@@ -1,0 +1,42 @@
+{
+  "name": "ImageForge - Image Processor",
+  "short_name": "ImageForge",
+  "description": "Compress, convert, and combine images instantly. 100% client-side processing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#7c3aed",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Compress",
+      "short_name": "Compress",
+      "description": "Compress images",
+      "url": "/?tool=compress",
+      "icons": [{ "src": "/favicon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Convert",
+      "short_name": "Convert",
+      "description": "Convert image formats",
+      "url": "/?tool=convert",
+      "icons": [{ "src": "/favicon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Combine",
+      "short_name": "Combine",
+      "description": "Combine multiple images",
+      "url": "/?tool=combine",
+      "icons": [{ "src": "/favicon.png", "sizes": "512x512" }]
+    }
+  ]
+}
