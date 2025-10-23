@@ -1,0 +1,225 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { UploadZone } from "@/components/UploadZone";
+import { Palette, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
+
+interface ColorSwatch {
+  hex: string;
+  rgb: string;
+  count: number;
+}
+
+export const PaletteTool = () => {
+  const [originalImage, setOriginalImage] = useState<File | null>(null);
+  const [colors, setColors] = useState<ColorSwatch[]>([]);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const handleFilesSelected = async (files: File[]) => {
+    if (files.length === 0) return;
+
+    const file = files[0];
+    setOriginalImage(file);
+
+    const img = new Image();
+    img.onload = () => extractColors(img);
+    img.src = URL.createObjectURL(file);
+
+    toast.success("Extracting color palette...");
+  };
+
+  const rgbToHex = (r: number, g: number, b: number): string => {
+    return '#' + [r, g, b].map(x => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
+  };
+
+  const extractColors = (img: HTMLImageElement) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Scale down for faster processing
+    const maxSize = 200;
+    const scale = Math.min(maxSize / img.width, maxSize / img.height);
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    // Color quantization using simple clustering
+    const colorMap = new Map<string, number>();
+
+    for (let i = 0; i < data.length; i += 16) { // Sample every 4th pixel
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const a = data[i + 3];
+
+      if (a < 128) continue; // Skip transparent pixels
+
+      // Round to nearest 16 to reduce color space
+      const rRounded = Math.round(r / 16) * 16;
+      const gRounded = Math.round(g / 16) * 16;
+      const bRounded = Math.round(b / 16) * 16;
+
+      const key = `${rRounded},${gRounded},${bRounded}`;
+      colorMap.set(key, (colorMap.get(key) || 0) + 1);
+    }
+
+    // Sort by frequency and get top colors
+    const sortedColors = Array.from(colorMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([color, count]) => {
+        const [r, g, b] = color.split(',').map(Number);
+        return {
+          hex: rgbToHex(r, g, b),
+          rgb: `rgb(${r}, ${g}, ${b})`,
+          count,
+        };
+      });
+
+    setColors(sortedColors);
+    toast.success(`Extracted ${sortedColors.length} dominant colors!`);
+  };
+
+  const copyToClipboard = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+    toast.success(`Copied ${text} to clipboard!`);
+  };
+
+  const generateGradients = () => {
+    if (colors.length < 2) return [];
+
+    return [
+      `linear-gradient(135deg, ${colors[0].hex}, ${colors[1].hex})`,
+      colors.length > 2 ? `linear-gradient(135deg, ${colors[0].hex}, ${colors[2].hex})` : null,
+      colors.length > 3 ? `linear-gradient(135deg, ${colors[1].hex}, ${colors[3].hex})` : null,
+    ].filter(Boolean) as string[];
+  };
+
+  return (
+    <div className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass rounded-2xl p-6"
+      >
+        <h2 className="text-2xl font-bold mb-4 gradient-text">Color Palette Extractor</h2>
+        <p className="text-muted-foreground mb-6">
+          Extract dominant colors from any image and copy HEX/RGB codes
+        </p>
+
+        {!originalImage ? (
+          <UploadZone onFilesSelected={handleFilesSelected} multiple={false} />
+        ) : (
+          <div className="space-y-6">
+            <div className="glass rounded-xl p-4">
+              <h3 className="text-sm font-semibold mb-2">Original Image</h3>
+              <img
+                src={URL.createObjectURL(originalImage)}
+                alt="Original"
+                className="w-full rounded-lg max-h-96 object-contain bg-muted/20"
+              />
+            </div>
+
+            {colors.length > 0 && (
+              <>
+                <div className="glass rounded-xl p-4 space-y-4">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <Palette className="w-4 h-4" />
+                    Dominant Colors
+                  </h3>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {colors.map((color, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="glass rounded-xl overflow-hidden"
+                      >
+                        <div
+                          className="h-24 w-full"
+                          style={{ backgroundColor: color.hex }}
+                        />
+                        <div className="p-3 space-y-2">
+                          <button
+                            onClick={() => copyToClipboard(color.hex, index * 2)}
+                            className="flex items-center justify-between w-full text-xs hover:text-primary transition-colors"
+                          >
+                            <span className="font-mono">{color.hex}</span>
+                            {copiedIndex === index * 2 ? (
+                              <Check className="w-3 h-3 text-primary" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => copyToClipboard(color.rgb, index * 2 + 1)}
+                            className="flex items-center justify-between w-full text-xs text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            <span className="font-mono">{color.rgb}</span>
+                            {copiedIndex === index * 2 + 1 ? (
+                              <Check className="w-3 h-3 text-primary" />
+                            ) : (
+                              <Copy className="w-3 h-3" />
+                            )}
+                          </button>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="glass rounded-xl p-4 space-y-4">
+                  <h3 className="font-semibold">Gradient Suggestions</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {generateGradients().map((gradient, index) => (
+                      <motion.button
+                        key={index}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        onClick={() => copyToClipboard(gradient, 100 + index)}
+                        className="glass rounded-xl h-24 overflow-hidden relative group"
+                        style={{ background: gradient }}
+                      >
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          {copiedIndex === 100 + index ? (
+                            <Check className="w-6 h-6 text-white" />
+                          ) : (
+                            <Copy className="w-6 h-6 text-white" />
+                          )}
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            <Button
+              onClick={() => {
+                setOriginalImage(null);
+                setColors([]);
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              Process Another Image
+            </Button>
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+};

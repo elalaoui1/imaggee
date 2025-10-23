@@ -6,7 +6,11 @@ import { Header } from "@/components/Header";
 import { CompressTool } from "@/components/CompressTool";
 import { ConvertTool } from "@/components/ConvertTool";
 import { CombineTool } from "@/components/CombineTool";
-import { Minimize2, Repeat, Layers } from "lucide-react";
+import { BackgroundRemoverTool } from "@/components/BackgroundRemoverTool";
+import { ResizeTool } from "@/components/ResizeTool";
+import { PaletteTool } from "@/components/PaletteTool";
+import { MetadataTool } from "@/components/MetadataTool";
+import { Minimize2, Repeat, Layers, Eraser, Crop, Palette, FileX } from "lucide-react";
 import heroBg from "@/assets/hero-bg.png";
 
 const Index = () => {
@@ -33,7 +37,7 @@ const Index = () => {
           transition={{ delay: 0.2 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 glass">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 mb-8 glass overflow-x-auto">
               <TabsTrigger value="compress">
                 <Minimize2 className="w-4 h-4 mr-2" />
                 Compress
@@ -45,6 +49,22 @@ const Index = () => {
               <TabsTrigger value="combine">
                 <Layers className="w-4 h-4 mr-2" />
                 Combine
+              </TabsTrigger>
+              <TabsTrigger value="remove-bg">
+                <Eraser className="w-4 h-4 mr-2" />
+                Remove BG
+              </TabsTrigger>
+              <TabsTrigger value="resize">
+                <Crop className="w-4 h-4 mr-2" />
+                Resize
+              </TabsTrigger>
+              <TabsTrigger value="palette">
+                <Palette className="w-4 h-4 mr-2" />
+                Palette
+              </TabsTrigger>
+              <TabsTrigger value="metadata">
+                <FileX className="w-4 h-4 mr-2" />
+                Metadata
               </TabsTrigger>
             </TabsList>
 
@@ -58,6 +78,22 @@ const Index = () => {
 
             <TabsContent value="combine" className="animate-fade-in">
               <CombineTool />
+            </TabsContent>
+
+            <TabsContent value="remove-bg" className="animate-fade-in">
+              <BackgroundRemoverTool />
+            </TabsContent>
+
+            <TabsContent value="resize" className="animate-fade-in">
+              <ResizeTool />
+            </TabsContent>
+
+            <TabsContent value="palette" className="animate-fade-in">
+              <PaletteTool />
+            </TabsContent>
+
+            <TabsContent value="metadata" className="animate-fade-in">
+              <MetadataTool />
             </TabsContent>
           </Tabs>
         </motion.div>
