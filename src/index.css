@@ -114,4 +114,27 @@ All colors MUST be HSL.
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  .glass-subtle {
+    @apply bg-background/40 backdrop-blur-sm border border-border/50;
+  }
+
+  /* Horizontal scroll for desktop navigation */
+  [role="tablist"] {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) transparent;
+  }
+  
+  [role="tablist"]::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  [role="tablist"]::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  [role="tablist"]::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 3px;
+  }
 }

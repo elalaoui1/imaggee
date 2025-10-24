@@ -127,7 +127,37 @@ export const BackgroundRemoverTool = () => {
     setProcessedBlob(null);
     setPreviewUrl(null);
     
-    toast.success("Image loaded! Click 'Remove Background' to process.");
+    // Auto-process the image
+    setIsProcessing(true);
+    setProgress(0);
+
+    try {
+      const img = await loadImage(file);
+      const blob = await removeBackground(img, setProgress);
+      setProcessedBlob(blob);
+      
+      // Create preview with transparent background
+      const previewCanvas = document.createElement('canvas');
+      const ctx = previewCanvas.getContext('2d');
+      if (!ctx) throw new Error('Failed to get canvas context');
+
+      const processedImg = await loadImage(blob);
+      previewCanvas.width = processedImg.width;
+      previewCanvas.height = processedImg.height;
+
+      // Draw image with transparency
+      ctx.drawImage(processedImg, 0, 0);
+
+      const previewDataUrl = previewCanvas.toDataURL('image/png');
+      setPreviewUrl(previewDataUrl);
+
+      toast.success("Background removed successfully!");
+    } catch (error) {
+      console.error('Processing error:', error);
+      toast.error("Failed to remove background. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const processImage = async () => {
@@ -263,14 +293,14 @@ export const BackgroundRemoverTool = () => {
                 <img
                   src={URL.createObjectURL(originalImage)}
                   alt="Original"
-                  className="w-full rounded-lg"
+                  className="max-w-full max-h-[400px] mx-auto rounded-lg object-contain"
                 />
               </div>
 
               {previewUrl && (
                 <div className="glass rounded-xl p-4">
                   <h3 className="text-sm font-semibold mb-2">Preview</h3>
-                  <img src={previewUrl} alt="Processed" className="w-full rounded-lg" />
+                  <img src={previewUrl} alt="Processed" className="max-w-full max-h-[400px] mx-auto rounded-lg object-contain" />
                 </div>
               )}
             </div>
@@ -290,16 +320,6 @@ export const BackgroundRemoverTool = () => {
               </div>
             )}
 
-            {!processedBlob && !isProcessing && (
-              <Button
-                onClick={processImage}
-                className="w-full"
-                variant="gradient"
-                size="lg"
-              >
-                Remove Background
-              </Button>
-            )}
 
             {processedBlob && (
               <div className="space-y-4">

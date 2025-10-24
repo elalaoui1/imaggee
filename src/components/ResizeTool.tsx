@@ -160,7 +160,7 @@ export const ResizeTool = () => {
               <div className="glass rounded-xl p-4">
                 <h3 className="text-sm font-semibold mb-2">Preview ({width} × {height})</h3>
                 <div className="relative bg-muted/20 rounded-lg overflow-hidden">
-                  <img src={previewUrl} alt="Preview" className="w-full" />
+                  <img src={previewUrl} alt="Preview" className="max-w-full max-h-[400px] mx-auto object-contain" />
                 </div>
               </div>
             )}

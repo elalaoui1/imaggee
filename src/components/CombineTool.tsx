@@ -386,7 +386,7 @@ export const CombineTool = () => {
                 <div
                   key={img.id}
                   onClick={() => addImageToCanvas(img.src)}
-                  className="aspect-square rounded-lg overflow-hidden border border-border hover:border-accent cursor-pointer transition-all hover:scale-105"
+                  className="h-20 rounded-lg overflow-hidden border border-border hover:border-accent cursor-pointer transition-all hover:scale-105"
                 >
                   <img src={img.src} alt="thumbnail" className="w-full h-full object-cover" />
                 </div>
