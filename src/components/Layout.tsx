@@ -32,13 +32,13 @@ export const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Mobile/Tablet Layout */}
-      <div className="lg:hidden p-4 pb-20">
-        <main className="max-w-3xl mx-auto">{children}</main>
-        
-        {/* Mobile Ad Banner */}
-        <div className="fixed bottom-16 left-0 right-0 h-16 glass flex items-center justify-center">
-          <div className="text-muted-foreground text-xs">Responsive Ad Banner</div>
+      <div className="lg:hidden">
+        {/* Compact Top Ad Banner - Mobile Only */}
+        <div className="sticky top-0 z-40 h-12 glass-subtle border-b border-border/50 flex items-center justify-center">
+          <div className="text-muted-foreground text-xs">Ad Banner 320x50</div>
         </div>
+        
+        <main className="max-w-3xl mx-auto p-4 pb-24">{children}</main>
       </div>
     </div>
   );

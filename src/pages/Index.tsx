@@ -73,119 +73,90 @@ const Index = () => {
               </TabsList>
             </div>
 
-            {/* Mobile - Native Style Navigation */}
-            <div className="md:hidden mb-8 relative">
-              <div className="grid grid-cols-4 gap-2 mb-4">
+            {/* Mobile - Fixed Bottom Navigation */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50 pb-safe">
+              <div className="grid grid-cols-4 gap-1 p-2">
                 <button
                   onClick={() => setActiveTab("compress")}
-                  className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
                     activeTab === "compress"
-                      ? "glass ring-2 ring-primary"
-                      : "glass-subtle hover:glass"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
                   }`}
                 >
-                  <Minimize2 className="w-6 h-6" />
-                  <span className="text-xs font-medium">Compress</span>
+                  <Minimize2 className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Compress</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("convert")}
-                  className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
                     activeTab === "convert"
-                      ? "glass ring-2 ring-primary"
-                      : "glass-subtle hover:glass"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
                   }`}
                 >
-                  <Repeat className="w-6 h-6" />
-                  <span className="text-xs font-medium">Convert</span>
+                  <Repeat className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Convert</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("combine")}
-                  className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
                     activeTab === "combine"
-                      ? "glass ring-2 ring-primary"
-                      : "glass-subtle hover:glass"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
                   }`}
                 >
-                  <Layers className="w-6 h-6" />
-                  <span className="text-xs font-medium">Combine</span>
+                  <Layers className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Combine</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("remove-bg")}
-                  className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
                     activeTab === "remove-bg"
-                      ? "glass ring-2 ring-primary"
-                      : "glass-subtle hover:glass"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
                   }`}
                 >
-                  <Eraser className="w-6 h-6" />
-                  <span className="text-xs font-medium">Remove BG</span>
+                  <Eraser className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Remove BG</span>
                 </button>
               </div>
-
-              {/* More Button */}
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setShowMoreMenu(!showMoreMenu)}
-              >
-                <MoreHorizontal className="w-4 h-4 mr-2" />
-                More Tools
-              </Button>
-
-              {/* More Menu */}
-              <AnimatePresence>
-                {showMoreMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-2 grid grid-cols-3 gap-2"
-                  >
-                    <button
-                      onClick={() => {
-                        setActiveTab("resize");
-                        setShowMoreMenu(false);
-                      }}
-                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
-                        activeTab === "resize"
-                          ? "glass ring-2 ring-primary"
-                          : "glass-subtle hover:glass"
-                      }`}
-                    >
-                      <Crop className="w-6 h-6" />
-                      <span className="text-xs font-medium">Resize</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveTab("palette");
-                        setShowMoreMenu(false);
-                      }}
-                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
-                        activeTab === "palette"
-                          ? "glass ring-2 ring-primary"
-                          : "glass-subtle hover:glass"
-                      }`}
-                    >
-                      <Palette className="w-6 h-6" />
-                      <span className="text-xs font-medium">Palette</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setActiveTab("metadata");
-                        setShowMoreMenu(false);
-                      }}
-                      className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-all ${
-                        activeTab === "metadata"
-                          ? "glass ring-2 ring-primary"
-                          : "glass-subtle hover:glass"
-                      }`}
-                    >
-                      <FileX className="w-6 h-6" />
-                      <span className="text-xs font-medium">Metadata</span>
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              
+              <div className="grid grid-cols-3 gap-1 px-2 pb-2">
+                <button
+                  onClick={() => setActiveTab("resize")}
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
+                    activeTab === "resize"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
+                  }`}
+                >
+                  <Crop className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Resize</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("palette")}
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
+                    activeTab === "palette"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
+                  }`}
+                >
+                  <Palette className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Palette</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("metadata")}
+                  className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-all ${
+                    activeTab === "metadata"
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted/50"
+                  }`}
+                >
+                  <FileX className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Metadata</span>
+                </button>
+              </div>
             </div>
 
             <TabsContent value="compress" className="animate-fade-in">
