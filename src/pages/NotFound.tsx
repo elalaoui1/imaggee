@@ -1,5 +1,10 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
+import { Home, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const NotFound = () => {
   const location = useLocation();
@@ -9,14 +14,62 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          Return to Home
-        </a>
-      </div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Helmet>
+        <title>404 - Page Not Found | ImageForge</title>
+        <meta name="description" content="The page you're looking for doesn't exist. Return to ImageForge to access our free online image tools." />
+        <meta name="robots" content="noindex,nofollow" />
+      </Helmet>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-lg w-full"
+      >
+        <Card className="glass">
+          <CardContent className="p-8 text-center">
+            <div className="mb-6">
+              <h1 className="text-8xl font-bold gradient-text mb-4">404</h1>
+              <h2 className="text-2xl font-semibold mb-2">Page Not Found</h2>
+              <p className="text-muted-foreground">
+                Oops! The page you're looking for doesn't exist or has been moved.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button asChild size="lg">
+                <Link to="/">
+                  <Home className="w-4 h-4 mr-2" />
+                  Go Home
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" onClick={() => window.history.back()}>
+                <a>
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Go Back
+                </a>
+              </Button>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-border/50">
+              <p className="text-sm text-muted-foreground mb-3">
+                Looking for our tools?
+              </p>
+              <div className="flex flex-wrap gap-2 justify-center text-xs">
+                <Link to="/?tool=compress" className="text-primary hover:underline">Compress</Link>
+                <span className="text-muted-foreground">•</span>
+                <Link to="/?tool=convert" className="text-primary hover:underline">Convert</Link>
+                <span className="text-muted-foreground">•</span>
+                <Link to="/?tool=combine" className="text-primary hover:underline">Combine</Link>
+                <span className="text-muted-foreground">•</span>
+                <Link to="/?tool=remove-bg" className="text-primary hover:underline">Remove BG</Link>
+                <span className="text-muted-foreground">•</span>
+                <Link to="/?tool=resize" className="text-primary hover:underline">Resize</Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 };
