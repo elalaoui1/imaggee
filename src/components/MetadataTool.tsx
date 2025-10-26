@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { UploadZone } from "@/components/UploadZone";
+import { ToolDescription } from "@/components/ToolDescription";
 import { Download, FileX, Info, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -209,6 +210,21 @@ export const MetadataTool = () => {
           </div>
         )}
       </motion.div>
+
+      <ToolDescription
+        title="Metadata Cleaner"
+        description="Remove EXIF data and metadata from images to protect your privacy. GPS location, camera info, timestamps, and other sensitive data are completely removed while preserving image quality."
+        benefits={["Remove GPS location data", "Delete camera information", "Privacy protection", "Maintains image quality"]}
+        howTo={[
+          { title: "Upload Image", description: "Upload the image you want to clean" },
+          { title: "View Metadata", description: "Review what metadata is present in your image" },
+          { title: "Remove & Download", description: "Remove all metadata and download the cleaned image" }
+        ]}
+        faqs={[
+          { question: "What is EXIF data?", answer: "EXIF data includes camera settings, GPS location, date/time, and other information embedded in photos." },
+          { question: "Why should I remove metadata?", answer: "Metadata can reveal sensitive information like your location, device details, and when/where photos were taken. Removing it protects your privacy when sharing images online." }
+        ]}
+      />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { UploadZone } from "@/components/UploadZone";
+import { ToolDescription } from "@/components/ToolDescription";
 import { Palette, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -220,6 +221,21 @@ export const PaletteTool = () => {
           </div>
         )}
       </motion.div>
+
+      <ToolDescription
+        title="Color Palette Extractor"
+        description="Extract dominant colors from any image and get HEX/RGB codes instantly. Perfect for designers, developers, and creatives who need to match colors or create harmonious palettes."
+        benefits={["Extract 8 dominant colors", "HEX and RGB codes", "Gradient suggestions", "One-click copy to clipboard"]}
+        howTo={[
+          { title: "Upload Image", description: "Upload any image to extract its color palette" },
+          { title: "View Colors", description: "See the dominant colors with HEX and RGB values" },
+          { title: "Copy Codes", description: "Click any color to copy its code to clipboard" }
+        ]}
+        faqs={[
+          { question: "How accurate is the color extraction?", answer: "Our algorithm analyzes every pixel to identify the most dominant and representative colors in your image." },
+          { question: "Can I use these colors in my designs?", answer: "Absolutely! Copy the HEX or RGB codes and use them in any design software, CSS, or graphics application." }
+        ]}
+      />
     </div>
   );
 };

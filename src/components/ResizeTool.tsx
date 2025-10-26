@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UploadZone } from "@/components/UploadZone";
+import { ToolDescription } from "@/components/ToolDescription";
 import { Download, Crop, Lock, Unlock } from "lucide-react";
 import { toast } from "sonner";
 
@@ -252,6 +253,21 @@ export const ResizeTool = () => {
           </div>
         )}
       </motion.div>
+
+      <ToolDescription
+        title="Smart Image Resizer"
+        description="Resize images to exact dimensions for any platform with our smart resizing tool. Features social media presets for Instagram, YouTube, Facebook, and custom dimensions with aspect ratio locking."
+        benefits={["Social media presets", "Custom dimensions", "Aspect ratio control", "Multiple export formats"]}
+        howTo={[
+          { title: "Upload Image", description: "Upload your image to start resizing" },
+          { title: "Choose Preset or Custom", description: "Select a preset or enter custom dimensions" },
+          { title: "Download", description: "Download your perfectly sized image" }
+        ]}
+        faqs={[
+          { question: "What are the best image sizes for social media?", answer: "Instagram posts: 1080x1080, Instagram stories: 1080x1920, YouTube thumbnails: 1280x720, Facebook covers: 820x312" },
+          { question: "Will resizing reduce image quality?", answer: "Our tool maintains quality during resizing. For best results, avoid upscaling beyond the original dimensions." }
+        ]}
+      />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UploadZone } from "./UploadZone";
+import { ToolDescription } from "./ToolDescription";
 import { useToast } from "@/hooks/use-toast";
 
 const formats = ["png", "jpeg", "webp", "bmp"] as const;
@@ -174,6 +175,59 @@ export const ConvertTool = () => {
           </div>
         </Card>
       )}
+
+      <ToolDescription
+        title="Image Format Converter"
+        description="Seamlessly convert images between PNG, JPG, WebP, and BMP formats with a single click. Our converter maintains image quality while ensuring compatibility across all platforms and applications. Whether you need transparent PNGs, compressed JPEGs, modern WebP for web optimization, or legacy BMP files, our tool handles it all effortlessly."
+        benefits={[
+          "Convert between PNG, JPEG, WebP, and BMP formats instantly",
+          "Maintain maximum image quality during conversion",
+          "Support for transparent backgrounds in PNG format",
+          "Optimize for web with modern WebP format (up to 30% smaller than JPEG)",
+          "Batch conversion support for multiple images",
+          "No watermarks, no file size limits, completely free"
+        ]}
+        howTo={[
+          {
+            title: "Upload Your Image",
+            description: "Select or drag-and-drop the image you want to convert. All common image formats are supported as input."
+          },
+          {
+            title: "Choose Target Format",
+            description: "Select your desired output format from the dropdown: PNG (for transparency), JPEG (for photos), WebP (for web), or BMP."
+          },
+          {
+            title: "Convert",
+            description: "Click the Convert button and watch as your image is instantly transformed to the new format."
+          },
+          {
+            title: "Download",
+            description: "Download your converted image with the new file extension and format."
+          }
+        ]}
+        faqs={[
+          {
+            question: "When should I use PNG vs JPEG format?",
+            answer: "Use PNG for images with transparency, graphics, logos, and screenshots where you need lossless quality. Use JPEG for photographs and images with many colors where smaller file sizes are more important than perfect quality."
+          },
+          {
+            question: "What is WebP and why should I use it?",
+            answer: "WebP is a modern image format developed by Google that provides superior compression. WebP images are typically 25-35% smaller than JPEG at the same quality level, making them perfect for websites and web applications to improve loading speeds."
+          },
+          {
+            question: "Will converting from JPEG to PNG improve quality?",
+            answer: "No, converting from a lossy format (JPEG) to a lossless format (PNG) won't restore lost quality. However, it's useful if you need transparency support or want to prevent further quality loss in subsequent edits."
+          },
+          {
+            question: "Does format conversion preserve EXIF data?",
+            answer: "Basic EXIF data like dimensions and color space is preserved when possible, but some metadata may be lost. If you need to preserve or remove all metadata, use our Metadata tool."
+          },
+          {
+            question: "Can I convert transparent PNGs to JPEG?",
+            answer: "Yes, but JPEG doesn't support transparency. Transparent areas will be replaced with a white background during conversion."
+          }
+        ]}
+      />
     </motion.div>
   );
 };

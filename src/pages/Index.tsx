@@ -12,6 +12,9 @@ import { BackgroundRemoverTool } from "@/components/BackgroundRemoverTool";
 import { ResizeTool } from "@/components/ResizeTool";
 import { PaletteTool } from "@/components/PaletteTool";
 import { MetadataTool } from "@/components/MetadataTool";
+import { HeroSection } from "@/components/HeroSection";
+import { ToolsShowcase } from "@/components/ToolsShowcase";
+import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { Minimize2, Repeat, Layers, Eraser, Crop, Palette, FileX, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroBg from "@/assets/hero-bg.png";
@@ -48,11 +51,19 @@ const Index = () => {
       <div className="relative z-10">
         <Header />
 
+        <HeroSection />
+        <ToolsShowcase />
+        <WhyChooseUs />
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="mt-12"
         >
+          <h2 className="text-3xl font-bold text-center mb-8 gradient-text">
+            Get Started with Our Tools
+          </h2>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Desktop/Tablet - Horizontal Scroll */}
             <div className="hidden md:block mb-8">

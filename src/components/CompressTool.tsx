@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card } from "@/components/ui/card";
 import { UploadZone } from "./UploadZone";
+import { ToolDescription } from "./ToolDescription";
 import { useToast } from "@/hooks/use-toast";
 import imageCompression from "browser-image-compression";
 
@@ -152,6 +153,59 @@ export const CompressTool = () => {
           </div>
         </Card>
       )}
+
+      <ToolDescription
+        title="Image Compression"
+        description="Our advanced image compression tool reduces file sizes by up to 90% while maintaining excellent visual quality. Perfect for optimizing images for websites, social media, email attachments, or cloud storage. Using state-of-the-art compression algorithms, you can significantly reduce loading times and save bandwidth without compromising on image quality."
+        benefits={[
+          "Reduce file sizes by up to 90% without visible quality loss",
+          "Adjustable quality slider for precise control over compression level",
+          "Instant preview to compare original and compressed versions",
+          "Perfect for web optimization, faster page loading, and reduced bandwidth costs",
+          "Supports all major image formats: JPEG, PNG, WebP, and more",
+          "No file size or quantity limits - compress as many images as you need"
+        ]}
+        howTo={[
+          {
+            title: "Upload Your Image",
+            description: "Click or drag-and-drop your image file into the upload zone. Supports JPG, PNG, WebP, and other common formats."
+          },
+          {
+            title: "Adjust Quality",
+            description: "Use the quality slider to set your desired compression level. Higher values preserve more quality but result in larger files."
+          },
+          {
+            title: "Compress",
+            description: "Click the 'Compress' button to process your image. You'll see the size reduction percentage instantly."
+          },
+          {
+            title: "Download",
+            description: "Review the compressed image and download it when satisfied with the results."
+          }
+        ]}
+        faqs={[
+          {
+            question: "How much can I compress an image without losing quality?",
+            answer: "Typically, you can reduce file sizes by 50-70% without noticeable quality loss. JPEG images can often be compressed to 70-80% quality with minimal visible difference, while PNG images benefit from lossless compression techniques."
+          },
+          {
+            question: "What's the difference between lossy and lossless compression?",
+            answer: "Lossy compression (like JPEG) removes some image data to achieve smaller file sizes, which may slightly reduce quality. Lossless compression (like PNG optimization) reduces file size without any quality loss by optimizing how the data is stored."
+          },
+          {
+            question: "Will compressing images affect their resolution or dimensions?",
+            answer: "No, compression only reduces file size by optimizing how image data is stored. The pixel dimensions and resolution remain unchanged."
+          },
+          {
+            question: "How does image compression help with website speed?",
+            answer: "Smaller image files load faster, reducing page load times and bandwidth usage. This improves user experience, SEO rankings, and reduces hosting costs. Google recommends optimized images for better Core Web Vitals scores."
+          },
+          {
+            question: "Is there a limit to how many images I can compress?",
+            answer: "No limits! You can compress as many images as you need, completely free. All processing happens in your browser, so there are no server restrictions."
+          }
+        ]}
+      />
     </motion.div>
   );
 };
