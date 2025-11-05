@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { UploadZone } from "@/components/UploadZone";
+import { ToolDescription } from "@/components/ToolDescription";
 import { Download, Palette, Sparkles, Image as ImageIcon, Scissors } from "lucide-react";
 import { toast } from "sonner";
 import { pipeline, env } from '@huggingface/transformers';
@@ -730,6 +731,67 @@ export const BackgroundRemoverTool = () => {
         )}
       </motion.div>
       <canvas ref={processedCanvasRef} style={{ display: 'none' }} />
+
+      <ToolDescription
+        title="Background Remover"
+        description="AI-powered background removal tool that instantly removes backgrounds from images with precision. Perfect for e-commerce product photos, profile pictures, presentations, and graphic design. Choose between transparent backgrounds, solid colors, or beautiful gradients. Also includes advanced object removal to delete unwanted people or items from photos."
+        benefits={[
+          "AI-powered precision using advanced machine learning models",
+          "Multiple background options: transparent, solid colors, or custom gradients",
+          "Object removal mode to delete unwanted people or items from photos",
+          "Adjustable confidence and edge smoothing for perfect results",
+          "Instant processing with real-time preview",
+          "100% client-side processing - your images never leave your device"
+        ]}
+        howTo={[
+          {
+            title: "Choose Your Mode",
+            description: "Select 'Remove Background' to keep the subject and remove background, or 'Remove Object' to delete unwanted people/items"
+          },
+          {
+            title: "Upload Your Image",
+            description: "Drag and drop your image or click to browse. Supports all common formats (PNG, JPG, WebP, etc.)"
+          },
+          {
+            title: "AI Processing",
+            description: "The AI model automatically detects and processes your image. For object removal, adjust confidence and smoothing settings"
+          },
+          {
+            title: "Customize Background",
+            description: "For background removal: choose transparent, select a solid color, or create a gradient background"
+          },
+          {
+            title: "Download Result",
+            description: "Download your processed image as PNG with transparent background or with your chosen background style"
+          }
+        ]}
+        faqs={[
+          {
+            question: "What's the difference between Remove Background and Remove Object?",
+            answer: "Remove Background keeps the main subject and removes everything else, perfect for product photos and portraits. Remove Object deletes unwanted people or items from your photo while keeping the background intact."
+          },
+          {
+            question: "Can I use this for e-commerce product photos?",
+            answer: "Absolutely! Our background remover is perfect for creating clean product images. Remove the background, add a white or custom colored background, and download professional-looking product photos."
+          },
+          {
+            question: "How accurate is the AI background removal?",
+            answer: "Our AI uses advanced segmentation models trained on millions of images. It works best with clear subjects and good contrast. For object removal, you can adjust confidence levels and edge smoothing for optimal results."
+          },
+          {
+            question: "What happens to my images?",
+            answer: "All processing happens locally in your browser using WebGPU. Your images are never uploaded to any server, ensuring complete privacy and data security."
+          },
+          {
+            question: "Why should I use gradient or solid backgrounds?",
+            answer: "While transparent backgrounds are great for overlays and composites, solid colors and gradients can make your subject pop, match brand colors, or create eye-catching social media graphics without needing additional editing software."
+          },
+          {
+            question: "Can I process multiple images?",
+            answer: "Currently, you can process one image at a time for best results. After downloading, click 'Process Another Image' to continue with your next photo."
+          }
+        ]}
+      />
     </div>
   );
 };

@@ -517,6 +517,67 @@ export const CombineTool = () => {
           <p className="text-muted-foreground">Click on any uploaded image above to add it to the canvas</p>
         </Card>
       )}
+
+      <ToolDescription
+        title="Image Combiner"
+        description="Our online image combiner tool allows you to merge multiple images into a single composite image. Whether you're creating a photo collage, adding watermarks, or building creative overlays, this tool gives you complete control over image placement, size, rotation, and layering. Perfect for social media content, presentations, and design projects."
+        benefits={[
+          "Drag & drop canvas with intuitive interface for positioning and arranging images",
+          "Full control to resize, rotate, and layer images precisely with interactive handles",
+          "Multiple presets including HD (16:9), Square (1:1), Story (9:16), and custom dimensions",
+          "Custom background colors for perfect compositions",
+          "Export as PNG, JPEG, or WebP with adjustable quality settings",
+          "Combine unlimited images with batch upload support"
+        ]}
+        howTo={[
+          {
+            title: "Upload Your Images",
+            description: "Drag and drop multiple images or click to browse. All formats supported (PNG, JPG, WebP, etc.)"
+          },
+          {
+            title: "Set Canvas Size",
+            description: "Choose from presets (16:9, 1:1, 9:16) or enter custom dimensions for your composite"
+          },
+          {
+            title: "Add Images to Canvas",
+            description: "Click any uploaded image to add it to the canvas. It will appear centered and ready to position"
+          },
+          {
+            title: "Arrange & Customize",
+            description: "Drag images to move them, use corner handles to resize, and rotate handle to spin. Adjust background color as needed"
+          },
+          {
+            title: "Export Your Creation",
+            description: "Choose your format (PNG for transparency, JPEG/WebP for smaller files) and download your combined image"
+          }
+        ]}
+        faqs={[
+          {
+            question: "Can I combine images of different sizes?",
+            answer: "Yes! Our tool automatically resizes images proportionally when added to the canvas. You can then manually adjust each image's size to fit your composition perfectly."
+          },
+          {
+            question: "How do I create a transparent background?",
+            answer: "The canvas background color is customizable. To achieve transparency, export as PNG format and use image editing software to remove the background, or start with a color that matches your destination."
+          },
+          {
+            question: "Is there a limit to how many images I can combine?",
+            answer: "No! You can upload and combine as many images as needed. However, keep canvas performance in mind - very complex compositions may slow down on older devices."
+          },
+          {
+            question: "Can I layer images on top of each other?",
+            answer: "Absolutely! Images are added in layers. Newly added images appear on top. You can overlap them freely to create collages, watermarks, or composite designs."
+          },
+          {
+            question: "What's the difference between PNG, JPEG, and WebP export?",
+            answer: "PNG offers lossless quality and is best for graphics and images with sharp edges. JPEG creates smaller files ideal for photos. WebP provides excellent compression with high quality - a modern format supported by most browsers."
+          },
+          {
+            question: "Do my images get uploaded to a server?",
+            answer: "No! All image processing happens locally in your browser. Your images never leave your device, ensuring complete privacy and instant processing."
+          }
+        ]}
+      />
     </motion.div>
   );
 };
