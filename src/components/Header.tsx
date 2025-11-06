@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
-import { Minimize2, Repeat, Layers, Eraser, Crop, Palette, FileX, Menu, X } from "lucide-react";
+import { Minimize2, Repeat, Layers, Smile, Crop, Palette, FileX, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const tools = [
   { name: "Compress", path: "/compress", icon: Minimize2 },
   { name: "Convert", path: "/convert", icon: Repeat },
   { name: "Combine", path: "/combine", icon: Layers },
-  { name: "Remove BG", path: "/remove-background", icon: Eraser },
+  { name: "Blur & Emoji", path: "/blur-emoji", icon: Smile },
   { name: "Resize", path: "/resize", icon: Crop },
   { name: "Palette", path: "/palette", icon: Palette },
   { name: "Metadata", path: "/metadata", icon: FileX },

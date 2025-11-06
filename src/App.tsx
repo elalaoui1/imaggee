@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import CompressPage from "./pages/CompressPage";
 import ConvertPage from "./pages/ConvertPage";
 import CombinePage from "./pages/CombinePage";
-import RemoveBgPage from "./pages/RemoveBgPage";
+import BlurEmojiPage from "./pages/BlurEmojiPage";
 import ResizePage from "./pages/ResizePage";
 import PalettePage from "./pages/PalettePage";
 import MetadataPage from "./pages/MetadataPage";
@@ -32,7 +32,7 @@ const App = () => (
             <Route path="/compress" element={<CompressPage />} />
             <Route path="/convert" element={<ConvertPage />} />
             <Route path="/combine" element={<CombinePage />} />
-            <Route path="/remove-background" element={<RemoveBgPage />} />
+            <Route path="/blur-emoji" element={<BlurEmojiPage />} />
             <Route path="/resize" element={<ResizePage />} />
             <Route path="/palette" element={<PalettePage />} />
             <Route path="/metadata" element={<MetadataPage />} />

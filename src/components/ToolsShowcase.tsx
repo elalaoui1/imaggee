@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Minimize2, Repeat, Layers, Eraser, Crop, Palette, FileX, ArrowRight } from "lucide-react";
+import { Minimize2, Repeat, Layers, Smile, Crop, Palette, FileX, ArrowRight } from "lucide-react";
 
 const tools = [
   {
@@ -19,11 +19,11 @@ const tools = [
     path: "/convert",
   },
   {
-    icon: Eraser,
-    title: "Background Removal",
-    description: "AI-powered background removal with transparent, solid, or gradient backgrounds.",
-    features: ["AI precision", "Multiple background options", "Edge refinement"],
-    path: "/remove-background",
+    icon: Smile,
+    title: "Blur & Emoji Editor",
+    description: "Add selective blur effects or fun emojis to your images with live preview and precision control.",
+    features: ["Selective blur areas", "Emoji placement", "Live preview"],
+    path: "/blur-emoji",
   },
   {
     icon: Crop,
