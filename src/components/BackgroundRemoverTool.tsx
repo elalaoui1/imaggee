@@ -40,8 +40,18 @@ function resizeImageIfNeeded(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 const removeBackground = async (imageElement: HTMLImageElement, onProgress?: (progress: number) => void): Promise<Blob> => {
   try {
     onProgress?.(10);
+    
+    // Check WebGPU support and use fallback if needed
+    const supportsWebGPU = 'gpu' in navigator;
+    const device = supportsWebGPU ? 'webgpu' : 'wasm';
+    
+    console.log(`Using device: ${device} for background removal`);
+    if (!supportsWebGPU) {
+      console.warn('WebGPU not supported, falling back to WASM (slower)');
+    }
+    
     const segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
-      device: 'webgpu',
+      device: device,
     });
     
     onProgress?.(30);
@@ -97,6 +107,12 @@ const removeBackground = async (imageElement: HTMLImageElement, onProgress?: (pr
     });
   } catch (error) {
     console.error('Error removing background:', error);
+    
+    // Provide more specific error information
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack);
+      throw new Error(`Background removal failed: ${error.message}`);
+    }
     throw error;
   }
 };
@@ -211,7 +227,15 @@ export const BackgroundRemoverTool = () => {
         toast.success("Background removed successfully!");
       } catch (error) {
         console.error('Processing error:', error);
-        toast.error("Failed to remove background. Please try again.");
+        const errorMessage = error instanceof Error ? error.message : "Failed to remove background";
+        toast.error(errorMessage);
+        
+        // Provide helpful tips based on common issues
+        if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+          toast.error("Network issue - please check your connection and try again");
+        } else if (!('gpu' in navigator)) {
+          toast.info("Using WASM mode (slower) - WebGPU not available in your browser");
+        }
       } finally {
         setIsProcessing(false);
       }
@@ -346,7 +370,14 @@ export const BackgroundRemoverTool = () => {
         toast.success("Background removed successfully!");
       } catch (error) {
         console.error('Processing error:', error);
-        toast.error("Failed to remove background. Please try again.");
+        const errorMessage = error instanceof Error ? error.message : "Failed to remove background";
+        toast.error(errorMessage);
+        
+        if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+          toast.error("Network issue - please check your connection and try again");
+        } else if (!('gpu' in navigator)) {
+          toast.info("Using WASM mode (slower) - WebGPU not available in your browser");
+        }
       } finally {
         setIsProcessing(false);
       }
