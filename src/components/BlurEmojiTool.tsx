@@ -22,6 +22,7 @@ export const BlurEmojiTool = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [blurMask, setBlurMask] = useState<ImageData | null>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [selectedEmojis, setSelectedEmojis] = useState<any[]>([]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -97,13 +98,16 @@ export const BlurEmojiTool = () => {
 
     const handleMouseDown = (e: any) => {
       if (!uploadedImage) return;
-      setIsDrawing(true);
       
       if (mode === "blur") {
+        setIsDrawing(true);
         drawOnMask(e.pointer.x, e.pointer.y);
       } else {
-        // Emoji mode - add emoji at click position
-        addEmoji(e.pointer.x, e.pointer.y);
+        // Emoji mode - only add emoji if clicking on empty space
+        const target = e.target;
+        if (!target || target.type === 'image') {
+          addEmoji(e.pointer.x, e.pointer.y);
+        }
       }
     };
 
@@ -119,14 +123,28 @@ export const BlurEmojiTool = () => {
       }
     };
 
+    const handleSelection = (e: any) => {
+      if (mode === "emoji" && e.selected && e.selected.length > 0) {
+        setSelectedEmojis(e.selected);
+      } else {
+        setSelectedEmojis([]);
+      }
+    };
+
     fabricCanvas.on("mouse:down", handleMouseDown);
     fabricCanvas.on("mouse:move", handleMouseMove);
     fabricCanvas.on("mouse:up", handleMouseUp);
+    fabricCanvas.on("selection:created", handleSelection);
+    fabricCanvas.on("selection:updated", handleSelection);
+    fabricCanvas.on("selection:cleared", () => setSelectedEmojis([]));
 
     return () => {
       fabricCanvas.off("mouse:down", handleMouseDown);
       fabricCanvas.off("mouse:move", handleMouseMove);
       fabricCanvas.off("mouse:up", handleMouseUp);
+      fabricCanvas.off("selection:created", handleSelection);
+      fabricCanvas.off("selection:updated", handleSelection);
+      fabricCanvas.off("selection:cleared");
     };
   }, [fabricCanvas, isDrawing, uploadedImage, mode, tool, brushSize, selectedEmoji]);
 
@@ -240,11 +258,25 @@ export const BlurEmojiTool = () => {
       left: x - 20,
       top: y - 20,
       fontSize: 40,
+      selectable: true,
+      evented: true,
     });
 
     fabricCanvas.add(text);
     fabricCanvas.renderAll();
-    toast.success("Emoji added! Drag to reposition or resize.");
+    toast.success("Emoji added! Drag to move, use corner handles to resize.");
+  };
+
+  const handleDeleteEmoji = () => {
+    if (!fabricCanvas || selectedEmojis.length === 0) return;
+    
+    selectedEmojis.forEach(obj => {
+      fabricCanvas.remove(obj);
+    });
+    
+    setSelectedEmojis([]);
+    fabricCanvas.renderAll();
+    toast.success("Emoji(s) deleted!");
   };
 
   const handleReset = () => {
@@ -411,8 +443,14 @@ export const BlurEmojiTool = () => {
                         ))}
                       </div>
                     </div>
+                    {selectedEmojis.length > 0 && (
+                      <Button onClick={handleDeleteEmoji} variant="destructive" className="w-full">
+                        <Eraser className="w-4 h-4 mr-2" />
+                        Delete Selected Emoji{selectedEmojis.length > 1 ? 's' : ''}
+                      </Button>
+                    )}
                     <p className="text-sm text-muted-foreground">
-                      Click on the image to place emoji. Drag to reposition or resize.
+                      Click to place emoji. Click emoji to select, then drag to move or resize. Delete selected emojis with the button above.
                     </p>
                   </div>
                 )}
@@ -453,7 +491,7 @@ export const BlurEmojiTool = () => {
             { title: "Upload Image", description: "Upload your image using the file selector" },
             { title: "Select Mode", description: "Choose Blur Mode to add blur effects or Emoji Mode to add emojis" },
             { title: "Apply Effects (Blur)", description: "For blur: Select areas with the brush, use eraser to refine selection" },
-            { title: "Add Emojis", description: "For emoji: Choose your emoji and click to place on the image" },
+            { title: "Add Emojis", description: "For emoji: Choose your emoji and click to place. Click emoji to select and move/resize." },
             { title: "Adjust Settings", description: "Adjust settings like brush size and blur intensity as needed" },
             { title: "Download", description: "Download your edited image when finished" }
           ]}
