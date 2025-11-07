@@ -34,21 +34,61 @@ export const CompressTool = () => {
 
     setIsProcessing(true);
     try {
-      const options = {
-        maxSizeMB: 10,
-        maxWidthOrHeight: 4096,
-        useWebWorker: true,
-        quality: quality[0] / 100,
-      };
-
-      const compressed = await imageCompression(originalFile, options);
-      setCompressedBlob(compressed);
-      setCompressedSize(compressed.size);
+      const fileSizeInMB = originalFile.size / (1024 * 1024);
+      const targetSize = originalFile.size * 0.5; // 50% of original
       
-      toast({
-        title: "Compression complete!",
-        description: `Reduced by ${((1 - compressed.size / originalFile.size) * 100).toFixed(1)}%`,
-      });
+      let finalCompressed: Blob;
+      
+      // For images over 1MB, ensure at least 50% compression with best quality
+      if (fileSizeInMB > 1) {
+        let bestQuality = quality[0] / 100;
+        let compressed = await imageCompression(originalFile, {
+          maxSizeMB: fileSizeInMB * 0.5,
+          maxWidthOrHeight: 4096,
+          useWebWorker: true,
+          initialQuality: bestQuality,
+        });
+        
+        // If first attempt doesn't reach 50% compression, iteratively reduce quality
+        let attempts = 0;
+        while (compressed.size > targetSize && bestQuality > 0.5 && attempts < 5) {
+          bestQuality -= 0.1;
+          compressed = await imageCompression(originalFile, {
+            maxSizeMB: fileSizeInMB * 0.5,
+            maxWidthOrHeight: 4096,
+            useWebWorker: true,
+            initialQuality: Math.max(0.5, bestQuality),
+          });
+          attempts++;
+        }
+        
+        finalCompressed = compressed;
+        
+        const compressionPercent = ((1 - compressed.size / originalFile.size) * 100).toFixed(1);
+        toast({
+          title: "Compression complete!",
+          description: `Reduced by ${compressionPercent}% (${(compressed.size / 1024).toFixed(2)} KB)`,
+        });
+      } else {
+        // For images under 1MB, use standard compression with user's quality setting
+        const compressed = await imageCompression(originalFile, {
+          maxSizeMB: 10,
+          maxWidthOrHeight: 4096,
+          useWebWorker: true,
+          initialQuality: quality[0] / 100,
+        });
+        
+        finalCompressed = compressed;
+        
+        toast({
+          title: "Compression complete!",
+          description: `Reduced by ${((1 - compressed.size / originalFile.size) * 100).toFixed(1)}%`,
+        });
+      }
+      
+      setCompressedBlob(finalCompressed);
+      setCompressedSize(finalCompressed.size);
+      
     } catch (error) {
       toast({
         title: "Compression failed",
