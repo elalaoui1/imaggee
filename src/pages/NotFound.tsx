@@ -16,8 +16,8 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Helmet>
-        <title>404 - Page Not Found | ImageForge</title>
-        <meta name="description" content="The page you're looking for doesn't exist. Return to ImageForge to access our free online image tools." />
+        <title>404 - Page Not Found | Imaggee</title>
+        <meta name="description" content="The page you're looking for doesn't exist. Return to Imaggee to access our free online image tools." />
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
 

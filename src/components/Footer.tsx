@@ -45,7 +45,7 @@ export const Footer = () => {
 
           {/* About */}
           <div>
-            <h3 className="font-semibold mb-3 text-sm">ImageForge</h3>
+            <h3 className="font-semibold mb-3 text-sm">Imaggee</h3>
             <p className="text-sm text-muted-foreground">
               Professional image editing tools that run entirely in your browser. 100% private and secure.
             </p>
@@ -54,7 +54,7 @@ export const Footer = () => {
 
         <div className="pt-6 border-t border-border/50 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} ImageForge. All rights reserved.
+            © {new Date().getFullYear()} Imaggee. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground/70 mt-2">
             Your images, your privacy, your control.

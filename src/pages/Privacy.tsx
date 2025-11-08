@@ -38,7 +38,7 @@ const Privacy = () => {
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold mb-4">Our Privacy Commitment</h2>
               <p className="text-lg leading-relaxed">
-                At ImageForge, your privacy is not just a priority—it's fundamental to how we operate. 
+                At Imaggee, your privacy is not just a priority—it's fundamental to how we operate. 
                 All image processing happens entirely in your browser. We never upload, access, store, 
                 or transmit your images to any server. Your data stays on your device, period.
               </p>
@@ -50,7 +50,7 @@ const Privacy = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">1. Information We Don't Collect</h2>
                 <p className="text-muted-foreground mb-3">
-                  Unlike most online services, ImageForge is designed to collect as little information as possible:
+                  Unlike most online services, Imaggee is designed to collect as little information as possible:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li><strong>Your Images:</strong> We never upload or access your images. All processing happens locally in your browser.</li>
@@ -63,7 +63,7 @@ const Privacy = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">2. How Our Tools Work</h2>
                 <p className="text-muted-foreground mb-3">
-                  ImageForge uses modern web technologies to process images entirely in your browser:
+                  Imaggee uses modern web technologies to process images entirely in your browser:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li><strong>Client-Side Processing:</strong> All operations use JavaScript, WebAssembly, and HTML5 Canvas APIs that run in your browser.</li>
@@ -89,7 +89,7 @@ const Privacy = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">4. Third-Party Services</h2>
                 <p className="text-muted-foreground mb-3">
-                  ImageForge may use the following third-party services:
+                  Imaggee may use the following third-party services:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li><strong>Analytics Services:</strong> We may use privacy-focused analytics tools (like Google Analytics with IP anonymization) to understand usage patterns.</li>
@@ -130,7 +130,7 @@ const Privacy = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">7. Children's Privacy</h2>
                 <p className="text-muted-foreground">
-                  ImageForge does not knowingly collect any information from children under 13. Our service 
+                  Imaggee does not knowingly collect any information from children under 13. Our service 
                   is designed to be used without providing any personal information, making it safe for users 
                   of all ages. However, we recommend that children use our tools under parental supervision.
                 </p>
@@ -139,7 +139,7 @@ const Privacy = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">8. International Users</h2>
                 <p className="text-muted-foreground">
-                  ImageForge is accessible worldwide. Since all processing happens in your browser, your 
+                  Imaggee is accessible worldwide. Since all processing happens in your browser, your 
                   data never crosses international borders. Our website may be hosted in various locations 
                   through CDNs, but this only affects the delivery of our code, not your images or personal data.
                 </p>
@@ -162,7 +162,7 @@ const Privacy = () => {
                   please contact us at:
                 </p>
                 <p className="text-muted-foreground">
-                  <strong>Email:</strong> <a href="mailto:privacy@imageforge.com" className="text-primary hover:underline">privacy@imageforge.com</a>
+                  <strong>Email:</strong> <a href="mailto:privacy@imaggee.com" className="text-primary hover:underline">privacy@imaggee.com</a>
                 </p>
                 <p className="text-muted-foreground mt-3">
                   We take privacy concerns seriously and will respond to all inquiries as quickly as possible.

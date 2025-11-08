@@ -37,7 +37,7 @@ const Terms = () => {
           <Card className="glass bg-primary/5 border-primary/20">
             <CardContent className="p-8">
               <p className="text-lg leading-relaxed">
-                Welcome to ImageForge. By accessing and using our website and tools, you agree to be 
+                Welcome to Imaggee. By accessing and using our website and tools, you agree to be 
                 bound by these Terms of Service. Please read them carefully before using our services.
               </p>
             </CardContent>
@@ -48,7 +48,7 @@ const Terms = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
                 <p className="text-muted-foreground">
-                  By accessing or using ImageForge ("the Service"), you agree to be bound by these Terms 
+                  By accessing or using Imaggee ("the Service"), you agree to be bound by these Terms 
                   of Service ("Terms"). If you disagree with any part of these terms, you may not access 
                   the Service. These Terms apply to all visitors, users, and others who access or use the Service.
                 </p>
@@ -57,7 +57,7 @@ const Terms = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">2. Description of Service</h2>
                 <p className="text-muted-foreground mb-3">
-                  ImageForge provides free, browser-based image processing tools including but not limited to:
+                  Imaggee provides free, browser-based image processing tools including but not limited to:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li>Image compression and optimization</li>
@@ -93,12 +93,12 @@ const Terms = () => {
                 <h2 className="text-2xl font-bold mb-4">4. Intellectual Property Rights</h2>
                 <p className="text-muted-foreground mb-3">
                   <strong>Our Content:</strong> The Service and its original content, features, and functionality 
-                  are owned by ImageForge and are protected by international copyright, trademark, patent, trade 
+                  are owned by Imaggee and are protected by international copyright, trademark, patent, trade 
                   secret, and other intellectual property laws.
                 </p>
                 <p className="text-muted-foreground mb-3">
                   <strong>Your Content:</strong> You retain all rights to the images you process using our tools. 
-                  ImageForge claims no ownership or rights to your images. Since processing happens locally in your 
+                  Imaggee claims no ownership or rights to your images. Since processing happens locally in your 
                   browser, we never have access to your images in the first place.
                 </p>
                 <p className="text-muted-foreground">
@@ -143,7 +143,7 @@ const Terms = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">7. Limitation of Liability</h2>
                 <p className="text-muted-foreground mb-3">
-                  TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IMAGEFORGE SHALL NOT BE LIABLE FOR ANY 
+                  TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IMAGGEE SHALL NOT BE LIABLE FOR ANY 
                   INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS 
                   OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, 
                   OR OTHER INTANGIBLE LOSSES, RESULTING FROM:
@@ -161,7 +161,7 @@ const Terms = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">8. Indemnification</h2>
                 <p className="text-muted-foreground">
-                  You agree to defend, indemnify, and hold harmless ImageForge and its officers, directors, 
+                  You agree to defend, indemnify, and hold harmless Imaggee and its officers, directors, 
                   employees, and agents from and against any claims, liabilities, damages, judgments, awards, 
                   losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or 
                   relating to your violation of these Terms or your use of the Service.
@@ -172,9 +172,9 @@ const Terms = () => {
                 <h2 className="text-2xl font-bold mb-4">9. Third-Party Links and Services</h2>
                 <p className="text-muted-foreground">
                   The Service may contain links to third-party websites or services that are not owned or 
-                  controlled by ImageForge. We have no control over and assume no responsibility for the 
+                  controlled by Imaggee. We have no control over and assume no responsibility for the 
                   content, privacy policies, or practices of any third-party websites or services. You 
-                  acknowledge and agree that ImageForge shall not be responsible or liable for any damage 
+                  acknowledge and agree that Imaggee shall not be responsible or liable for any damage 
                   or loss caused by or in connection with the use of any such third-party content or services.
                 </p>
               </div>
@@ -225,13 +225,13 @@ const Terms = () => {
                   If you have any questions about these Terms, please contact us at:
                 </p>
                 <p className="text-muted-foreground">
-                  <strong>Email:</strong> <a href="mailto:legal@imageforge.com" className="text-primary hover:underline">legal@imageforge.com</a>
+                  <strong>Email:</strong> <a href="mailto:legal@imaggee.com" className="text-primary hover:underline">legal@imaggee.com</a>
                 </p>
               </div>
 
               <div className="pt-6 border-t border-border">
                 <p className="text-sm text-muted-foreground">
-                  By using ImageForge, you acknowledge that you have read, understood, and agree to be 
+                  By using Imaggee, you acknowledge that you have read, understood, and agree to be 
                   bound by these Terms of Service.
                 </p>
               </div>

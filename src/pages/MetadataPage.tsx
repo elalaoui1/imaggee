@@ -6,7 +6,7 @@ const MetadataPage = () => {
   return (
     <Layout>
       <Helmet>
-        <title>View & Remove Image Metadata - EXIF Data Editor | ImageForge</title>
+        <title>View & Remove Image Metadata - EXIF Data Editor | Imaggee</title>
         <meta
           name="description"
           content="Free image metadata viewer and editor. View and remove EXIF data, location information, and camera details from your photos for privacy protection."

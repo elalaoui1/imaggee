@@ -32,13 +32,13 @@ const Contact = () => {
           <Card className="glass">
             <CardContent className="p-8">
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                At ImageForge, we value our users and are committed to providing excellent support. 
+                At Imaggee, we value our users and are committed to providing excellent support. 
                 If you have any questions about our tools, encounter any issues, or have suggestions 
                 for improvements, please don't hesitate to reach out. We read every message and strive 
                 to respond as quickly as possible.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Your feedback helps us make ImageForge better for everyone. We're always looking to 
+                Your feedback helps us make Imaggee better for everyone. We're always looking to 
                 improve our tools and add new features that matter to you.
               </p>
             </CardContent>
@@ -59,10 +59,10 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <a 
-                  href="mailto:support@imageforge.com" 
+                  href="mailto:support@imaggee.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  support@imageforge.com
+                  support@imaggee.com
                 </a>
               </CardContent>
             </Card>
@@ -81,10 +81,10 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <a 
-                  href="mailto:help@imageforge.com" 
+                  href="mailto:help@imaggee.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  help@imageforge.com
+                  help@imaggee.com
                 </a>
               </CardContent>
             </Card>
@@ -98,15 +98,15 @@ const Contact = () => {
                   <CardTitle>Feedback & Suggestions</CardTitle>
                 </div>
                 <CardDescription>
-                  Share your ideas to improve ImageForge
+                  Share your ideas to improve Imaggee
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <a 
-                  href="mailto:feedback@imageforge.com" 
+                  href="mailto:feedback@imaggee.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  feedback@imageforge.com
+                  feedback@imaggee.com
                 </a>
               </CardContent>
             </Card>
@@ -125,10 +125,10 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <a 
-                  href="mailto:partners@imageforge.com" 
+                  href="mailto:partners@imaggee.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  partners@imageforge.com
+                  partners@imaggee.com
                 </a>
               </CardContent>
             </Card>
@@ -141,7 +141,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-2">How do I report a bug?</h3>
                   <p className="text-sm text-muted-foreground">
-                    Send us an email at help@imageforge.com with details about the issue, including 
+                    Send us an email at help@imaggee.com with details about the issue, including 
                     your browser type, operating system, and steps to reproduce the problem.
                   </p>
                 </div>
@@ -149,7 +149,7 @@ const Contact = () => {
                   <h3 className="font-semibold mb-2">Can I suggest a new feature?</h3>
                   <p className="text-sm text-muted-foreground">
                     Absolutely! We love hearing from our users. Email your suggestions to 
-                    feedback@imageforge.com and we'll review them carefully.
+                    feedback@imaggee.com and we'll review them carefully.
                   </p>
                 </div>
                 <div>

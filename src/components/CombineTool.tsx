@@ -346,7 +346,7 @@ export const CombineTool = () => {
       const dataUrl = canvas.toDataURL(exportFormat, exportFormat !== "image/png" ? exportQuality[0] : undefined);
       const link = document.createElement("a");
       link.href = dataUrl;
-      link.download = `imageforge-combine.${exportFormat.split("/")[1]}`;
+      link.download = `imaggee-combine.${exportFormat.split("/")[1]}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

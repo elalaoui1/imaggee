@@ -1,6 +1,6 @@
 {
-  "name": "ImageForge - Image Processor",
-  "short_name": "ImageForge",
+  "name": "Imaggee - Image Processor",
+  "short_name": "Imaggee",
   "description": "Compress, convert, and combine images instantly. 100% client-side processing.",
   "start_url": "/",
   "display": "standalone",

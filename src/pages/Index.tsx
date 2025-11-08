@@ -12,7 +12,7 @@ const Index = () => {
   return (
     <Layout>
       <Helmet>
-        <title>ImageForge - Free Online Image Tools | Compress, Convert, Edit Images</title>
+        <title>Imaggee - Free Online Image Tools | Compress, Convert, Edit Images</title>
         <meta
           name="description"
           content="Professional online image tools: compress images, convert formats (PNG, JPG, WebP), remove backgrounds, resize images, extract color palettes, and edit metadata. 100% free and private - all processing happens in your browser."

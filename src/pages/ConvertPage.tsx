@@ -6,7 +6,7 @@ const ConvertPage = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Convert Images Online - PNG, JPG, WebP Converter | ImageForge</title>
+        <title>Convert Images Online - PNG, JPG, WebP Converter | Imaggee</title>
         <meta
           name="description"
           content="Free online image format converter. Convert between PNG, JPG, WebP, and BMP formats instantly. No quality loss, 100% client-side processing."

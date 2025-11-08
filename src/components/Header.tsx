@@ -27,9 +27,9 @@ export const Header = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="ImageForge Logo" className="w-10 h-10" />
+            <img src={logo} alt="Imaggee Logo" className="w-10 h-10" />
             <div>
-              <h1 className="text-2xl font-bold gradient-text">ImageForge</h1>
+              <h1 className="text-2xl font-bold gradient-text">Imaggee</h1>
               <p className="text-xs text-muted-foreground hidden sm:block">
                 100% client-side • Privacy-first
               </p>

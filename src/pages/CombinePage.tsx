@@ -6,7 +6,7 @@ const CombinePage = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Combine Images Online - Merge Multiple Images | ImageForge</title>
+        <title>Combine Images Online - Merge Multiple Images | Imaggee</title>
         <meta
           name="description"
           content="Free online image combiner tool. Merge multiple images into one, create collages, overlays, and composites. Drag and drop interface."

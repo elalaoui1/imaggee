@@ -6,7 +6,7 @@ const PalettePage = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Extract Color Palette from Images - HEX & RGB Codes | ImageForge</title>
+        <title>Extract Color Palette from Images - HEX & RGB Codes | Imaggee</title>
         <meta
           name="description"
           content="Free color palette extractor. Extract dominant colors from any image with HEX and RGB codes. Perfect for designers and developers."

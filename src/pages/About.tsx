@@ -23,7 +23,7 @@ const About = () => {
           className="space-y-8"
         >
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">About ImageForge</h1>
+            <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">About Imaggee</h1>
             <p className="text-xl text-muted-foreground">
               Empowering creators with professional image tools
             </p>
@@ -33,7 +33,7 @@ const About = () => {
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                At ImageForge, we believe that powerful image editing tools should be accessible to everyone, 
+                At Imaggee, we believe that powerful image editing tools should be accessible to everyone, 
                 without compromising privacy or requiring expensive software subscriptions. Our mission is to 
                 provide professional-grade image processing capabilities that run entirely in your browser, 
                 ensuring your data never leaves your device.
@@ -112,18 +112,14 @@ const About = () => {
             <CardContent className="p-8">
               <h2 className="text-2xl font-bold mb-4">Our Story</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                ImageForge was born from a simple observation: most people need basic to intermediate 
+                Imaggee was born from a simple observation: most people need basic to intermediate 
                 image editing capabilities, but they're forced to choose between privacy-invading online 
                 tools or expensive desktop software. We saw an opportunity to bridge this gap using modern 
                 web technologies.
               </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                By leveraging the power of WebAssembly, HTML5 Canvas, and advanced JavaScript APIs, we 
-                created a suite of tools that runs entirely in your browser. This means instant processing, 
-                complete privacy, and zero cost to you.
-              </p>
+...
               <p className="text-muted-foreground leading-relaxed">
-                Today, ImageForge serves thousands of users who value both functionality and privacy. 
+                Today, Imaggee serves thousands of users who value both functionality and privacy. 
                 We're constantly expanding our toolset and improving existing features to meet the evolving 
                 needs of content creators, designers, and everyday users.
               </p>

@@ -6,7 +6,7 @@ const BlurEmojiPage = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Blur & Add Emojis to Images - Free Online Editor | ImageForge</title>
+        <title>Blur & Add Emojis to Images - Free Online Editor | Imaggee</title>
         <meta
           name="description"
           content="Free blur and emoji editor. Add selective blur effects or fun emojis to your photos. Live preview, adjustable settings, no upload required."
