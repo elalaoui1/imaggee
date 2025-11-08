@@ -15,13 +15,13 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-3 text-sm">Tools</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/?tool=compress" className="hover:text-foreground transition-colors">Compress Images</Link></li>
-              <li><Link to="/?tool=convert" className="hover:text-foreground transition-colors">Convert Images</Link></li>
-              <li><Link to="/?tool=combine" className="hover:text-foreground transition-colors">Combine Images</Link></li>
-              <li><Link to="/?tool=remove-bg" className="hover:text-foreground transition-colors">Remove Background</Link></li>
-              <li><Link to="/?tool=resize" className="hover:text-foreground transition-colors">Resize Images</Link></li>
-              <li><Link to="/?tool=palette" className="hover:text-foreground transition-colors">Color Palette</Link></li>
-              <li><Link to="/?tool=metadata" className="hover:text-foreground transition-colors">Image Metadata</Link></li>
+              <li><Link to="/compress" className="hover:text-foreground transition-colors">Compress Images</Link></li>
+              <li><Link to="/convert" className="hover:text-foreground transition-colors">Convert Images</Link></li>
+              <li><Link to="/combine" className="hover:text-foreground transition-colors">Combine Images</Link></li>
+              <li><Link to="/blur-emoji" className="hover:text-foreground transition-colors">Blur & Emoji</Link></li>
+              <li><Link to="/resize" className="hover:text-foreground transition-colors">Resize Images</Link></li>
+              <li><Link to="/palette" className="hover:text-foreground transition-colors">Color Palette</Link></li>
+              <li><Link to="/metadata" className="hover:text-foreground transition-colors">Image Metadata</Link></li>
             </ul>
           </div>
 
