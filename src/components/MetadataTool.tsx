@@ -127,24 +127,24 @@ export const MetadataTool = () => {
                   Image Information
                 </h3>
 
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between py-2 border-b border-border/50">
+                <div className="space-y-2 text-sm sm:text-base">
+                  <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-border/50 gap-1">
                     <span className="text-muted-foreground">File Name</span>
-                    <span className="font-mono">{metadata.fileName}</span>
+                    <span className="font-mono text-sm break-all">{metadata.fileName}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/50">
+                  <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-border/50 gap-1">
                     <span className="text-muted-foreground">File Size</span>
                     <span className="font-mono">{metadata.fileSize}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/50">
+                  <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-border/50 gap-1">
                     <span className="text-muted-foreground">Dimensions</span>
                     <span className="font-mono">{metadata.dimensions}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-border/50">
+                  <div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-border/50 gap-1">
                     <span className="text-muted-foreground">Format</span>
                     <span className="font-mono">{metadata.fileType}</span>
                   </div>
-                  <div className="flex justify-between py-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between py-2 gap-1">
                     <span className="text-muted-foreground">Last Modified</span>
                     <span className="font-mono">{metadata.lastModified}</span>
                   </div>

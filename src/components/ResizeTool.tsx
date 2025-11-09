@@ -172,17 +172,17 @@ export const ResizeTool = () => {
                 Preset Sizes
               </h3>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {PRESETS.map((preset) => (
                   <Button
                     key={preset.name}
                     variant="outline"
                     onClick={() => handlePresetClick(preset)}
-                    className="text-xs"
+                    className="h-auto py-3 text-xs"
                   >
-                    <div className="text-left">
-                      <div className="font-semibold">{preset.name}</div>
-                      <div className="text-muted-foreground">{preset.ratio} • {preset.width}×{preset.height}</div>
+                    <div className="text-left w-full">
+                      <div className="font-semibold text-sm">{preset.name}</div>
+                      <div className="text-muted-foreground text-xs">{preset.ratio} • {preset.width}×{preset.height}</div>
                     </div>
                   </Button>
                 ))}

@@ -332,15 +332,15 @@ export const BlurEmojiTool = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4 gradient-text">Blur & Emoji Editor</h1>
-        <p className="text-muted-foreground mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 gradient-text">Blur & Emoji Editor</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">
           Add blur effects or emojis to your images with live preview
         </p>
 
-        <Card className="glass p-6 mb-8">
-          <div className="space-y-6">
+        <Card className="glass p-4 sm:p-6 mb-6 sm:mb-8">
+          <div className="space-y-4 sm:space-y-6">
             {/* Upload Section */}
             <div>
               <Label htmlFor="image-upload" className="text-lg font-semibold mb-2 block">
@@ -358,21 +358,21 @@ export const BlurEmojiTool = () => {
             {uploadedImage && (
               <>
                 {/* Mode Selection */}
-                <div className="flex gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <Button
                     variant={mode === "blur" ? "default" : "outline"}
                     onClick={() => {
                       setMode("blur");
                       setTool("brush");
                     }}
-                    className="flex-1"
+                    size="lg"
                   >
                     Blur Mode
                   </Button>
                   <Button
                     variant={mode === "emoji" ? "default" : "outline"}
                     onClick={() => setMode("emoji")}
-                    className="flex-1"
+                    size="lg"
                   >
                     <Smile className="w-4 h-4 mr-2" />
                     Emoji Mode
@@ -382,18 +382,18 @@ export const BlurEmojiTool = () => {
                 {/* Blur Mode Controls */}
                 {mode === "blur" && (
                   <div className="space-y-4">
-                    <div className="flex gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <Button
                         variant={tool === "brush" ? "default" : "outline"}
                         onClick={() => setTool("brush")}
-                        className="flex-1"
+                        size="lg"
                       >
                         Brush
                       </Button>
                       <Button
                         variant={tool === "eraser" ? "default" : "outline"}
                         onClick={() => setTool("eraser")}
-                        className="flex-1"
+                        size="lg"
                       >
                         <Eraser className="w-4 h-4 mr-2" />
                         Eraser
@@ -429,12 +429,12 @@ export const BlurEmojiTool = () => {
                   <div className="space-y-4">
                     <div>
                       <Label className="mb-2 block">Select Emoji</Label>
-                      <div className="grid grid-cols-10 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg">
+                      <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-48 overflow-y-auto p-2 border rounded-lg">
                         {EMOJI_LIST.map((emoji) => (
                           <button
                             key={emoji}
                             onClick={() => setSelectedEmoji(emoji)}
-                            className={`text-2xl p-2 rounded hover:bg-muted/50 transition-colors ${
+                            className={`text-2xl p-2 sm:p-3 rounded hover:bg-muted/50 transition-colors active:scale-95 ${
                               selectedEmoji === emoji ? "bg-primary/20 ring-2 ring-primary" : ""
                             }`}
                           >
@@ -456,12 +456,12 @@ export const BlurEmojiTool = () => {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex gap-4">
-                  <Button onClick={handleReset} variant="outline" className="flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Button onClick={handleReset} variant="outline" size="lg">
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Reset
                   </Button>
-                  <Button onClick={handleDownload} className="flex-1">
+                  <Button onClick={handleDownload} size="lg">
                     <Download className="w-4 h-4 mr-2" />
                     Download
                   </Button>
@@ -472,8 +472,8 @@ export const BlurEmojiTool = () => {
         </Card>
 
         {/* Canvas */}
-        <Card className="glass p-4 mb-8">
-          <canvas ref={canvasRef} className="w-full rounded-lg shadow-lg" />
+        <Card className="glass p-2 sm:p-4 mb-6 sm:mb-8">
+          <canvas ref={canvasRef} className="w-full rounded-lg shadow-lg touch-none" />
         </Card>
 
         {/* Tool Description */}

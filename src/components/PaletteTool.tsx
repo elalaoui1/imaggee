@@ -139,7 +139,7 @@ export const PaletteTool = () => {
                     Dominant Colors
                   </h3>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {colors.map((color, index) => (
                       <motion.div
                         key={index}
@@ -149,30 +149,30 @@ export const PaletteTool = () => {
                         className="glass rounded-xl overflow-hidden"
                       >
                         <div
-                          className="h-24 w-full"
+                          className="h-24 sm:h-28 w-full"
                           style={{ backgroundColor: color.hex }}
                         />
                         <div className="p-3 space-y-2">
                           <button
                             onClick={() => copyToClipboard(color.hex, index * 2)}
-                            className="flex items-center justify-between w-full text-xs hover:text-primary transition-colors"
+                            className="flex items-center justify-between w-full text-xs sm:text-sm hover:text-primary transition-colors active:scale-95 py-1"
                           >
                             <span className="font-mono">{color.hex}</span>
                             {copiedIndex === index * 2 ? (
-                              <Check className="w-3 h-3 text-primary" />
+                              <Check className="w-4 h-4 text-primary" />
                             ) : (
-                              <Copy className="w-3 h-3" />
+                              <Copy className="w-4 h-4" />
                             )}
                           </button>
                           <button
                             onClick={() => copyToClipboard(color.rgb, index * 2 + 1)}
-                            className="flex items-center justify-between w-full text-xs text-muted-foreground hover:text-primary transition-colors"
+                            className="flex items-center justify-between w-full text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors active:scale-95 py-1"
                           >
-                            <span className="font-mono">{color.rgb}</span>
+                            <span className="font-mono text-xs">{color.rgb}</span>
                             {copiedIndex === index * 2 + 1 ? (
-                              <Check className="w-3 h-3 text-primary" />
+                              <Check className="w-4 h-4 text-primary" />
                             ) : (
-                              <Copy className="w-3 h-3" />
+                              <Copy className="w-4 h-4" />
                             )}
                           </button>
                         </div>
@@ -183,7 +183,7 @@ export const PaletteTool = () => {
 
                 <div className="glass rounded-xl p-4 space-y-4">
                   <h3 className="font-semibold">Gradient Suggestions</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {generateGradients().map((gradient, index) => (
                       <motion.button
                         key={index}
@@ -191,14 +191,14 @@ export const PaletteTool = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
                         onClick={() => copyToClipboard(gradient, 100 + index)}
-                        className="glass rounded-xl h-24 overflow-hidden relative group"
+                        className="glass rounded-xl h-24 sm:h-28 overflow-hidden relative group active:scale-95"
                         style={{ background: gradient }}
                       >
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity flex items-center justify-center">
                           {copiedIndex === 100 + index ? (
-                            <Check className="w-6 h-6 text-white" />
+                            <Check className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                           ) : (
-                            <Copy className="w-6 h-6 text-white" />
+                            <Copy className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                           )}
                         </div>
                       </motion.button>

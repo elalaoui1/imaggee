@@ -126,13 +126,13 @@ export const CompressTool = () => {
         <UploadZone onFilesSelected={handleFileSelect} accept="image/*" />
       ) : (
         <Card className="glass p-6 space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <div>
               <h3 className="text-sm font-medium mb-2">Original</h3>
               <img 
                 src={URL.createObjectURL(originalFile)} 
                 alt="Original" 
-                className="w-full rounded-lg border border-border"
+                className="w-full rounded-lg border border-border max-h-[300px] sm:max-h-[400px] object-contain"
               />
               <p className="text-sm text-muted-foreground mt-2">
                 {(originalSize / 1024).toFixed(2)} KB
@@ -145,7 +145,7 @@ export const CompressTool = () => {
                 <img 
                   src={URL.createObjectURL(compressedBlob)} 
                   alt="Compressed" 
-                  className="w-full rounded-lg border border-border"
+                  className="w-full rounded-lg border border-border max-h-[300px] sm:max-h-[400px] object-contain"
                 />
                 <p className="text-sm text-muted-foreground mt-2">
                   {(compressedSize / 1024).toFixed(2)} KB
@@ -171,23 +171,25 @@ export const CompressTool = () => {
             />
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button
               onClick={compressImage}
               disabled={isProcessing}
               variant="gradient"
+              className="w-full sm:w-auto"
+              size="lg"
             >
               {isProcessing ? "Processing..." : "Compress"}
             </Button>
             
             {compressedBlob && (
-              <Button onClick={downloadCompressed} variant="secondary">
+              <Button onClick={downloadCompressed} variant="secondary" className="w-full sm:w-auto" size="lg">
                 <Download className="w-4 h-4 mr-2" />
                 Download
               </Button>
             )}
             
-            <Button onClick={() => setOriginalFile(null)} variant="outline">
+            <Button onClick={() => setOriginalFile(null)} variant="outline" className="w-full sm:w-auto" size="lg">
               New Image
             </Button>
           </div>

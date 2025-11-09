@@ -382,12 +382,12 @@ export const CombineTool = () => {
         <Card className="glass p-4 space-y-4">
           <div className="space-y-2">
             <Label className="text-sm font-medium">Uploaded Images</Label>
-            <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
               {uploadedImages.map((img) => (
                 <div
                   key={img.id}
                   onClick={() => addImageToCanvas(img.src)}
-                  className="h-20 rounded-lg overflow-hidden border border-border hover:border-accent cursor-pointer transition-all hover:scale-105"
+                  className="h-20 sm:h-24 rounded-lg overflow-hidden border border-border hover:border-accent cursor-pointer transition-all hover:scale-105 active:scale-95"
                 >
                   <img src={img.src} alt="thumbnail" className="w-full h-full object-cover" />
                 </div>
@@ -404,8 +404,8 @@ export const CombineTool = () => {
             <canvas
               ref={canvasRef}
               onMouseDown={handleMouseDown}
-              className="w-full cursor-move"
-              style={{ maxHeight: "600px", objectFit: "contain" }}
+              className="w-full cursor-move touch-none"
+              style={{ maxHeight: "400px", objectFit: "contain" }}
             />
             {selectedObjectId && (
               <Button
@@ -420,10 +420,10 @@ export const CombineTool = () => {
             )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
+                <Label className="flex items-center gap-2 text-base">
                   <Maximize2 className="w-4 h-4" />
                   Canvas Size
                 </Label>
@@ -433,12 +433,14 @@ export const CombineTool = () => {
                     value={canvasSize.width}
                     onChange={(e) => setCanvasSize((s) => ({ ...s, width: parseInt(e.target.value) || 0 }))}
                     placeholder="Width"
+                    className="text-base"
                   />
                   <Input
                     type="number"
                     value={canvasSize.height}
                     onChange={(e) => setCanvasSize((s) => ({ ...s, height: parseInt(e.target.value) || 0 }))}
                     placeholder="Height"
+                    className="text-base"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -448,6 +450,7 @@ export const CombineTool = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => setCanvasSize({ width: s.width, height: s.height })}
+                      className="h-auto py-2 text-xs"
                     >
                       {s.name}
                     </Button>
@@ -500,12 +503,12 @@ export const CombineTool = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t border-border">
-            <Button onClick={handleExport} variant="gradient" className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
+            <Button onClick={handleExport} variant="gradient" className="w-full sm:flex-1" size="lg">
               <Download className="w-4 h-4 mr-2" />
               Export Image
             </Button>
-            <Button onClick={clearCanvas} variant="outline">
+            <Button onClick={clearCanvas} variant="outline" className="w-full sm:w-auto" size="lg">
               Clear Canvas
             </Button>
           </div>
