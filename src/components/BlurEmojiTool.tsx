@@ -23,6 +23,9 @@ export const BlurEmojiTool = () => {
   const [blurMask, setBlurMask] = useState<ImageData | null>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const [selectedEmojis, setSelectedEmojis] = useState<any[]>([]);
+  const [brightness, setBrightness] = useState(100);
+  const [contrast, setContrast] = useState(100);
+  const originalImageRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -77,6 +80,7 @@ export const BlurEmojiTool = () => {
       const img = new Image();
       img.onload = () => {
         setUploadedImage(img);
+        originalImageRef.current = event.target?.result as string;
         if (fabricCanvas) {
           fabricCanvas.clear();
           
@@ -84,11 +88,11 @@ export const BlurEmojiTool = () => {
           const scale = Math.min(
             fabricCanvas.width! / img.width,
             fabricCanvas.height! / img.height
-          ) * 0.95; // 95% to add padding
+          ) * 0.9; // 90% to add padding
 
           FabricImage.fromURL(event.target?.result as string).then((fabricImg) => {
             fabricImg.scale(scale);
-            // Center the image on canvas
+            // Center the image perfectly on canvas
             fabricImg.set({
               left: (fabricCanvas.width! - img.width * scale) / 2,
               top: (fabricCanvas.height! - img.height * scale) / 2,
@@ -99,6 +103,7 @@ export const BlurEmojiTool = () => {
             });
             fabricCanvas.add(fabricImg);
             fabricCanvas.sendObjectToBack(fabricImg);
+            applyImageAdjustments();
             fabricCanvas.renderAll();
           });
 
@@ -142,7 +147,7 @@ export const BlurEmojiTool = () => {
         // Always show preview circle when in blur mode
         drawPreviewCircle(e.pointer.x, e.pointer.y);
         
-        // Draw on mask if mouse is pressed
+        // Only draw on mask if mouse is pressed (selecting area)
         if (isDrawing) {
           drawOnMask(e.pointer.x, e.pointer.y);
         }
@@ -150,22 +155,17 @@ export const BlurEmojiTool = () => {
     };
 
     const handleMouseUp = () => {
-      setIsDrawing(false);
-      if (mode === "blur") {
+      if (isDrawing && mode === "blur") {
+        setIsDrawing(false);
+        // Remove preview circle before applying blur
+        removePreviewCircle();
         applyBlur();
       }
     };
 
     const handleMouseOut = () => {
       // Remove preview circle when mouse leaves canvas
-      if (!fabricCanvas) return;
-      const objects = fabricCanvas.getObjects();
-      objects.forEach(obj => {
-        if ((obj as any).name === "preview-circle") {
-          fabricCanvas.remove(obj);
-        }
-      });
-      fabricCanvas.renderAll();
+      removePreviewCircle();
     };
 
     const handleSelection = (e: any) => {
@@ -205,28 +205,31 @@ export const BlurEmojiTool = () => {
     ctx.beginPath();
     ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
     ctx.fill();
-
-    // Show preview circle
-    drawPreviewCircle(x, y);
   };
 
-  const drawPreviewCircle = (x: number, y: number) => {
+  const removePreviewCircle = () => {
     if (!fabricCanvas) return;
-    
-    // Remove previous preview circles
     const objects = fabricCanvas.getObjects();
     objects.forEach(obj => {
       if ((obj as any).name === "preview-circle") {
         fabricCanvas.remove(obj);
       }
     });
+    fabricCanvas.renderAll();
+  };
 
-    // Draw new preview circle with blue color
+  const drawPreviewCircle = (x: number, y: number) => {
+    if (!fabricCanvas) return;
+    
+    // Remove previous preview circles
+    removePreviewCircle();
+
+    // Draw new preview circle - blue for selection preview
     const circle = new Circle({
       left: x - brushSize / 2,
       top: y - brushSize / 2,
       radius: brushSize / 2,
-      fill: tool === "brush" ? "rgba(59, 130, 246, 0.4)" : "rgba(239, 68, 68, 0.4)",
+      fill: tool === "brush" ? "rgba(59, 130, 246, 0.3)" : "rgba(239, 68, 68, 0.3)",
       stroke: tool === "brush" ? "#3B82F6" : "#EF4444",
       strokeWidth: 2,
       selectable: false,
@@ -246,14 +249,16 @@ export const BlurEmojiTool = () => {
     const tempCtx = tempCanvas.getContext("2d");
     if (!tempCtx) return;
 
-    // Draw current canvas state
+    // Draw current canvas state (without preview circles)
     const dataUrl = fabricCanvas.toDataURL();
     const img = new Image();
     img.onload = () => {
+      // Apply brightness/contrast adjustments
+      tempCtx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
       tempCtx.drawImage(img, 0, 0);
 
-      // Apply blur filter
-      tempCtx.filter = `blur(${blurIntensity}px)`;
+      // Apply blur filter on top
+      tempCtx.filter = `brightness(${brightness}%) contrast(${contrast}%) blur(${blurIntensity}px)`;
       tempCtx.drawImage(img, 0, 0);
       tempCtx.filter = "none";
 
@@ -264,9 +269,14 @@ export const BlurEmojiTool = () => {
       
       // Composite blurred image with mask
       const blurredData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+      
+      // Redraw original with adjustments
+      tempCtx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
       tempCtx.drawImage(img, 0, 0);
+      tempCtx.filter = "none";
       const originalData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
 
+      // Apply blur only to masked areas
       for (let i = 0; i < maskData.data.length; i += 4) {
         const alpha = maskData.data[i + 3] / 255;
         if (alpha > 0) {
@@ -278,18 +288,66 @@ export const BlurEmojiTool = () => {
 
       tempCtx.putImageData(originalData, 0, 0);
 
-      // Update canvas
+      // Update canvas with blurred result
       FabricImage.fromURL(tempCanvas.toDataURL()).then((fabricImg) => {
         fabricCanvas.clear();
         fabricImg.set({
           selectable: false,
           evented: false,
+          originX: 'left',
+          originY: 'top',
         });
         fabricCanvas.add(fabricImg);
         fabricCanvas.renderAll();
       });
     };
     img.src = dataUrl;
+  };
+
+  const applyImageAdjustments = () => {
+    if (!fabricCanvas || !originalImageRef.current) return;
+
+    const img = fabricCanvas.getObjects().find(obj => obj.type === 'image');
+    if (img) {
+      (img as any).filters = [];
+      fabricCanvas.renderAll();
+    }
+
+    // Apply brightness and contrast adjustments
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = fabricCanvas.width!;
+    tempCanvas.height = fabricCanvas.height!;
+    const tempCtx = tempCanvas.getContext("2d");
+    if (!tempCtx) return;
+
+    const image = new Image();
+    image.onload = () => {
+      tempCtx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
+      
+      const scale = Math.min(
+        fabricCanvas.width! / image.width,
+        fabricCanvas.height! / image.height
+      ) * 0.9;
+
+      const left = (fabricCanvas.width! - image.width * scale) / 2;
+      const top = (fabricCanvas.height! - image.height * scale) / 2;
+      
+      tempCtx.drawImage(image, left, top, image.width * scale, image.height * scale);
+
+      FabricImage.fromURL(tempCanvas.toDataURL()).then((fabricImg) => {
+        const objects = fabricCanvas.getObjects().filter(obj => obj.type !== 'image');
+        fabricCanvas.clear();
+        fabricImg.set({
+          selectable: false,
+          evented: false,
+        });
+        fabricCanvas.add(fabricImg);
+        fabricCanvas.sendObjectToBack(fabricImg);
+        objects.forEach(obj => fabricCanvas.add(obj));
+        fabricCanvas.renderAll();
+      });
+    };
+    image.src = originalImageRef.current;
   };
 
   const addEmoji = (x: number, y: number) => {
@@ -352,6 +410,10 @@ export const BlurEmojiTool = () => {
         ctx.clearRect(0, 0, maskCanvasRef.current.width, maskCanvasRef.current.height);
       }
     }
+
+    // Reset adjustments
+    setBrightness(100);
+    setContrast(100);
 
     toast.success("Reset to original image");
   };
@@ -464,6 +526,34 @@ export const BlurEmojiTool = () => {
                         min={2}
                         max={30}
                         step={1}
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block">Brightness: {brightness}%</Label>
+                      <Slider
+                        value={[brightness]}
+                        onValueChange={(value) => {
+                          setBrightness(value[0]);
+                          applyImageAdjustments();
+                        }}
+                        min={50}
+                        max={150}
+                        step={5}
+                      />
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block">Contrast: {contrast}%</Label>
+                      <Slider
+                        value={[contrast]}
+                        onValueChange={(value) => {
+                          setContrast(value[0]);
+                          applyImageAdjustments();
+                        }}
+                        min={50}
+                        max={150}
+                        step={5}
                       />
                     </div>
                   </div>
