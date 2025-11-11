@@ -27,9 +27,14 @@ export const BlurEmojiTool = () => {
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    // Make canvas responsive based on container width
+    const containerWidth = canvasRef.current.parentElement?.clientWidth || 800;
+    const canvasWidth = Math.min(containerWidth - 32, 800); // Max 800px, minus padding
+    const canvasHeight = Math.min(canvasWidth * 0.75, 600); // 4:3 aspect ratio, max 600px
+
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: 800,
-      height: 600,
+      width: canvasWidth,
+      height: canvasHeight,
       backgroundColor: "#f5f5f5",
       selection: false,
     });
@@ -38,11 +43,27 @@ export const BlurEmojiTool = () => {
 
     // Create mask canvas for blur selection
     const maskCanvas = document.createElement("canvas");
-    maskCanvas.width = 800;
-    maskCanvas.height = 600;
+    maskCanvas.width = canvasWidth;
+    maskCanvas.height = canvasHeight;
     maskCanvasRef.current = maskCanvas;
 
+    // Handle window resize
+    const handleResize = () => {
+      const newContainerWidth = canvasRef.current?.parentElement?.clientWidth || 800;
+      const newWidth = Math.min(newContainerWidth - 32, 800);
+      const newHeight = Math.min(newWidth * 0.75, 600);
+      
+      canvas.setDimensions({ width: newWidth, height: newHeight });
+      if (maskCanvasRef.current) {
+        maskCanvasRef.current.width = newWidth;
+        maskCanvasRef.current.height = newHeight;
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
     return () => {
+      window.removeEventListener('resize', handleResize);
       canvas.dispose();
     };
   }, []);
@@ -358,7 +379,7 @@ export const BlurEmojiTool = () => {
             {uploadedImage && (
               <>
                 {/* Mode Selection */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <Button
                     variant={mode === "blur" ? "default" : "outline"}
                     onClick={() => {
@@ -366,6 +387,7 @@ export const BlurEmojiTool = () => {
                       setTool("brush");
                     }}
                     size="lg"
+                    className="h-12 text-xs sm:text-sm"
                   >
                     Blur Mode
                   </Button>
@@ -373,8 +395,9 @@ export const BlurEmojiTool = () => {
                     variant={mode === "emoji" ? "default" : "outline"}
                     onClick={() => setMode("emoji")}
                     size="lg"
+                    className="h-12 text-xs sm:text-sm"
                   >
-                    <Smile className="w-4 h-4 mr-2" />
+                    <Smile className="w-4 h-4 mr-1 sm:mr-2" />
                     Emoji Mode
                   </Button>
                 </div>
@@ -382,11 +405,12 @@ export const BlurEmojiTool = () => {
                 {/* Blur Mode Controls */}
                 {mode === "blur" && (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <Button
                         variant={tool === "brush" ? "default" : "outline"}
                         onClick={() => setTool("brush")}
                         size="lg"
+                        className="h-12 text-xs sm:text-sm"
                       >
                         Brush
                       </Button>
@@ -394,8 +418,9 @@ export const BlurEmojiTool = () => {
                         variant={tool === "eraser" ? "default" : "outline"}
                         onClick={() => setTool("eraser")}
                         size="lg"
+                        className="h-12 text-xs sm:text-sm"
                       >
-                        <Eraser className="w-4 h-4 mr-2" />
+                        <Eraser className="w-4 h-4 mr-1 sm:mr-2" />
                         Eraser
                       </Button>
                     </div>
@@ -456,13 +481,13 @@ export const BlurEmojiTool = () => {
                 )}
 
                 {/* Action Buttons */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button onClick={handleReset} variant="outline" size="lg">
-                    <RotateCcw className="w-4 h-4 mr-2" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                  <Button onClick={handleReset} variant="outline" size="lg" className="h-12 text-xs sm:text-sm">
+                    <RotateCcw className="w-4 h-4 mr-1 sm:mr-2" />
                     Reset
                   </Button>
-                  <Button onClick={handleDownload} size="lg">
-                    <Download className="w-4 h-4 mr-2" />
+                  <Button onClick={handleDownload} size="lg" className="h-12 text-xs sm:text-sm">
+                    <Download className="w-4 h-4 mr-1 sm:mr-2" />
                     Download
                   </Button>
                 </div>
@@ -472,8 +497,10 @@ export const BlurEmojiTool = () => {
         </Card>
 
         {/* Canvas */}
-        <Card className="glass p-2 sm:p-4 mb-6 sm:mb-8">
-          <canvas ref={canvasRef} className="w-full rounded-lg shadow-lg touch-none" />
+        <Card className="glass p-3 sm:p-4 mb-6 sm:mb-8">
+          <div className="w-full overflow-auto">
+            <canvas ref={canvasRef} className="max-w-full rounded-lg shadow-lg touch-none" style={{ display: 'block', margin: '0 auto' }} />
+          </div>
         </Card>
 
         {/* Tool Description */}
