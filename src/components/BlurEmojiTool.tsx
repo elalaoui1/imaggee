@@ -80,19 +80,22 @@ export const BlurEmojiTool = () => {
         if (fabricCanvas) {
           fabricCanvas.clear();
           
-          // Calculate scaling to fit canvas
+          // Calculate scaling to fit canvas while maintaining aspect ratio
           const scale = Math.min(
             fabricCanvas.width! / img.width,
             fabricCanvas.height! / img.height
-          );
+          ) * 0.95; // 95% to add padding
 
           FabricImage.fromURL(event.target?.result as string).then((fabricImg) => {
             fabricImg.scale(scale);
+            // Center the image on canvas
             fabricImg.set({
               left: (fabricCanvas.width! - img.width * scale) / 2,
               top: (fabricCanvas.height! - img.height * scale) / 2,
               selectable: false,
               evented: false,
+              originX: 'left',
+              originY: 'top',
             });
             fabricCanvas.add(fabricImg);
             fabricCanvas.sendObjectToBack(fabricImg);
@@ -133,8 +136,17 @@ export const BlurEmojiTool = () => {
     };
 
     const handleMouseMove = (e: any) => {
-      if (!isDrawing || !uploadedImage || mode !== "blur") return;
-      drawOnMask(e.pointer.x, e.pointer.y);
+      if (!uploadedImage) return;
+      
+      if (mode === "blur") {
+        // Always show preview circle when in blur mode
+        drawPreviewCircle(e.pointer.x, e.pointer.y);
+        
+        // Draw on mask if mouse is pressed
+        if (isDrawing) {
+          drawOnMask(e.pointer.x, e.pointer.y);
+        }
+      }
     };
 
     const handleMouseUp = () => {
@@ -142,6 +154,18 @@ export const BlurEmojiTool = () => {
       if (mode === "blur") {
         applyBlur();
       }
+    };
+
+    const handleMouseOut = () => {
+      // Remove preview circle when mouse leaves canvas
+      if (!fabricCanvas) return;
+      const objects = fabricCanvas.getObjects();
+      objects.forEach(obj => {
+        if ((obj as any).name === "preview-circle") {
+          fabricCanvas.remove(obj);
+        }
+      });
+      fabricCanvas.renderAll();
     };
 
     const handleSelection = (e: any) => {
@@ -155,6 +179,7 @@ export const BlurEmojiTool = () => {
     fabricCanvas.on("mouse:down", handleMouseDown);
     fabricCanvas.on("mouse:move", handleMouseMove);
     fabricCanvas.on("mouse:up", handleMouseUp);
+    fabricCanvas.on("mouse:out", handleMouseOut);
     fabricCanvas.on("selection:created", handleSelection);
     fabricCanvas.on("selection:updated", handleSelection);
     fabricCanvas.on("selection:cleared", () => setSelectedEmojis([]));
@@ -163,6 +188,7 @@ export const BlurEmojiTool = () => {
       fabricCanvas.off("mouse:down", handleMouseDown);
       fabricCanvas.off("mouse:move", handleMouseMove);
       fabricCanvas.off("mouse:up", handleMouseUp);
+      fabricCanvas.off("mouse:out", handleMouseOut);
       fabricCanvas.off("selection:created", handleSelection);
       fabricCanvas.off("selection:updated", handleSelection);
       fabricCanvas.off("selection:cleared");
@@ -195,13 +221,13 @@ export const BlurEmojiTool = () => {
       }
     });
 
-    // Draw new preview circle
+    // Draw new preview circle with blue color
     const circle = new Circle({
       left: x - brushSize / 2,
       top: y - brushSize / 2,
       radius: brushSize / 2,
-      fill: "rgba(100, 150, 255, 0.3)",
-      stroke: "#4A90E2",
+      fill: tool === "brush" ? "rgba(59, 130, 246, 0.4)" : "rgba(239, 68, 68, 0.4)",
+      stroke: tool === "brush" ? "#3B82F6" : "#EF4444",
       strokeWidth: 2,
       selectable: false,
       evented: false,
@@ -209,12 +235,6 @@ export const BlurEmojiTool = () => {
     (circle as any).name = "preview-circle";
     fabricCanvas.add(circle);
     fabricCanvas.renderAll();
-
-    // Remove after a short delay
-    setTimeout(() => {
-      fabricCanvas.remove(circle);
-      fabricCanvas.renderAll();
-    }, 100);
   };
 
   const applyBlur = () => {
