@@ -263,64 +263,86 @@ export const BlurEmojiTool = () => {
     const imageObj = fabricCanvas.getObjects().find(obj => obj.type === 'image') as any;
     if (!imageObj) return;
 
-    const tempCanvas = document.createElement("canvas");
-    tempCanvas.width = fabricCanvas.width!;
-    tempCanvas.height = fabricCanvas.height!;
-    const tempCtx = tempCanvas.getContext("2d");
-    if (!tempCtx) return;
-
-    // First, draw the canvas background
-    tempCtx.fillStyle = "#f5f5f5";
-    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-    // Get image position and size
+    // Get image position and scale on canvas
     const imgLeft = imageObj.left || 0;
     const imgTop = imageObj.top || 0;
     const imgWidth = (imageObj.width || 0) * (imageObj.scaleX || 1);
     const imgHeight = (imageObj.height || 0) * (imageObj.scaleY || 1);
 
-    // Draw the original image with adjustments
+    // Work at ORIGINAL image resolution for best quality
+    const originalWidth = uploadedImage.width;
+    const originalHeight = uploadedImage.height;
+    
+    // Create canvas at original resolution
+    const tempCanvas = document.createElement("canvas");
+    tempCanvas.width = originalWidth;
+    tempCanvas.height = originalHeight;
+    const tempCtx = tempCanvas.getContext("2d", { willReadFrequently: true });
+    if (!tempCtx) return;
+
+    // Draw the original image with adjustments at full resolution
     tempCtx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
-    tempCtx.drawImage(uploadedImage, imgLeft, imgTop, imgWidth, imgHeight);
+    tempCtx.drawImage(uploadedImage, 0, 0, originalWidth, originalHeight);
     tempCtx.filter = "none";
-    const originalData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const originalData = tempCtx.getImageData(0, 0, originalWidth, originalHeight);
 
-    // Draw blurred version
-    tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
-    tempCtx.fillStyle = "#f5f5f5";
-    tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+    // Draw blurred version at full resolution
+    tempCtx.clearRect(0, 0, originalWidth, originalHeight);
     tempCtx.filter = `brightness(${brightness}%) contrast(${contrast}%) blur(${blurIntensity}px)`;
-    tempCtx.drawImage(uploadedImage, imgLeft, imgTop, imgWidth, imgHeight);
+    tempCtx.drawImage(uploadedImage, 0, 0, originalWidth, originalHeight);
     tempCtx.filter = "none";
-    const blurredData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const blurredData = tempCtx.getImageData(0, 0, originalWidth, originalHeight);
 
-    // Get mask data
+    // Get mask data from canvas resolution
     const maskCtx = maskCanvasRef.current.getContext("2d");
     if (!maskCtx) return;
-    const maskData = maskCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const maskData = maskCtx.getImageData(0, 0, fabricCanvas.width!, fabricCanvas.height!);
 
-    // Combine original and blurred based on mask - only within image bounds
-    for (let y = 0; y < tempCanvas.height; y++) {
-      for (let x = 0; x < tempCanvas.width; x++) {
-        const i = (y * tempCanvas.width + x) * 4;
-        const maskAlpha = maskData.data[i + 3] / 255;
+    // Calculate scale factors between canvas and original image
+    const scaleX = originalWidth / imgWidth;
+    const scaleY = originalHeight / imgHeight;
+
+    // Combine original and blurred based on mask at full resolution
+    for (let origY = 0; origY < originalHeight; origY++) {
+      for (let origX = 0; origX < originalWidth; origX++) {
+        // Map original image coordinates to canvas coordinates
+        const canvasX = Math.floor(origX / scaleX + imgLeft);
+        const canvasY = Math.floor(origY / scaleY + imgTop);
         
-        // Only apply blur if we're within the image bounds AND mask is active
-        const isWithinImage = x >= imgLeft && x <= imgLeft + imgWidth && 
-                             y >= imgTop && y <= imgTop + imgHeight;
-        
-        if (maskAlpha > 0 && isWithinImage) {
-          originalData.data[i] = blurredData.data[i];
-          originalData.data[i + 1] = blurredData.data[i + 1];
-          originalData.data[i + 2] = blurredData.data[i + 2];
+        // Check if this canvas coordinate has a mask
+        if (canvasX >= 0 && canvasX < fabricCanvas.width! && 
+            canvasY >= 0 && canvasY < fabricCanvas.height!) {
+          const maskIndex = (canvasY * fabricCanvas.width! + canvasX) * 4;
+          const maskAlpha = maskData.data[maskIndex + 3] / 255;
+          
+          if (maskAlpha > 0) {
+            const origIndex = (origY * originalWidth + origX) * 4;
+            originalData.data[origIndex] = blurredData.data[origIndex];
+            originalData.data[origIndex + 1] = blurredData.data[origIndex + 1];
+            originalData.data[origIndex + 2] = blurredData.data[origIndex + 2];
+          }
         }
       }
     }
 
     tempCtx.putImageData(originalData, 0, 0);
 
+    // Create final canvas at display resolution with background
+    const displayCanvas = document.createElement("canvas");
+    displayCanvas.width = fabricCanvas.width!;
+    displayCanvas.height = fabricCanvas.height!;
+    const displayCtx = displayCanvas.getContext("2d");
+    if (!displayCtx) return;
+    
+    // Draw background
+    displayCtx.fillStyle = "#f5f5f5";
+    displayCtx.fillRect(0, 0, displayCanvas.width, displayCanvas.height);
+    
+    // Draw the high-res result scaled to fit
+    displayCtx.drawImage(tempCanvas, 0, 0, originalWidth, originalHeight, imgLeft, imgTop, imgWidth, imgHeight);
+
     // Update canvas with the result
-    FabricImage.fromURL(tempCanvas.toDataURL()).then((fabricImg) => {
+    FabricImage.fromURL(displayCanvas.toDataURL()).then((fabricImg) => {
       fabricCanvas.clear();
       fabricImg.set({
         selectable: false,
