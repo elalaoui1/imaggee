@@ -33,7 +33,7 @@ export const WhyChooseUs = () => {
       transition={{ delay: 0.6 }}
       className="mb-12"
     >
-      <h2 className="text-3xl font-bold text-center mb-8 gradient-text">
+      <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 gradient-text">
         Why Choose Imaggee?
       </h2>
       
