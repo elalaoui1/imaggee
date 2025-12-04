@@ -76,19 +76,20 @@ const testimonials = [
   },
 ];
 
-// Split testimonials into 3 columns
-const column1 = testimonials.slice(0, 4);
-const column2 = testimonials.slice(4, 8);
-const column3 = testimonials.slice(8, 12);
+// For mobile: single column with all testimonials
+// For desktop: split into 3 columns
+const desktopColumn1 = testimonials.slice(0, 4);
+const desktopColumn2 = testimonials.slice(4, 8);
+const desktopColumn3 = testimonials.slice(8, 12);
 
 const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] }) => (
   <motion.figure 
     className="
       relative
-      rounded-xl 
+      rounded-lg md:rounded-xl 
       border border-white/20
       glass
-      p-6 mb-6 
+      p-4 md:p-6 mb-4 md:mb-6 
       flex-shrink-0 
       backdrop-blur-md 
       shadow-lg 
@@ -96,6 +97,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] 
       hover:border-purple-500/60
       overflow-hidden
       group
+      w-full
     "
   >
     {/* Dark blur effects - shown on card hover */}
@@ -103,39 +105,45 @@ const TestimonialCard = ({ testimonial }: { testimonial: typeof testimonials[0] 
     <div className="absolute -bottom-5 -left-5 w-20 h-20 bg-blue-600/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
     
     <div className="relative z-10">
-      <div className="flex items-center mb-3">
+      <div className="flex items-center mb-2 md:mb-3">
         {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-orange-400 text-orange-400" />
+          <Star key={i} className="w-3 h-3 md:w-4 md:h-4 fill-orange-400 text-orange-400" />
         ))}
       </div>
-      <blockquote className="text-sm text-gray-200 mb-4">"{testimonial.quote}"</blockquote>
-      <figcaption className="flex items-center gap-3">
+      <blockquote className="text-xs md:text-sm text-gray-200 mb-3 md:mb-4 leading-relaxed">
+        "{testimonial.quote}"
+      </blockquote>
+      <figcaption className="flex items-center gap-2 md:gap-3">
         <img 
           src={testimonial.avatar} 
           alt={`${testimonial.name} avatar`}
-          className="w-10 h-10 rounded-full object-cover border-2 border-purple-400/40"
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-purple-400/40"
         />
         <div>
-          <div className="text-sm font-medium text-white">{testimonial.name}</div>
+          <div className="text-xs md:text-sm font-medium text-white">{testimonial.name}</div>
           <div className="text-xs text-gray-300">{testimonial.role}</div>
         </div>
       </figcaption>
     </div>
   </motion.figure>
 );
+
 const ScrollingColumn = ({ 
   testimonials, 
   direction = "up",
-  speed = "40s" 
+  speed = "40s",
+  isMobile = false
 }: { 
-  testimonials: typeof column1;
+  testimonials: typeof testimonials;
   direction?: "up" | "down";
   speed?: string;
+  isMobile?: boolean;
 }) => {
   const duplicatedTestimonials = [...testimonials, ...testimonials];
+  const columnHeight = isMobile ? "h-[600px]" : "h-[600px]";
   
   return (
-    <div className="relative h-[600px] overflow-hidden">
+    <div className={`relative ${columnHeight} overflow-hidden`}>
       <div 
         className={`flex flex-col ${direction === "up" ? "animate-scroll-up" : "animate-scroll-down"}`}
         style={{ animationDuration: speed }}
@@ -150,73 +158,76 @@ const ScrollingColumn = ({
 
 export default function SupportersSection() {
   return (
-    <section className="relative py-20 bg-transparent overflow-hidden">
+    <section className="relative py-12 md:py-20 bg-transparent overflow-hidden">
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.header 
-          className="mx-auto max-w-2xl text-center mb-16"
+          className="mx-auto max-w-2xl text-center mb-8 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 gradient-text">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-center mb-6 md:mb-8 gradient-text">
             Loved by Our Supporters
           </h2>
-
         </motion.header>
 
         <div className="relative">
           {/* Top overlay */}
-          <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-gray-950 to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 left-0 right-0 h-12 md:h-20 bg-gradient-to-b from-gray-950 to-transparent z-10 pointer-events-none" />
           
           {/* Bottom overlay */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-gray-950 to-transparent z-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-12 md:h-20 bg-gradient-to-t from-gray-950 to-transparent z-10 pointer-events-none" />
           
-          {/* Scrolling columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Left column - bottom to top */}
-            <ScrollingColumn testimonials={column1} direction="up" speed="50s" />
-            
-            {/* Center column - top to bottom */}
-            <ScrollingColumn testimonials={column2} direction="down" speed="40s" />
-            
-            {/* Right column - bottom to top */}
-            <ScrollingColumn testimonials={column3} direction="up" speed="60s" />
+          {/* Mobile: Single column */}
+          <div className="md:hidden relative h-[500px] overflow-hidden mx-2">
+            <div 
+              className="flex flex-col animate-scroll-down"
+              style={{ animationDuration: "60s" }}
+            >
+              {[...testimonials, ...testimonials].map((testimonial, index) => (
+                <TestimonialCard key={`${testimonial.name}-${index}`} testimonial={testimonial} />
+              ))}
+            </div>
+          </div>
+          
+          {/* Desktop: 3 columns */}
+          <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
+            <ScrollingColumn testimonials={desktopColumn1} direction="up" speed="50s" />
+            <ScrollingColumn testimonials={desktopColumn2} direction="down" speed="40s" />
+            <ScrollingColumn testimonials={desktopColumn3} direction="up" speed="60s" />
           </div>
         </div>
 
         {/* Bottom CTA */}
         <motion.div 
-            className="text-center mt-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-            >
-            <p className="text-gray-300 mb-4 font-medium">
-                Love what we create? Support us on Ko-fi!
-            </p>
+          className="text-center mt-8 md:mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <p className="text-gray-300 mb-3 md:mb-4 text-sm md:text-base font-medium">
+            Love what we create? Support us on Ko-fi!
+          </p>
 
-            <motion.a
-                href="https://ko-fi.com/imaggee"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative bg-gradient-to-r from-amber-600 to-orange-700 text-amber-50 px-4 py-3 rounded-sm font-medium text-sm shadow-lg shadow-amber-900/30 hover:shadow-amber-800/40 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden border border-amber-500/40 w-full max-w-xs mx-auto"
-            >
-                {/* Button shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-100/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                
-                <Coffee className="w-4 h-4 text-amber-100" />
-                <span>Support on Ko-fi</span>
-                <Heart className="w-3 h-3 text-red-300" />
-            </motion.a>
-            </motion.div>
-
-    
+          <motion.a
+            href="https://ko-fi.com/imaggee"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group relative bg-gradient-to-r from-amber-600 to-orange-700 text-amber-50 px-4 py-3 rounded-sm font-medium text-sm shadow-lg shadow-amber-900/30 hover:shadow-amber-800/40 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden border border-amber-500/40 w-full max-w-xs mx-auto"
+          >
+            {/* Button shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-100/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+            
+            <Coffee className="w-4 h-4 text-amber-100" />
+            <span className="text-sm">Support on Ko-fi</span>
+            <Heart className="w-3 h-3 text-red-300" />
+          </motion.a>
+        </motion.div>
       </div>
 
       <style jsx>{`
@@ -244,6 +255,27 @@ export default function SupportersSection() {
         
         .animate-scroll-down {
           animation: scroll-down linear infinite;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+          @keyframes scroll-up {
+            0% {
+              transform: translateY(0);
+            }
+            100% {
+              transform: translateY(-50%);
+            }
+          }
+          
+          @keyframes scroll-down {
+            0% {
+              transform: translateY(-50%);
+            }
+            100% {
+              transform: translateY(0);
+            }
+          }
         }
       `}</style>
     </section>

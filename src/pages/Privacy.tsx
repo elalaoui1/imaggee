@@ -11,7 +11,7 @@ const Privacy = () => {
     <Layout>
       <div className="relative z-10 max-w-4xl mx-auto">
         <Button asChild variant="ghost" size="sm" className="mb-6">
-          <Link to="/">
+          <Link to="/" onClick={() => window.scrollTo({ top: 0, })}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
@@ -178,7 +178,7 @@ const Privacy = () => {
                 We're here to help. Reach out to us anytime.
               </p>
               <Button asChild>
-                <Link to="/contact">
+                <Link to="/contact" onClick={() => window.scrollTo({ top: 0, })}>
                   Contact Us
                 </Link>
               </Button>

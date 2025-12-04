@@ -26,8 +26,8 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-3 text-sm">Company</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
+              <li><Link to="/about" onClick={() => window.scrollTo({ top: 0, })} className="hover:text-foreground transition-colors">About Us</Link></li>
+              <li><Link to="/contact" onClick={() => window.scrollTo({ top: 0, })} className="hover:text-foreground transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -35,8 +35,8 @@ export const Footer = () => {
           <div>
             <h3 className="font-semibold mb-3 text-sm">Legal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+              <li><Link to="/privacy" onClick={() => window.scrollTo({ top: 0, })} className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" onClick={() => window.scrollTo({ top: 0, })} className="hover:text-foreground transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
 
