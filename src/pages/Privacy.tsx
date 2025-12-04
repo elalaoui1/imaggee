@@ -162,7 +162,7 @@ const Privacy = () => {
                   please contact us at:
                 </p>
                 <p className="text-muted-foreground">
-                  <strong>Email:</strong> <a href="mailto:privacy@imaggee.com" className="text-primary hover:underline">privacy@imaggee.com</a>
+                  <strong>Email:</strong> <a href="mailto:contact.imaggee@gmail.com" className="text-primary hover:underline">contact.imaggee@gmail.com</a>
                 </p>
                 <p className="text-muted-foreground mt-3">
                   We take privacy concerns seriously and will respond to all inquiries as quickly as possible.

@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/Layout";
 import { CombineTool } from "@/components/CombineTool";
+import { Footer } from "@/components/Footer";
 
 const CombinePage = () => {
   return (
@@ -11,9 +12,10 @@ const CombinePage = () => {
           name="description"
           content="Free online image combiner tool. Merge multiple images into one, create collages, overlays, and composites. Drag and drop interface."
         />
-        <link rel="canonical" href="https://yoursite.com/combine" />
+        <link rel="canonical" href="https://imaggee.com/combine" />
       </Helmet>
       <CombineTool />
+      <Footer />
     </Layout>
   );
 };

@@ -12,6 +12,12 @@ import BlurEmojiPage from "./pages/BlurEmojiPage";
 import ResizePage from "./pages/ResizePage";
 import PalettePage from "./pages/PalettePage";
 import MetadataPage from "./pages/MetadataPage";
+import MergePDFPage from "./pages/MergePDFPage";
+import PdfCompressPage from "./pages/PdfCompressPage";
+import PdfSplitPage from "./pages/PdfSplitPage";
+import QrGeneratorPage from "./pages/QrGeneratorPage";
+import ImagesToPdfPage from "./pages/ImagesToPdfPage";
+import PdfToImagesPage from "./pages/PdfToImagesPage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
@@ -36,6 +42,12 @@ const App = () => (
             <Route path="/resize" element={<ResizePage />} />
             <Route path="/palette" element={<PalettePage />} />
             <Route path="/metadata" element={<MetadataPage />} />
+            <Route path="/merge-pdf" element={<MergePDFPage />} />
+            {/* <Route path="/pdf-compress" element={<PdfCompressPage />} /> */}
+            <Route path="/pdf-split" element={<PdfSplitPage />} />
+            <Route path="/qr-generator" element={<QrGeneratorPage />} />
+            <Route path="/image-to-pdf" element={<ImagesToPdfPage />} />
+            <Route path="/pdf-to-image" element={<PdfToImagesPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />

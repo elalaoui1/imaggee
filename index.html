@@ -3,31 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon2.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#7c3aed" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Imaggee" />
     <title>Imaggee - Compress. Convert. Combine. Instantly.</title>
-    <meta name="description" content="Process images 100% client-side. Compress, convert formats, and combine photos instantly in your browser. No uploads, no tracking, complete privacy." />
+    <meta name="description" content="Process images 100% client-side. Compress, convert formats, combine photos, Pdf's tools, and more tools instantly in your browser. No uploads, no tracking, complete privacy." />
     <meta name="author" content="Imaggee" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta property="og:title" content="Imaggee - Compress. Convert. Combine. Instantly." />
     <meta property="og:description" content="Process images 100% client-side. Privacy-first image processing tool." />
+    <meta property="og:image" content="/logo.png" />
+    <meta property="og:url" content="https://imaggee.com" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <style>
+      .bg-squares {
+    position: relative;
+}
+
+.bg-squares::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 50px 50px; /* size of squares */
+    pointer-events: none;
+    z-index: 0;
+}
+
+    </style>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root" class="bg-squares"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
