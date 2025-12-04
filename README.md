@@ -1,73 +1,91 @@
-# Welcome to your Lovable project
+# Imaggee
 
-## Project info
+![Imaggee Logo](public/logo.png)
 
-**URL**: https://lovable.dev/projects/dd8cc860-0630-4cf6-9b3f-2a587d89b09e
+**Fix, Enhance, Convert — Without the Hassle**  
+Imaggee provides professional image editing tools, including compression, conversion, resizing, PDF tools, and more — all in your browser with **complete privacy**.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+### 100% Free
+No hidden costs, completely free for everyone.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/dd8cc860-0630-4cf6-9b3f-2a587d89b09e) and start prompting.
+### 100% Private
+All processing happens directly in your browser. **No uploads, no cloud storage, no tracking.**
 
-Changes made via Lovable will be committed automatically to this repo.
+### Lightning Fast
+Instant results with client-side processing.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Image Tools
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+| Tool | Description | Key Highlights |
+|------|------------|----------------|
+| **Compress** | Reduce image file size up to 80% | Smaller, Quality, Click to use |
+| **Convert** | Convert between PNG, JPG, WebP, GIF, BMP, and more | 10+ Formats, Instant, Click to use |
+| **Resize** | Resize images to exact dimensions | Precision, Batch, Click to use |
+| **Combine** | Merge multiple images into collages or creative compositions | Layouts, Smart, Click to use |
+| **Blur & Emoji** | Add artistic blur effects and expressive emojis | Privacy, Fun, Click to use |
+| **Color Palette** | Extract color palettes from your images for design | Smart, Export, Click to use |
+| **Metadata** | View, edit, and manage image metadata (EXIF, IPTC) | Privacy, Edit, Click to use |
+| **Remove Background** | Automatically remove image backgrounds | AI Powered, Instant, Click to use |
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 📄 PDF Tools
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+| Tool | Description | Key Highlights |
+|------|------------|----------------|
+| **Merge PDF** | Combine multiple PDF files into one document | Merge, Fast, Click to use |
+| **Split PDF** | Extract pages or sections from PDFs quickly | Split, Batch, Click to use |
+| **Images to PDF** | Convert images into a single PDF effortlessly | Multi Formats, Fast, Click to use |
+| **PDF to Image** | Convert PDF pages into high-quality images | High Quality, Instant, Click to use |
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🔳 QR Tools
 
-**Edit a file directly in GitHub**
+| Tool | Description | Key Highlights |
+|------|------------|----------------|
+| **QR Generator** | Create custom QR codes for URLs, text, contacts, and more | Custom, Export, Click to use |
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## ⚡ Client-Side Processing
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Your files **never touch our servers**. Everything is handled in your browser:
 
-## What technologies are used for this project?
+- 0 Uploads  
+- 0 Tracking  
+- 100% Private  
+- Unlimited usage  
+- 100% Free  
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## ❤️ Support Imaggee
 
-## How can I deploy this project?
+Help keep Imaggee fast, free, and improving every week. Your support keeps the project alive.
 
-Simply open [Lovable](https://lovable.dev/projects/dd8cc860-0630-4cf6-9b3f-2a587d89b09e) and click on Share -> Publish.
+[Support on Ko-fi](https://ko-fi.com/imaggee)  
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📌 About
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Imaggee is a **professional, privacy-focused suite of image editing tools** that runs entirely in the browser. No installations, no sign-ups, just instant editing.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 🌐 Get Started
+
+Simply visit [Imaggee](https://imaggee.com) and start editing your images instantly.
+
+---
+
+## License
+
+MIT License © 2025 Imaggee
