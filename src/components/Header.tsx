@@ -262,7 +262,7 @@ export const Header = () => {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
+          <Link to="/" onClick={() => window.scrollTo({ top: 0, })} className="flex items-center gap-3">
             <div>
             <img src={logo} className="w-28" />
               {/* <h1 className="text-2xl font-bold gradient-text">Imaggee</h1> */}
@@ -307,6 +307,7 @@ export const Header = () => {
                             <Link
                               key={tool.path}
                               to={tool.path}
+                              onClick={() => window.scrollTo({ top: 0, })}
                               className={`group tool-card bg-linear-to-br ${color.bg} border ${color.border} rounded-xl px-4 py-4 flex flex-col justify-between transition-all duration-300 hover:shadow-xl relative overflow-hidden h-[120px]`}
                             >
                               {/* Colored Blur Glow */}
@@ -376,6 +377,7 @@ export const Header = () => {
                 <Link
                   key={item.path}
                   to={item.path}
+                  onClick={() => window.scrollTo({ top: 0, })}
                   className="px-4 py-2 flex items-center gap-2 hover:bg-muted/40 rounded-lg transition-all"
                 >
                   <Icon className="w-4 h-4" />
@@ -464,10 +466,18 @@ export const Header = () => {
                             <Link
                               key={tool.path}
                               to={tool.path}
-                              onClick={() => setMobileMenuOpen(false)}
+                              onClick={() => {
+                                  setMobileMenuOpen(false);
+                                  window.scrollTo({ top: 0,}); // scrolls to top smoothly
+                                }}
                               className={`group p-3 rounded-xl border ${color.border} bg-linear-to-br ${color.bg} flex flex-col gap-2 transition-all`}
                             >
-                              <Icon className={`w-5 h-5 ${color.icon}`} />
+                              {tool.icon ? (
+    <tool.icon className={`w-5 h-5 ${color.icon}`} />
+  ) : (
+    <i className={`${tool.icon2} text-xl ${color.icon}`}></i>
+  )}
+                              {/* <Icon className={`w-5 h-5 ${color.icon}`} /> */}
                               <span className="text-sm">{tool.name}</span>
                             </Link>
                           );
@@ -484,7 +494,10 @@ export const Header = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                      setMobileMenuOpen(false);
+                      window.scrollTo({ top: 0,}); // scrolls to top smoothly
+                    }}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-muted/40"
                 >
                   <Icon className="w-4 h-4" />

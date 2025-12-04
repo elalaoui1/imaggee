@@ -579,17 +579,17 @@ const Index = () => {
   whileInView={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
   viewport={{ once: true }}
-  className="relative py-16 sm:py-24 bg-gradient-to-br from-gray-900 via-gray-950 to-black overflow-hidden rounded-sm"
+  className="relative py-12 sm:py-20 md:py-24 bg-gradient-to-br from-gray-900 via-gray-950 to-black overflow-hidden rounded-sm"
 >
   {/* Premium Background Elements */}
   <div className="absolute inset-0 overflow-hidden">
-    {/* Animated gradient orbs */}
-    <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-full blur-3xl"></div>
+    {/* Animated gradient orbs - smaller on mobile */}
+    <div className="absolute -top-16 -right-16 sm:-top-24 sm:-right-24 w-40 h-40 sm:w-64 sm:h-64 bg-purple-600/20 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+    <div className="absolute -bottom-16 -left-16 sm:-bottom-24 sm:-left-24 w-40 h-40 sm:w-64 sm:h-64 bg-blue-600/20 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-1000"></div>
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-full blur-2xl sm:blur-3xl"></div>
     
-    {/* Grid pattern */}
-    <div className="absolute inset-0 bg-[linear-gradient(rgba(120,119,198,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(120,119,198,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
+    {/* Grid pattern - smaller on mobile */}
+    <div className="absolute inset-0 bg-[linear-gradient(rgba(120,119,198,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(120,119,198,0.03)_1px,transparent_1px)] bg-[size:32px_32px] sm:bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
     
     {/* Shimmer effect */}
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 transform -translate-x-full animate-shimmer"></div>
@@ -609,10 +609,10 @@ const Index = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
         viewport={{ once: true }}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-purple-300 text-sm font-medium mb-8 backdrop-blur-sm"
+        className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-purple-300 text-xs sm:text-sm font-medium mb-6 sm:mb-8 backdrop-blur-sm"
       >
-        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-        Trusted by 10,000+ Users Worldwide
+        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <span className="truncate">Trusted by 10K+ Users</span>
       </motion.div>
 
       {/* Main Heading */}
@@ -621,11 +621,11 @@ const Index = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         viewport={{ once: true }}
-        className="text-3xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-200 via-blue-200 to-purple-200 bg-clip-text text-transparent leading-tight"
+        className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-purple-200 via-blue-200 to-purple-200 bg-clip-text text-transparent leading-tight"
       >
         Ready to Transform Your
         <motion.span 
-          className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
+          className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mt-2"
           animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
           transition={{ duration: 3, repeat: Infinity }}
           style={{ backgroundSize: '200% auto' }}
@@ -640,41 +640,43 @@ const Index = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
         viewport={{ once: true }}
-        className="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto"
+        className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-2xl mx-auto px-2"
       >
         Join thousands of professionals who trust Imaggee for their image, PDF, and QR code needs. 
         Enterprise-grade tools, completely free forever.
       </motion.p>
 
-      {/* Stats Row */}
+      {/* Stats Row - Stack on mobile */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
         viewport={{ once: true }}
-        className="flex justify-center items-center gap-8 mb-8 text-sm text-gray-400"
+        className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 text-xs sm:text-sm text-gray-400"
       >
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full"></div>
           <span>10K+ Monthly Users</span>
         </div>
+        <div className="hidden sm:block w-1 h-1 bg-gray-600 rounded-full"></div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full"></div>
           <span>99.9% Uptime</span>
         </div>
+        <div className="hidden sm:block w-1 h-1 bg-gray-600 rounded-full"></div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full"></div>
           <span>Zero Data Collection</span>
         </div>
       </motion.div>
 
-      {/* CTA Buttons */}
+      {/* CTA Buttons - Stack on mobile */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.5 }}
         viewport={{ once: true }}
-        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+        className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full"
       >
         <motion.button
           whileHover={{ 
@@ -685,22 +687,22 @@ const Index = () => {
           onClick={() => {
             const element = document.getElementById("alltools");
             if (element) {
-              const top = element.getBoundingClientRect().top + window.scrollY - 40; // 20px offset
+              const top = element.getBoundingClientRect().top + window.scrollY - 40;
               window.scrollTo({
                 top,
                 behavior: "smooth",
               });
             }
           }}
-          className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 flex items-center gap-3 overflow-hidden"
+          className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-base sm:text-lg shadow-xl sm:shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 overflow-hidden w-full sm:w-auto"
         >
           {/* Button shine effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
           
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          Start Processing Now
+          <span className="whitespace-nowrap">Start Processing Now</span>
         </motion.button>
 
         <motion.button
@@ -709,39 +711,57 @@ const Index = () => {
           onClick={() => {
             const element = document.getElementById("alltools");
             if (element) {
-              const top = element.getBoundingClientRect().top + window.scrollY - 40; // 20px offset
+              const top = element.getBoundingClientRect().top + window.scrollY - 40;
               window.scrollTo({
                 top,
                 behavior: "smooth",
               });
             }
           }}
-
-          className="group border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-6 py-4 rounded-xl font-medium text-lg transition-all duration-300 backdrop-blur-sm"
+          className="group border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-4 py-3 sm:px-6 sm:py-4 rounded-lg sm:rounded-xl font-medium text-base sm:text-lg transition-all duration-300 backdrop-blur-sm w-full sm:w-auto"
         >
-          View All Features
-          <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          <span className="flex items-center justify-center sm:justify-start">
+            View All Features
+            <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </span>
         </motion.button>
       </motion.div>
     </motion.div>
   </div>
 
-  {/* Privacy Notice - Premium Version */}
+  {/* Privacy Notice - Premium Version - Stack on mobile */}
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ delay: 0.8 }}
-    className="text-center text-sm text-gray-500 mt-12 relative z-10"
+    className="text-center text-xs sm:text-sm text-gray-500 mt-8 sm:mt-12 relative z-10 px-4"
   >
-    <div className="inline-flex items-center gap-3 bg-gray-800/50 backdrop-blur-sm px-4 py-3 rounded-xl border border-gray-700/50">
-      <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-      </svg>
-      <span>All processing happens locally in your browser</span>
-      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-      <span>No data uploaded or stored</span>
-      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
-      <span>Complete privacy guaranteed</span>
+    <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-3 bg-gray-800/50 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-gray-700/50 w-full max-w-2xl mx-auto">
+      <div className="flex items-center md:items-start gap-2">
+        <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        </svg>
+        <span>All processing happens locally in your browser</span>
+      </div>
+      
+      <div className="hidden sm:flex items-center md:items-start gap-3">
+        <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+        <span>No data uploaded or stored</span>
+        <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+        <span>Complete privacy guaranteed</span>
+      </div>
+      
+      {/* Mobile stacked version */}
+      <div className="sm:hidden flex flex-col items-center gap-1 mt-1">
+        <div className="flex items-center gap-2 text-xs">
+          <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+          <span>No data uploaded or stored</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+          <span>Complete privacy guaranteed</span>
+        </div>
+      </div>
     </div>
   </motion.div>
 
@@ -752,6 +772,13 @@ const Index = () => {
     }
     .animate-shimmer {
       animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+      .animate-shimmer {
+        animation-duration: 4s;
+      }
     }
   `}</style>
 </motion.section>

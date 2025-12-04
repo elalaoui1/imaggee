@@ -16,18 +16,27 @@ const Terms = () => {
 
     // Scroll after short delay to let DOM render
     setTimeout(() => {
-      const el = document.getElementById("alltools");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 100); // 100ms delay usually enough
+  const el = document.getElementById("alltools");
+  if (el) {
+    // Step 1 — scroll to the element
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // Step 2 — adjust -40px after the scroll
+    setTimeout(() => {
+      window.scrollTo({
+        top: window.scrollY - 40,
+        behavior: "instant" // no animation (optional)
+      });
+    }, 400); // match your smooth scroll duration
+  }
+}, 100);
   };
 
   return (
     <Layout>
       <div className="relative z-10 max-w-4xl mx-auto">
         <Button asChild variant="ghost" size="sm" className="mb-6">
-          <Link to="/">
+          <Link to="/" onClick={() => window.scrollTo({ top: 0, })}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Home
           </Link>
