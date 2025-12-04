@@ -1868,7 +1868,7 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-pink-500/30 transition-all duration-500"
+              className="hidden glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-pink-500/30 transition-all duration-500"
             >
               <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-white">
                 <Image className="w-5 h-5 text-pink-400" />
