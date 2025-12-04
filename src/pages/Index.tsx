@@ -115,20 +115,20 @@ const Index = () => {
         { icon: "fas fa-bolt", label: "Edit" }
       ]
     },
-    {
-      id: "remove-bg",
-      name: "Remove Background",
-      description: "Automatically remove image backgrounds with AI-powered precision",
-      features: ["AI technology", "High precision", "Instant results"],
-      color: "green",
-      icon: "fas fa-eraser",
-      url: "/remove-bg",
-      category: "image",
-      stats: [
-        { icon: "fas fa-star", label: "AI Powered" },
-        { icon: "fas fa-bolt", label: "Instant" }
-      ]
-    },
+    // {
+    //   id: "remove-bg",
+    //   name: "Remove Background",
+    //   description: "Automatically remove image backgrounds with AI-powered precision",
+    //   features: ["AI technology", "High precision", "Instant results"],
+    //   color: "green",
+    //   icon: "fas fa-eraser",
+    //   url: "/remove-bg",
+    //   category: "image",
+    //   stats: [
+    //     { icon: "fas fa-star", label: "AI Powered" },
+    //     { icon: "fas fa-bolt", label: "Instant" }
+    //   ]
+    // },
     // PDF Tools
     {
       id: "merge-pdf",
@@ -491,6 +491,7 @@ const Index = () => {
                       >
                         <Link
                           to={tool.url}
+                            onClick={() => window.scrollTo({ top: 0, })}
                           className={`
                             group tool-card bg-linear-to-br ${colorClasses.bg} 
                             border ${colorClasses.border} ${colorClasses.shadow}
