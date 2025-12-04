@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/Layout";
 import { PaletteTool } from "@/components/PaletteTool";
+import { Footer } from "@/components/Footer";
 
 const PalettePage = () => {
   return (
@@ -11,9 +12,10 @@ const PalettePage = () => {
           name="description"
           content="Free color palette extractor. Extract dominant colors from any image with HEX and RGB codes. Perfect for designers and developers."
         />
-        <link rel="canonical" href="https://yoursite.com/palette" />
+        <link rel="canonical" href="https://imaggee.com/palette" />
       </Helmet>
       <PaletteTool />
+      <Footer />
     </Layout>
   );
 };

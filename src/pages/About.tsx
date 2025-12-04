@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Shield, Zap, Heart, Globe } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Footer } from "@/components/Footer";
@@ -7,6 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 const About = () => {
+   const navigate = useNavigate();
+    
+      const handleClick = () => {
+        // Navigate to home first
+        navigate("/");
+    
+        // Scroll after short delay to let DOM render
+        setTimeout(() => {
+          const el = document.getElementById("alltools");
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 100); // 100ms delay usually enough
+      };
   return (
     <Layout>
       <div className="relative z-10 max-w-4xl mx-auto">
@@ -154,10 +168,8 @@ const About = () => {
 
           <div className="text-center pt-8">
             <h3 className="text-xl font-semibold mb-4">Ready to start editing?</h3>
-            <Button asChild size="lg">
-              <Link to="/">
+            <Button size="lg" onClick={handleClick}>
                 Try Our Tools
-              </Link>
             </Button>
           </div>
         </motion.div>

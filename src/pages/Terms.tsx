@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Footer } from "@/components/Footer";
@@ -7,6 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 const Terms = () => {
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // Navigate to home first
+    navigate("/");
+
+    // Scroll after short delay to let DOM render
+    setTimeout(() => {
+      const el = document.getElementById("alltools");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100); // 100ms delay usually enough
+  };
+
   return (
     <Layout>
       <div className="relative z-10 max-w-4xl mx-auto">
@@ -29,9 +45,6 @@ const Terms = () => {
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-4">Terms of Service</h1>
-            <p className="text-muted-foreground">
-              Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </p>
           </div>
 
           <Card className="glass bg-primary/5 border-primary/20">
@@ -67,6 +80,7 @@ const Terms = () => {
                   <li>Image resizing with preset dimensions</li>
                   <li>Color palette extraction</li>
                   <li>Image metadata viewing and editing</li>
+                  <li>PDF tool and QR code generator</li>
                 </ul>
                 <p className="text-muted-foreground mt-3">
                   All processing occurs locally in your browser without uploading images to our servers.
@@ -76,12 +90,14 @@ const Terms = () => {
               <div>
                 <h2 className="text-2xl font-bold mb-4">3. Acceptable Use</h2>
                 <p className="text-muted-foreground mb-3">
-                  You agree to use ImageForge only for lawful purposes and in accordance with these Terms. You agree NOT to:
+                  You agree to use Imaggee only for lawful purposes and in accordance with these Terms. You agree NOT to:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                  <li>Process images that contain illegal, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable content</li>
-                  <li>Process images that infringe upon intellectual property rights of others</li>
+                  <li>Process images, PDFs, or generate QR codes that contain illegal, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable content</li>
+                  <li>Process content that infringes upon intellectual property rights of others</li>
                   <li>Use the Service to create content that violates any local, state, national, or international law</li>
+                  <li>Generate QR codes for malicious websites, phishing attempts, or fraudulent activities</li>
+                  <li>Use PDF tools for processing copyrighted material without permission</li>
                   <li>Attempt to gain unauthorized access to any portion of the Service or any systems or networks</li>
                   <li>Use automated systems (bots, scrapers) to access the Service in a manner that sends more requests than a human can reasonably produce</li>
                   <li>Interfere with or disrupt the Service or servers or networks connected to the Service</li>
@@ -97,9 +113,9 @@ const Terms = () => {
                   secret, and other intellectual property laws.
                 </p>
                 <p className="text-muted-foreground mb-3">
-                  <strong>Your Content:</strong> You retain all rights to the images you process using our tools. 
-                  Imaggee claims no ownership or rights to your images. Since processing happens locally in your 
-                  browser, we never have access to your images in the first place.
+                  <strong>Your Content:</strong> You retain all rights to the images, PDFs, and QR codes you process using our tools. 
+                  Imaggee claims no ownership or rights to your content. Since processing happens locally in your 
+                  browser, we never have access to your files in the first place.
                 </p>
                 <p className="text-muted-foreground">
                   <strong>License to Use Service:</strong> We grant you a limited, non-exclusive, non-transferable, 
@@ -114,11 +130,12 @@ const Terms = () => {
                   You are responsible for:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                  <li>Ensuring you have the necessary rights and permissions to process any images you upload</li>
+                  <li>Ensuring you have the necessary rights and permissions to process any images, PDFs, or content you upload</li>
+                  <li>Using QR codes responsibly and ensuring they direct to appropriate, lawful content</li>
                   <li>Complying with all applicable laws and regulations when using the Service</li>
                   <li>Maintaining the security of your device and browser</li>
                   <li>Any consequences resulting from your use of the Service</li>
-                  <li>Backing up your original images before processing (though our tools are non-destructive)</li>
+                  <li>Backing up your original files before processing (though our tools are non-destructive)</li>
                 </ul>
               </div>
 
@@ -133,10 +150,12 @@ const Terms = () => {
                   <li>Warranties that the Service will be uninterrupted, timely, secure, or error-free</li>
                   <li>Warranties regarding the accuracy, reliability, or quality of any information obtained through the Service</li>
                   <li>Warranties that defects will be corrected</li>
+                  <li>Warranties regarding the functionality or security of generated QR codes</li>
+                  <li>Warranties regarding PDF processing accuracy or compatibility</li>
                 </ul>
                 <p className="text-muted-foreground mt-3">
                   Your use of the Service is at your own risk. While we strive to provide reliable tools, we 
-                  cannot guarantee specific results or outcomes from using our image processing features.
+                  cannot guarantee specific results or outcomes from using our image processing, PDF tools, or QR generation features.
                 </p>
               </div>
 
@@ -154,7 +173,9 @@ const Terms = () => {
                   <li>Any interruption or cessation of transmission to or from the Service</li>
                   <li>Any bugs, viruses, or similar issues transmitted through the Service by any third party</li>
                   <li>Any errors or omissions in any content or for any loss or damage incurred as a result of the use of any content posted or shared through the Service</li>
-                  <li>Loss or corruption of images during processing</li>
+                  <li>Loss or corruption of images, PDFs, or other files during processing</li>
+                  <li>Misuse or security issues related to generated QR codes</li>
+                  <li>PDF processing errors or compatibility issues</li>
                 </ul>
               </div>
 
@@ -164,7 +185,8 @@ const Terms = () => {
                   You agree to defend, indemnify, and hold harmless Imaggee and its officers, directors, 
                   employees, and agents from and against any claims, liabilities, damages, judgments, awards, 
                   losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or 
-                  relating to your violation of these Terms or your use of the Service.
+                  relating to your violation of these Terms or your use of the Service, including but not limited 
+                  to misuse of QR codes, PDF tools, or image processing features.
                 </p>
               </div>
 
@@ -172,7 +194,8 @@ const Terms = () => {
                 <h2 className="text-2xl font-bold mb-4">9. Third-Party Links and Services</h2>
                 <p className="text-muted-foreground">
                   The Service may contain links to third-party websites or services that are not owned or 
-                  controlled by Imaggee. We have no control over and assume no responsibility for the 
+                  controlled by Imaggee. Additionally, QR codes generated by our tool may direct users to 
+                  third-party websites. We have no control over and assume no responsibility for the 
                   content, privacy policies, or practices of any third-party websites or services. You 
                   acknowledge and agree that Imaggee shall not be responsible or liable for any damage 
                   or loss caused by or in connection with the use of any such third-party content or services.
@@ -225,7 +248,7 @@ const Terms = () => {
                   If you have any questions about these Terms, please contact us at:
                 </p>
                 <p className="text-muted-foreground">
-                  <strong>Email:</strong> <a href="mailto:legal@imaggee.com" className="text-primary hover:underline">legal@imaggee.com</a>
+                  <strong>Email:</strong> <a href="mailto:contact.imaggee@gmail.com" className="text-primary hover:underline">contact.imaggee@gmail.com</a>
                 </p>
               </div>
 
@@ -244,11 +267,9 @@ const Terms = () => {
               <p className="text-muted-foreground mb-6">
                 Now that you understand our terms, let's create something amazing.
               </p>
-              <Button asChild size="lg">
-                <Link to="/">
-                  Try Our Tools
-                </Link>
-              </Button>
+               <Button size="lg" onClick={handleClick}>
+              Try Our Tools
+            </Button>
             </CardContent>
           </Card>
         </motion.div>

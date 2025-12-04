@@ -6,918 +6,882 @@ import { Footer } from "@/components/Footer";
 import { HeroSection } from "@/components/HeroSection";
 import { ToolsShowcase } from "@/components/ToolsShowcase";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
+import  FeatureCardSection  from "@/components/FeatureCardSection";
+import  Supporters from "@/components/Supporters";
 import heroBg from "@/assets/hero-bg.png";
-import { Minimize2, Repeat, Layers, Smile, Crop, Palette, FileX, Menu, X } from "lucide-react";
+import { Minimize2, Repeat, Layers, Smile, Crop, Palette, FileX, Menu, X, ArrowRight, Download, Shield, Star, Bolt, Ruler, Expand, Coffee, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
-const emojis = ['😀', '😂', '🥰', '😎', '🤩', '😍', '🤗', '🙃', '😇'];
-const iconSet = [Minimize2, Repeat, Layers, Smile];
-
-// Tool Demo Components
-const CompressDemo = () => (
-  <div className="relative w-full h-64 rounded-xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 shadow-xl border border-white/10">
-    
-    {/* Floating file size tag — RIGHT SIDE */}
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="absolute top-[9px] right-4 px-3 py-1.5 rounded-lg backdrop-blur-md bg-black/50 border border-white/10 text-white text-sm font-medium shadow-md flex items-center gap-2"
-    >
-      <span>2.4MB → 450KB</span>
-
-      {/* status dot on the right */}
-      <motion.div
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 1.8, repeat: Infinity }}
-        className="w-2.5 h-2.5 bg-green-400 rounded-full shadow-green-500"
-      />
-    </motion.div>
-
-    {/* Compression "box" visual */}
-    <div className="absolute inset-0 flex items-center justify-center">
-      <motion.div
-        animate={{ scale: [1, 0.9, 1] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="w-40 h-40 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/30 shadow-[0_0_35px_8px_rgba(255,255,255,0.15)]"
-      />
-
-      {/* Compressed inner box */}
-      <motion.div
-        animate={{ scale: [0.7, 0.5, 0.7] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute w-20 h-20 rounded-lg bg-white/10 border border-white/20 shadow-[0_0_25px_4px_rgba(0,0,0,0.25)]"
-      />
-    </div>
-
-    {/* Animated quality bars */}
-    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-      {[100, 80, 60, 40].map((q, i) => (
-        <motion.div
-          key={q}
-          initial={{ opacity: 0, height: 10 }}
-          animate={{ opacity: 1, height: [12, 28 - i * 4, 12] }}
-          transition={{
-            duration: 1.8,
-            delay: i * 0.25,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="w-3 rounded-md bg-white/70 shadow-md"
-        />
-      ))}
-    </div>
-
-    {/* Light overlay for premium depth */}
-    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
-  </div>
-);
-
-const ConvertDemo = () => {
-  const [inputFormat, setInputFormat] = useState('PNG');
-  const [outputFormat, setOutputFormat] = useState('JPG');
-  
-  const formats = ['PNG', 'JPG', 'WEBP', 'AVIF', 'GIF', 'BMP'];
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const currentIndex = formats.indexOf(outputFormat);
-      const nextIndex = (currentIndex + 1) % formats.length;
-      setOutputFormat(formats[nextIndex]);
-    }, 2000);
-    
-    return () => clearInterval(interval);
-  }, [outputFormat]);
-
-  return (
-    <div className="relative w-full h-64 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl overflow-hidden p-6">
-      
-      {/* Main Conversion Flow */}
-      <div className="absolute inset-0 flex items-center justify-center space-x-8">
-        
-        {/* Input File */}
-        <div className="flex flex-col items-center">
-          <motion.div
-            className="w-20 h-24 bg-white rounded-xl shadow-2xl flex flex-col"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          >
-            <div className="h-6 bg-blue-400 rounded-t-xl flex items-center justify-center">
-              <span className="text-xs text-white font-bold">.{inputFormat}</span>
-            </div>
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-200 to-blue-300 rounded-lg" />
-            </div>
-          </motion.div>
-          <motion.div
-            className="mt-2 text-white text-sm font-medium bg-black/30 px-2 py-1 rounded"
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            Input
-          </motion.div>
-        </div>
-
-        {/* Conversion Arrow */}
-        <motion.div
-          className="flex flex-col items-center"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <div className="text-3xl text-white mb-2">→</div>
-          <div className="text-xs text-white/70 bg-black/30 px-2 py-1 rounded">
-            Convert
-          </div>
-        </motion.div>
-
-        {/* Output File */}
-        <div className="flex flex-col items-center">
-          <motion.div
-            key={outputFormat}
-            className="w-20 h-24 bg-green-50 rounded-xl shadow-2xl flex flex-col"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="h-6 bg-green-500 rounded-t-xl flex items-center justify-center">
-              <span className="text-xs text-white font-bold">.{outputFormat}</span>
-            </div>
-            <div className="flex-1 flex items-center justify-center">
-              <motion.div
-                className="w-12 h-12 bg-gradient-to-br from-green-200 to-green-300 rounded-lg"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  borderRadius: ['8px', '12px', '8px']
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </div>
-          </motion.div>
-          <motion.div
-            className="mt-2 text-white text-sm font-medium bg-black/30 px-2 py-1 rounded"
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            Output
-          </motion.div>
-        </div>
-
-      </div>
-
-      {/* Format Cycling Display */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/40 backdrop-blur-sm rounded-full px-4 py-2">
-        <div className="flex items-center gap-3 text-white text-sm">
-          <span className="text-blue-300">.{inputFormat}</span>
-          <motion.div
-            animate={{ rotate: [0, 180, 360] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <Repeat />
-          </motion.div>
-          <motion.span
-            key={outputFormat}
-            className="text-green-300 font-medium"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            .{outputFormat}
-          </motion.span>
-        </div>
-      </div>      
-
-      {/* Processing Animation */}
-      <div className="absolute bottom-4 right-4">
-        <motion.div
-          className="w-16 h-2 bg-white/30 rounded-full overflow-hidden"
-          animate={{ width: [48, 64, 48] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <motion.div
-            className="h-full bg-yellow-400"
-            animate={{ x: [-64, 64] }}
-            transition={{ duration: 0.8, repeat: Infinity }}
-          />
-        </motion.div>
-      </div>
-
-    </div>
-  );
-};
-
-const RemoveBgDemo = () => (
-  <div className="relative w-full h-64 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl overflow-hidden">
-    {/* Before/After comparison */}
-    <div className="absolute inset-0 flex">
-      <motion.div
-        className="flex-1 bg-cover bg-center"
-        style={{
-          backgroundImage: 'linear-gradient(45deg, #666 25%, transparent 25%), linear-gradient(-45deg, #666 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #666 75%), linear-gradient(-45deg, transparent 75%, #666 75%)',
-          backgroundSize: '20px 20px',
-          backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
-        }}
-      >
-        <motion.div
-          animate={{ x: [0, 100, 0] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="w-24 h-32 bg-white/90 rounded-lg absolute top-1/2 left-1/4 transform -translate-y-1/2 shadow-lg"
-        />
-      </motion.div>
-      
-      <motion.div
-        className="flex-1 bg-transparent"
-        animate={{ backgroundColor: ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.1)'] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      >
-        <motion.div
-          animate={{ x: [-100, 0, -100] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="w-24 h-32 bg-white/90 rounded-lg absolute top-1/2 left-3/4 transform -translate-y-1/2 shadow-lg"
-        />
-      </motion.div>
-    </div>
-    
-    {/* AI processing indicator */}
-    <div className="absolute top-4 right-4 bg-black/80 text-white px-3 py-1 rounded-lg text-sm">
-      <motion.div
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-      >
-        AI Processing
-      </motion.div>
-    </div>
-  </div>
-);
-
-// Combine Tool Demo Component
-const CombineDemo = () => (
-  <div className="relative w-full h-64 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl overflow-hidden">
-    {/* Multiple images merging animation */}
-    <div className="absolute inset-0 flex items-center justify-center">
-      {/* First image */}
-      <motion.div
-        animate={{ 
-          x: [-60, 0, -60],
-          y: [-20, 0, -20],
-          rotate: [-5, 0, -5]
-        }}
-        transition={{ duration: 4, repeat: Infinity }}
-        className="absolute w-20 h-24 bg-white/80 rounded-lg shadow-lg border-2 border-white/60"
-      >
-        <div className="w-full h-1/2 bg-gradient-to-br from-blue-400 to-blue-300 rounded-t-lg" />
-        <div className="w-full h-1/2 bg-gradient-to-br from-green-400 to-green-300 rounded-b-lg" />
-      </motion.div>
-      
-      {/* Second image */}
-      <motion.div
-        animate={{ 
-          x: [60, 0, 60],
-          y: [20, 0, 20],
-          rotate: [5, 0, 5]
-        }}
-        transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-        className="absolute w-20 h-24 bg-white/80 rounded-lg shadow-lg border-2 border-white/60"
-      >
-        <div className="w-full h-1/3 bg-gradient-to-br from-red-400 to-red-300 rounded-t-lg" />
-        <div className="w-full h-1/3 bg-gradient-to-br from-yellow-400 to-yellow-300" />
-        <div className="w-full h-1/3 bg-gradient-to-br from-purple-400 to-purple-300 rounded-b-lg" />
-      </motion.div>
-      
-      {/* Combined result */}
-      <motion.div
-        animate={{ 
-          scale: [0.8, 1, 0.8],
-          opacity: [0.7, 1, 0.7]
-        }}
-        transition={{ duration: 3, repeat: Infinity }}
-        className="w-24 h-28 bg-white/90 rounded-xl shadow-2xl border-2 border-white/80 backdrop-blur-sm"
-      >
-        <div className="w-full h-1/4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-t-xl" />
-        <div className="w-full h-1/4 bg-gradient-to-r from-green-400 to-yellow-400" />
-        <div className="w-full h-1/4 bg-gradient-to-r from-red-400 to-pink-400" />
-        <div className="w-full h-1/4 bg-gradient-to-r from-indigo-400 to-blue-400 rounded-b-xl" />
-      </motion.div>
-    </div>
-    
-    {/* Merge animation indicator */}
-    {/* <motion.div
-      className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-1 rounded-full text-sm"
-      animate={{ scale: [1, 1.1, 1] }}
-      transition={{ duration: 2, repeat: Infinity }}
-    >
-      🔄 Merging...
-    </motion.div> */}
-    
-    {/* Layout options */}
-    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-      {['Grid', 'Collage', 'Stack'].map((layout, i) => (
-        <motion.div
-          key={layout}
-          className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs text-white"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, delay: i * 0.7, repeat: Infinity }}
-        >
-          {layout}
-        </motion.div>
-      ))}
-    </div>
-  </div>
-);
-
-// Blur & Emoji Tool Demo Component
-const BlurEmojiDemo = () => {
-  const [placedEmojis, setPlacedEmojis] = useState([]);
-  const [blurAreas, setBlurAreas] = useState([]);
-
-  const handlePlaceEmoji = (emoji, x, y) => {
-    setPlacedEmojis([...placedEmojis, { emoji, x, y }]);
-  };
-
-  const handleAddBlur = (x, y) => {
-    setBlurAreas([...blurAreas, { x, y }]);
-  };
-
-  return (
-    <div className="relative w-full h-64 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl overflow-hidden shadow-xl border border-white/10">
-
-      {/* Main canvas */}
-      <div className="absolute inset-0 flex items-center justify-center cursor-crosshair">
-        <div className="relative w-64 h-40 bg-white/5 rounded-xl overflow-hidden border border-white/20">
-          
-          {/* Placed blur overlays */}
-          {blurAreas.map((b, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-16 h-16 rounded-full bg-white/30 backdrop-blur-md border border-white/20"
-              style={{ left: b.x, top: b.y }}
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          ))}
-
-          {/* Placed emojis */}
-          {placedEmojis.map((e, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-10 h-10 flex items-center justify-center text-xl"
-              style={{ left: e.x, top: e.y }}
-              animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              {e.emoji}
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Emoji selection panel */}
-      <div className="absolute top-14 left-4 bg-white/10 backdrop-blur-sm rounded-2xl p-3">
-        <div className="grid grid-cols-3 gap-2">
-          {emojis.map((emoji, i) => (
-            <motion.div
-              key={i}
-              className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors"
-              whileHover={{ scale: 1.3, rotate: 10 }}
-              onClick={() => handlePlaceEmoji(emoji, Math.random() * 180, Math.random() * 120)}
-            >
-              {emoji}
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      <div className="absolute top-14 right-4 bg-white/10 backdrop-blur-md rounded-3xl p-4 shadow-lg">
-      <div className="grid grid-cols-2 gap-3">
-        {['small', 'medium', 'large', 'custom'].map((size, i) => (
-          <motion.div
-            key={size}
-            className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors relative overflow-hidden shadow-inner"
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleAddBlur(size, Math.random() * 160, Math.random() * 100)}
-          >
-            {/* Animated blur preview */}
-            <motion.div
-              className={`absolute bg-white/50 rounded-full ${
-                size === 'small' ? 'w-3 h-3' :
-                size === 'medium' ? 'w-5 h-5' :
-                size === 'large' ? 'w-7 h-7' :
-                'w-4 h-2'
-              }`}
-              animate={{ scale: [1, 1.4, 1] }}
-              transition={{ duration: 1.2, repeat: Infinity, repeatType: "mirror", delay: i * 0.2 }}
-            />
-          </motion.div>
-        ))}
-      </div>
-    </div>
-
-
-      {/* Blur selection button (placeholder) */}
-      <motion.button
-        className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2 text-white font-medium shadow"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => handleAddBlur(Math.random() * 180, Math.random() * 120)}
-      >
-        Add Blur
-      </motion.button>
-
-      {/* Real-time preview indicator */}
-      <motion.div
-        className="absolute bottom-4 right-4 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2"
-        animate={{ boxShadow: ['0 0 0px rgba(255,255,255,0.3)', '0 0 15px rgba(255,255,255,0.6)', '0 0 0px rgba(255,255,255,0.3)'] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <motion.div
-          className="w-2 h-2 bg-green-400 rounded-full"
-          animate={{ scale: [1, 1.5, 1] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        />
-        <span className="text-white text-sm font-medium">Live Preview</span>
-      </motion.div>
-    </div>
-  );
-};
-
-const ResizeDemo = () => {
-  const presets = {
-    instagram: { name: 'Instagram', ratio: '1:1', width: 1080, height: 1080 },
-    story: { name: 'Story', ratio: '9:16', width: 1080, height: 1920 },
-    facebook: { name: 'Facebook', ratio: '16:9', width: 1200, height: 630 },
-    twitter: { name: 'Twitter', ratio: '16:9', width: 1200, height: 675 },
-    whatsapp: { name: 'WhatsApp', ratio: '1:1', width: 800, height: 800 },
-    custom: { name: 'Custom', ratio: 'Free', width: '?', height: '?' }
-  };
-
-  const presetKeys = Object.keys(presets);
-  const [activePreset, setActivePreset] = useState(presetKeys[0]);
-
-  // Auto-cycle presets every 2s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActivePreset(prev => {
-        const idx = presetKeys.indexOf(prev);
-        return presetKeys[(idx + 1) % presetKeys.length];
-      });
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="relative w-full h-64 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl overflow-hidden p-4">
-
-      {/* Platform Name Display */}
-      <div className="absolute top-3 left-1/2 transform -translate-x-1/2 flex gap-0 bg-black/30 backdrop-blur-sm rounded-xl p-1">
-        {presetKeys.map((key) => (
-          <motion.div
-            key={key}
-            className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-              activePreset === key ? 'bg-white text-purple-600' : 'text-white/70'
-            }`}
-            animate={{ scale: activePreset === key ? 1.1 : 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {presets[key].name}
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Resized Preview */}
-      <div className="absolute inset-0 flex items-center justify-center mt-8 gap-6">
-        {/* Original Image */}
-        <motion.div
-          className="relative w-24 h-24 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg shadow-lg border-2 border-white/50 flex items-center justify-center text-white/80 text-xs"
-        >
-          Original
-        </motion.div>
-
-        <motion.div
-          className="text-2xl text-white/70"
-          animate={{ x: [-3, 3, -3] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          →
-        </motion.div>
-
-        {/* Resized Image */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activePreset}
-            className="relative bg-gradient-to-br from-green-400 to-emerald-300 shadow-lg border-2 border-white/50 rounded-lg flex items-center justify-center text-white/80 text-xs"
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.7 }}
-            transition={{ duration: 0.5 }}
-            style={{
-              width: presets[activePreset].width === 1080 ? 120 :
-                     presets[activePreset].width === 1200 ? 140 : 100,
-              height: presets[activePreset].height === 1080 ? 120 :
-                      presets[activePreset].height === 1920 ? 80 :
-                      presets[activePreset].height === 630 ? 70 : 100,
-            }}
-          >
-            {presets[activePreset].name}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-    </div>
-  );
-};
-
-const PaletteDemo = () => (
-  <div className="relative w-full h-64 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl overflow-hidden">
-    {/* Color palette animation */}
-    <div className="absolute inset-0 flex">
-      {['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'].map((color, i) => (
-        <motion.div
-          key={i}
-          className="flex-1"
-          style={{ backgroundColor: color }}
-          animate={{ 
-            scaleY: [1, 1.2, 1],
-            opacity: [0.7, 1, 0.7]
-          }}
-          transition={{ 
-            duration: 2, 
-            delay: i * 0.3,
-            repeat: Infinity 
-          }}
-        />
-      ))}
-    </div>
-    
-    {/* Color codes */}
-    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-      {['#FF6B6B', '#4ECDC4', '#45B7D1'].map((color, i) => (
-        <motion.div
-          key={i}
-          className="px-2 py-1 rounded text-xs font-mono bg-black/80 text-white"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 2, delay: i * 0.5, repeat: Infinity }}
-        >
-          {color}
-        </motion.div>
-      ))}
-    </div>
-  </div>
-);
-
-const MetadataDemo = () => (
-  <div className="relative w-full h-64 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl overflow-hidden">
-    {/* Metadata table animation */}
-    <div className="absolute inset-4 bg-white/10 backdrop-blur-sm rounded-lg p-4 mt-10">
-      <div className="space-y-2">
-        {[
-          { label: 'Camera', value: 'Canon EOS R5' },
-          { label: 'Aperture', value: 'f/2.8' },
-          { label: 'ISO', value: '200' },
-          { label: 'Date', value: '2024-01-15' }
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            className="flex justify-between text-white text-sm"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.5, repeat: Infinity, repeatDelay: 3 }}
-          >
-            <span className="font-semibold">{item.label}:</span>
-            <span>{item.value}</span>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-    
-    {/* Edit indicator */}
-    <motion.div
-      className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-white text-sm"
-      animate={{ backgroundColor: ['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.4)', 'rgba(255,255,255,0.2)'] }}
-      transition={{ duration: 2, repeat: Infinity }}
-    >
-      ✏️ Editing
-    </motion.div>
-  </div>
-);
-
 const Index = () => {
   const tools = [
+    // Image Tools
     {
       id: "compress",
-      name: "Image Compressor",
-      description: "Drastically reduce image file size while preserving visual quality. Perfect for web optimization and faster loading times.",
-      features: ["Smart compression algorithms", "Quality adjustment slider", "Batch processing", "Format optimization"],
-      demo: <CompressDemo />,
-      color: "from-blue-500 to-purple-600",
-      icon: <Minimize2 />,
-      url: "/compress"
+      name: "Compress",
+      description: "Reduce image file size up to 80% while keeping visual quality",
+      features: ["Smart compression", "Quality preservation", "Batch processing"],
+      color: "purple",
+      icon: "fas fa-compress-alt",
+      url: "/compress",
+      category: "image",
+      stats: [
+        { icon: "fas fa-download", label: "Smaller" },
+        { icon: "fas fa-shield-alt", label: "Quality" }
+      ]
     },
     {
       id: "convert",
-      name: "Format Converter",
-      description: "Seamlessly convert between all major image formats including PNG, JPG, WebP, AVIF, and more with one click.",
-      features: ["30+ format support", "Bulk conversion", "Quality preservation", "Fast processing"],
-      demo: <ConvertDemo />,
-      color: "from-green-500 to-teal-600",
-      icon: <Repeat />,
-      url: "/convert"
+      name: "Convert",
+      description: "Convert between PNG, JPG, WebP, GIF, BMP, and more formats",
+      features: ["10+ formats", "Instant conversion", "Quality control"],
+      color: "pink",
+      icon: "fas fa-sync-alt",
+      url: "/convert",
+      category: "image",
+      stats: [
+        { icon: "fas fa-star", label: "10+ Formats" },
+        { icon: "fas fa-bolt", label: "Instant" }
+      ]
     },
-    // {
-    //   id: "remove-bg",
-    //   name: "Background Remover",
-    //   description: "AI-powered background removal with precision edge detection. Get clean, transparent backgrounds in seconds.",
-    //   features: ["AI-powered detection", "Hair & fine details", "Batch processing", "Transparent PNG output"],
-    //   demo: <RemoveBgDemo />,
-    //   color: "from-pink-500 to-rose-600",
-    //   icon: "✂️",
-    //   url: "/remove-bg"
-    // },
-    {
-    id: "combine",
-    name: "Image Combiner",
-    description: "Merge multiple images into stunning collages, grids, and creative compositions. Perfect for social media posts and photo albums.",
-    features: ["Multiple layout options", "Smart alignment", "Custom spacing", "Batch processing"],
-    demo: <CombineDemo />,
-    color: "from-purple-500 to-indigo-600",
-    icon: <Layers />,
-    url: "/combine"
-  },
-  {
-    id: "blur-emoji",
-    name: "Blur & Emoji",
-    description: "Add artistic blur effects and expressive emojis to your images. Protect privacy or add fun elements to your photos.",
-    features: ["Adjustable blur intensity", "Emoji library", "Real-time preview", "Position controls"],
-    demo: <BlurEmojiDemo />,
-    color: "from-cyan-500 to-blue-600",
-    icon: <Smile />,
-    url: "/blur-emoji"
-  },
     {
       id: "resize",
-      name: "Smart Resizer",
-      description: "Intelligent image resizing with content-aware scaling. Maintain proportions or crop to exact dimensions.",
-      features: ["Content-aware scaling", "Multiple resize modes", "Preset templates", "Bulk resizing"],
-      demo: <ResizeDemo />,
-      color: "from-orange-500 to-red-600",
-      icon: <Crop />,
-      url: "/resize"
+      name: "Resize",
+      description: "Resize images to exact dimensions with smart aspect ratio control",
+      features: ["Precision control", "Batch resizing", "Aspect ratio"],
+      color: "orange",
+      icon: "",
+      icon2: Crop,
+      url: "/resize",
+      category: "image",
+      stats: [
+        { icon: "fas fa-ruler", label: "Precision" },
+        { icon: "fas fa-layer-group", label: "Batch" }
+      ]
+    },
+    {
+      id: "combine",
+      name: "Combine",
+      description: "Merge multiple images into stunning collages and creative compositions",
+      features: ["Multiple layouts", "Smart alignment", "Custom spacing"],
+      color: "blue",
+      icon: "fas fa-layer-group",
+      url: "/combine",
+      category: "image",
+      stats: [
+        { icon: "fas fa-star", label: "Layouts" },
+        { icon: "fas fa-bolt", label: "Smart" }
+      ]
+    },
+    {
+      id: "blur-emoji",
+      name: "Blur & Emoji",
+      description: "Add artistic blur effects and expressive emojis to your images",
+      features: ["Adjustable blur", "Emoji library", "Real-time preview"],
+      color: "cyan",
+      icon: "fas fa-smile",
+      url: "/blur-emoji",
+      category: "image",
+      stats: [
+        { icon: "fas fa-shield-alt", label: "Privacy" },
+        { icon: "fas fa-star", label: "Fun" }
+      ]
     },
     {
       id: "palette",
-      name: "Color Palette Extractor",
-      description: "Extract beautiful color palettes from your images. Perfect for designers and brand development.",
-      features: ["Smart color detection", "Multiple palette types", "HEX/RGB/HSL codes", "Export options"],
-      demo: <PaletteDemo />,
-      color: "from-yellow-500 to-amber-600",
-      icon: <Palette />,
-      url: "/palette"
+      name: "Color Palette",
+      description: "Extract beautiful color palettes from your images for design projects",
+      features: ["Smart detection", "Multiple formats", "Export options"],
+      color: "yellow",
+      icon: "fas fa-palette",
+      url: "/palette",
+      category: "image",
+      stats: [
+        { icon: "fas fa-star", label: "Smart" },
+        { icon: "fas fa-download", label: "Export" }
+      ]
     },
     {
       id: "metadata",
-      name: "Metadata Editor",
-      description: "View, edit, and manage image metadata including EXIF, IPTC, and XMP data for better organization.",
-      features: ["EXIF data editing", "Batch metadata", "Privacy protection", "Data export"],
-      demo: <MetadataDemo />,
-      color: "from-indigo-500 to-blue-600",
-      icon: <FileX />,
-      url: "/metadata"
+      name: "Metadata",
+      description: "View, edit, and manage image metadata including EXIF and IPTC data",
+      features: ["EXIF editing", "Batch metadata", "Privacy protection"],
+      color: "indigo",
+      icon: "fas fa-info-circle",
+      url: "/metadata",
+      category: "image",
+      stats: [
+        { icon: "fas fa-shield-alt", label: "Privacy" },
+        { icon: "fas fa-bolt", label: "Edit" }
+      ]
+    },
+    {
+      id: "remove-bg",
+      name: "Remove Background",
+      description: "Automatically remove image backgrounds with AI-powered precision",
+      features: ["AI technology", "High precision", "Instant results"],
+      color: "green",
+      icon: "fas fa-eraser",
+      url: "/remove-bg",
+      category: "image",
+      stats: [
+        { icon: "fas fa-star", label: "AI Powered" },
+        { icon: "fas fa-bolt", label: "Instant" }
+      ]
+    },
+    // PDF Tools
+    {
+      id: "merge-pdf",
+      name: "Merge PDF",
+      description: "Combine multiple PDF files into a single document seamlessly",
+      features: ["Drag & drop", "Order control", "Fast processing"],
+      color: "red",
+      icon: "fas fa-file-pdf",
+      url: "/merge-pdf",
+      category: "pdf",
+      stats: [
+        { icon: "fas fa-layer-group", label: "Merge" },
+        { icon: "fas fa-bolt", label: "Fast" }
+      ]
+    },
+    {
+      id: "pdf-split",
+      name: "Split PDF",
+      description: "Extract specific pages or sections from PDF files quickly",
+      features: ["Page selection", "Range extraction", "Batch splitting"],
+      color: "orange",
+      icon: "fas fa-cut",
+      url: "/pdf-split",
+      category: "pdf",
+      stats: [
+        { icon: "fas fa-scissors", label: "Split" },
+        { icon: "fas fa-layer-group", label: "Batch" }
+      ]
+    },
+     {
+      id: "image-to-pdf",
+      name: "Images to PDF",
+      description: "Convert images into a single PDF document effortlessly",
+      features: ["Multiple images", "Custom layout", "Fast conversion"],
+      color: "blue",
+      icon: "fas fa-file-image",
+      url: "/image-to-pdf",
+      category: "pdf",
+      stats: [
+        { icon: "fas fa-image", label: "Multi Formats" },
+        { icon: "fas fa-bolt", label: "Fast" }
+      ]
+    },
+    {
+      id: "pdf-to-image",
+      name: "PDF to Image",
+      description: "Convert PDF pages into high-quality images in various formats",
+      features: ["Multiple formats", "High resolution", "Fast conversion"],
+      color: "cyan",
+      icon: "fas fa-images",
+      url: "/pdf-to-image",
+      category: "pdf",
+      stats: [
+        { icon: "fas fa-image", label: "High Quality" },
+        { icon: "fas fa-bolt", label: "Instant" }
+      ]
+    },
+   
+    // QR Tools
+    {
+      id: "qr-generator",
+      name: "QR Generator",
+      description: "Create custom QR codes for URLs, text, contacts, and more",
+      features: ["Customizable", "Multiple types", "High resolution"],
+      color: "teal",
+      icon: "fas fa-qrcode",
+      url: "/qr-generator",
+      category: "qr",
+      stats: [
+        { icon: "fas fa-star", label: "Custom" },
+        { icon: "fas fa-download", label: "Export" }
+      ]
     }
   ];
+
+  const getColorClasses = (color) => {
+    const colorMap = {
+      purple: {
+        bg: "from-purple-500/10 to-purple-500/5",
+        border: "border-purple-500/20 hover:border-purple-500/40",
+        gradient: "from-purple-500 to-purple-600",
+        shadow: "group-hover:shadow-purple-500/20",
+        text: "group-hover:text-purple-400",
+        icon: "text-purple-400",
+        focus: "focus:ring-purple-500",
+        blurColor: "bg-purple-500",
+        blurColor2: "bg-purple-400"
+      },
+      pink: {
+        bg: "from-pink-500/10 to-pink-500/5",
+        border: "border-pink-500/20 hover:border-pink-500/40",
+        gradient: "from-pink-500 to-pink-600",
+        shadow: "group-hover:shadow-pink-500/20",
+        text: "group-hover:text-pink-400",
+        icon: "text-pink-400",
+        focus: "focus:ring-pink-500",
+        blurColor: "bg-pink-500",
+        blurColor2: "bg-pink-400"
+      },
+      orange: {
+        bg: "from-orange-500/10 to-orange-500/5",
+        border: "border-orange-500/20 hover:border-orange-500/40",
+        gradient: "from-orange-500 to-orange-600",
+        shadow: "group-hover:shadow-orange-500/20",
+        text: "group-hover:text-orange-400",
+        icon: "text-orange-400",
+        focus: "focus:ring-orange-500",
+        blurColor: "bg-orange-500",
+        blurColor2: "bg-orange-400"
+      },
+      blue: {
+        bg: "from-blue-500/10 to-blue-500/5",
+        border: "border-blue-500/20 hover:border-blue-500/40",
+        gradient: "from-blue-500 to-blue-600",
+        shadow: "group-hover:shadow-blue-500/20",
+        text: "group-hover:text-blue-400",
+        icon: "text-blue-400",
+        focus: "focus:ring-blue-500",
+        blurColor: "bg-blue-500",
+        blurColor2: "bg-blue-400"
+      },
+      cyan: {
+        bg: "from-cyan-500/10 to-cyan-500/5",
+        border: "border-cyan-500/20 hover:border-cyan-500/40",
+        gradient: "from-cyan-500 to-cyan-600",
+        shadow: "group-hover:shadow-cyan-500/20",
+        text: "group-hover:text-cyan-400",
+        icon: "text-cyan-400",
+        focus: "focus:ring-cyan-500",
+        blurColor: "bg-cyan-500",
+        blurColor2: "bg-cyan-400"
+      },
+      yellow: {
+        bg: "from-yellow-500/10 to-yellow-500/5",
+        border: "border-yellow-500/20 hover:border-yellow-500/40",
+        gradient: "from-yellow-500 to-yellow-600",
+        shadow: "group-hover:shadow-yellow-500/20",
+        text: "group-hover:text-yellow-400",
+        icon: "text-yellow-400",
+        focus: "focus:ring-yellow-500",
+        blurColor: "bg-yellow-500",
+        blurColor2: "bg-yellow-400"
+      },
+      indigo: {
+        bg: "from-indigo-500/10 to-indigo-500/5",
+        border: "border-indigo-500/20 hover:border-indigo-500/40",
+        gradient: "from-indigo-500 to-indigo-600",
+        shadow: "group-hover:shadow-indigo-500/20",
+        text: "group-hover:text-indigo-400",
+        icon: "text-indigo-400",
+        focus: "focus:ring-indigo-500",
+        blurColor: "bg-indigo-500",
+        blurColor2: "bg-indigo-400"
+      },
+      green: {
+        bg: "from-green-500/10 to-green-500/5",
+        border: "border-green-500/20 hover:border-green-500/40",
+        gradient: "from-green-500 to-green-600",
+        shadow: "group-hover:shadow-green-500/20",
+        text: "group-hover:text-green-400",
+        icon: "text-green-400",
+        focus: "focus:ring-green-500",
+        blurColor: "bg-green-500",
+        blurColor2: "bg-green-400"
+      },
+      red: {
+        bg: "from-red-500/10 to-red-500/5",
+        border: "border-red-500/20 hover:border-red-500/40",
+        gradient: "from-red-500 to-red-600",
+        shadow: "group-hover:shadow-red-500/20",
+        text: "group-hover:text-red-400",
+        icon: "text-red-400",
+        focus: "focus:ring-red-500",
+        blurColor: "bg-red-500",
+        blurColor2: "bg-red-400"
+      },
+      teal: {
+        bg: "from-teal-500/10 to-teal-500/5",
+        border: "border-teal-500/20 hover:border-teal-500/40",
+        gradient: "from-teal-500 to-teal-600",
+        shadow: "group-hover:shadow-teal-500/20",
+        text: "group-hover:text-teal-400",
+        icon: "text-teal-400",
+        focus: "focus:ring-teal-500",
+        blurColor: "bg-teal-500",
+        blurColor2: "bg-teal-400"
+      } 
+    };
+    
+    return colorMap[color] || colorMap.purple;
+  };
+
+  // Group tools by category
+  const toolsByCategory = tools.reduce((acc, tool) => {
+    if (!acc[tool.category]) {
+      acc[tool.category] = [];
+    }
+    acc[tool.category].push(tool);
+    return acc;
+  }, {});
+
+  const categoryLabels = {
+    image: "Image Tools",
+    pdf: "PDF Tools", 
+    qr: "QR Tools"
+  };
 
   return (
     <Layout>
       <Helmet>
-        <title>Imaggee - Free Online Image Tools | Compress, Convert, Edit Images</title>
+        <title>Imaggee - 100% Free Online Tools | Images, PDFs, QR Codes</title>
         <meta
           name="description"
-          content="Professional online image tools: compress images, convert formats (PNG, JPG, WebP), remove backgrounds, resize images, extract color palettes, and edit metadata. 100% free and private - all processing happens in your browser."
+          content="100% free online tools: compress images, convert formats, merge PDFs, generate QR codes, remove backgrounds, and more. All processing happens in your browser - no uploads, complete privacy."
         />
         <meta
           name="keywords"
-          content="online image tools, compress images, convert images, remove background, resize images, image editor, color palette extractor, image metadata, PNG to JPG, WebP converter, free image tools"
+          content="free image tools, compress images, convert images, merge PDF, QR code generator, remove background, resize images, online tools 100% free"
         />
         <link rel="canonical" href="https://imaggee.com/" />
       </Helmet>
 
-      {/* Hero Background */}
+      {/* Updated Background with Grid */}
       <div 
-        className="fixed inset-0 opacity-20 pointer-events-none"
+        className="fixed inset-0 opacity-10 pointer-events-none z-0"
         style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
         }}
       />
 
       <div className="relative z-10">
         <HeroSection />
         
+        {/* Buy Me a Coffee Section */}
+       <motion.section
+  initial={{ opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  viewport={{ once: true }}
+  className="relative py-10 sm:py-12 bg-gradient-to-b from-black via-zinc-900/40 to-black border border-amber-950 rounded-sm overflow-hidden"
+>
+
+  {/* Soft glow background */}
+  <div className="absolute inset-0">
+    <div className="absolute -top-20 right-0 w-40 h-40 bg-amber-700/20 blur-2xl"></div>
+    <div className="absolute bottom-0 left-0 w-40 h-40 bg-orange-700/20 blur-2xl"></div>
+  </div>
+
+  <div className="relative z-10 container mx-auto px-5 text-center max-w-2xl">
+
+    {/* Icon */}
+    <motion.div
+      initial={{ scale: 0.8, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="mx-auto mb-5 w-14 h-14 bg-gradient-to-br from-amber-700 to-orange-700 rounded-xl 
+                 flex items-center justify-center border border-amber-600/40 shadow-lg"
+    >
+      <Coffee className="text-amber-100 text-xl" />
+    </motion.div>
+
+    {/* Heading */}
+    <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-200 via-orange-200 to-amber-200 bg-clip-text text-transparent mb-2">
+      Support Imaggee
+    </h2>
+
+    {/* Subtitle */}
+    <p className="text-amber-100/70 text-sm leading-relaxed mb-6">
+      Help keep Imaggee fast, free, and improving every week.  
+      Your support keeps the project alive ❤️
+    </p>
+
+    {/* Button */}
+          <motion.a
+            href="https://ko-fi.com/imaggee"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 
+                      rounded-xl font-semibold text-base overflow-hidden
+                      bg-gradient-to-r from-amber-700 to-orange-700
+                      text-amber-50 border border-amber-600/40
+                      shadow-lg shadow-amber-900/30 hover:shadow-amber-800/40
+                      transition-all duration-300"
+          >
+            {/* Shine Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r 
+                            from-transparent via-amber-100/20 to-transparent 
+                            -skew-x-12 transform translate-x-[-100%] 
+                            group-hover:translate-x-[100%] 
+                            transition-transform duration-1000">
+            </div>
+
+            <Coffee className="text-amber-100 text-lg relative z-10" />
+            <span className="relative z-10">Support on Ko-fi</span>
+          </motion.a>
+
+
+    {/* Small footer note */}
+    <div className="text-xs text-amber-400/60 mt-4">
+      Every bit of support helps keep Imaggee 100% free.
+    </div>
+
+  </div>
+</motion.section>
+
+
         {/* Enhanced Tools Showcase */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
+        <section className="py-12 sm:py-20 relative" id="alltools">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="text-center mb-16"
+              className="text-center mb-12 sm:mb-16"
             >
-              <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4">
-                Professional Image Tools
+              <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 gradient-text">
+                Professional Imaggee Tools
               </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Powerful, privacy-focused tools that work directly in your browser. 
+              <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
+                100% free, privacy-focused tools that work directly in your browser. 
                 No uploads, no waiting, complete control.
               </p>
             </motion.div>
 
-            {/* Tools Grid */}
-            <div className="space-y-32">
-              {tools.map((tool, index) => (
+            {/* Render tools by category */}
+            {Object.entries(toolsByCategory).map(([category, categoryTools]) => (
+              <div key={category} className="mb-16 last:mb-0">
+                {/* Category Header */}
                 <motion.div
-                  key={tool.id}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6 }}
                   viewport={{ once: true }}
-                  className={`flex flex-col ${
-                    index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                  } items-center gap-12 lg:gap-20`}
+                  className="mb-8"
                 >
-                  {/* Demo Container with 3D Effect */}
-                  <div className="flex-1">
-                    <motion.div
-                      whileHover={{ 
-                        scale: 1.02,
-                        rotateY: index % 2 === 0 ? 5 : -5,
-                        transition: { duration: 0.3 }
-                      }}
-                      className="relative group"
-                    >
-                      {/* 3D Container */}
-                      <div className="relative rounded-2xl overflow-hidden shadow-2xl transform-gpu transition-all duration-300 group-hover:shadow-3xl">
-                        {/* Gradient Border */}
-                        <div className={`absolute inset-0 bg-gradient-to-r ${tool.color} opacity-20 rounded-2xl`}></div>
-                        
-                        {/* Main Demo Container */}
-                        <div className="relative bg-card rounded-2xl p-1 transform-gpu">
-                          {tool.demo}
-                          
-                          {/* Floating Badge */}
-                          <div
-                            className={`absolute ${
-                              tool.name === "Smart Resizer" ? "bottom-4 left-4" : "top-4 left-4"
-                            }`}
-                          >
-                            <span className="bg-background/80 backdrop-blur-sm text-foreground px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-                              <span className="text-lg">{tool.icon}</span>
-                              {tool.name}
-                            </span>
-                          </div>
-
-                          {/* Hover Effect Overlay */}
-                         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end justify-center pb-4">
-                          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            <Link
-                              to={tool.url} // your link here
-                              className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-semibold shadow-lg"
-                            >
-                              Try Now
-                            </Link>
-                          </motion.div>
-                        </div>
-                        </div>
-                      </div>
-                      
-                      {/* Floating Elements */}
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                    </motion.div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1">
-                    <motion.div
-                      initial={{ opacity: 0, x: index % 2 === 0 ? 20 : -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      className="space-y-6"
-                    >
-                      {/* Tool Icon & Name */}
-                      <div className="flex items-center gap-4 mb-2">
-                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${tool.color} flex items-center justify-center text-2xl shadow-lg`}>
-                          {tool.icon}
-                        </div>
-                        <h3 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-                          {tool.name}
-                        </h3>
-                      </div>
-
-                      {/* Description */}
-                      <p className="text-lg text-muted-foreground leading-relaxed">
-                        {tool.description}
-                      </p>
-
-                      {/* Features List */}
-                      <ul className="space-y-3">
-                        {tool.features.map((feature, featureIndex) => (
-                          <motion.li
-                            key={featureIndex}
-                            initial={{ opacity: 0, x: 10 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.4, delay: 0.3 + featureIndex * 0.1 }}
-                            className="flex items-center gap-3 text-foreground/80"
-                          >
-                            <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${tool.color}`}></div>
-                            {feature}
-                          </motion.li>
-                        ))}
-                      </ul>
-
-                      {/* CTA Button */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.6 }}
-                        className="pt-4"
-                      >
-                       <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Link
-                            to={tool.url}
-                            className={`bg-gradient-to-r ${tool.color} text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300`}
-                          >
-                            Use {tool.name} →
-                          </Link>
-                        </motion.div>
-                      </motion.div>
-                    </motion.div>
-                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    {categoryLabels[category]}
+                  </h3>
+                  <div className="w-20 h-1 bg-gradient-to-r from-primary to-primary/60 rounded-full"></div>
                 </motion.div>
-              ))}
-            </div>
+
+                {/* Tools Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 max-w-7xl mx-auto">
+                  {categoryTools.map((tool, index) => {
+                    const colorClasses = getColorClasses(tool.color);
+                    
+                    return (
+                      <motion.div
+                        key={tool.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        viewport={{ once: true }}
+                      >
+                        <Link
+                          to={tool.url}
+                          className={`
+                            group tool-card bg-linear-to-br ${colorClasses.bg} 
+                            border ${colorClasses.border} ${colorClasses.shadow}
+                            rounded-xl lg:rounded-2xl p-5 sm:p-6 hover:shadow-2xl 
+                            transition-all duration-300 overflow-hidden focus:outline-none 
+                            focus:ring-2 ${colorClasses.focus} focus:ring-offset-2 
+                            focus:ring-offset-background block relative
+                          `}
+                        >
+                          {/* Hover Effects */}
+                          <div className="hover-blur absolute inset-0 backdrop-filter backdrop-blur-0 opacity-0 group-hover:backdrop-blur-md group-hover:opacity-100 transition-all duration-500 z-0 rounded-xl" />
+                          
+                          <div className="hover-shapes absolute inset-0 overflow-hidden rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-400 z-0">
+                            <div className={`hover-shape hover-shape-1 w-32 h-32 ${colorClasses.blurColor} -top-10 -right-10 absolute rounded-full filter blur-xl opacity-20 group-hover:opacity-30 transition-all duration-600 group-hover:translate-x-2 group-hover:-translate-y-2`} />
+                            <div className={`hover-shape hover-shape-2 w-24 h-24 ${colorClasses.blurColor2} bottom-5 left-5 absolute rounded-full filter blur-xl opacity-20 group-hover:opacity-30 transition-all duration-600 group-hover:-translate-x-2 group-hover:translate-y-2`} />
+                          </div>
+                          
+                          <div className="content-wrapper relative z-2">
+                            <div className="mb-4 relative inline-block">
+                              <div className={`absolute inset-0 bg-linear-to-br ${colorClasses.gradient} blur-lg opacity-40 group-hover:opacity-60 transition-opacity duration-300 rounded-xl`} />
+                              <div className={`
+                                relative w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-linear-to-br ${colorClasses.gradient} 
+                                rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg 
+                                group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 tool-icon
+                              `}
+                              >
+                                {tool.icon && tool.icon.trim() !== "" ? (
+                                  <i className={`${tool.icon} text-white text-xl sm:text-2xl drop-shadow-lg`} />
+                                ) : (
+                                  (() => {
+                                    const IconComp = tool.icon2;
+                                    return <IconComp className="text-white text-xl sm:text-2xl drop-shadow-lg" />;
+                                  })()
+                                )}
+                              </div>
+                              <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-card/90 backdrop-blur-sm border border-border rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 shadow-md">
+                                <i className="fas fa-arrow-right text-foreground text-xs" />
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <h3 className={`text-lg font-bold text-foreground mb-2 ${colorClasses.text} transition-colors duration-300`}>
+                                {tool.name}
+                              </h3>
+                              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 group-hover:text-foreground/80 transition-colors duration-300">
+                                {tool.description}
+                              </p>
+                            </div>
+                            
+                            <div className="relative mt-4 pt-3 border-t border-border/50">
+                              <div className="transition-all duration-300 group-hover:opacity-0 group-hover:-translate-y-2">
+                                <div className="flex items-center gap-3">
+                                  {tool.stats.map((stat, statIndex) => (
+                                    <div key={statIndex} className="flex items-center gap-1.5 text-muted-foreground group-hover:text-foreground transition-colors whitespace-nowrap">
+                                      <i className={`${stat.icon} ${colorClasses.icon} text-xs`} />
+                                      <span className="text-xs font-medium">{stat.label}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="absolute top-3 left-0 right-0 flex items-center justify-between opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                  Click to use
+                                </span>
+                                <i className={`fas fa-bolt ${colorClasses.icon} text-sm animate-pulse`} />
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
-
+        <FeatureCardSection />
         <WhyChooseUs />
+        <Supporters />
 
         {/* Enhanced CTA Section */}
         <motion.section
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="py-20 bg-gradient-to-br from-primary/10 via-primary/5 to-background"
-        >
-          <div className="container mx-auto px-4 text-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="max-w-4xl mx-auto"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Ready to Transform Your Images?
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                Join thousands of users who trust Imaggee for their image processing needs. 
-                Fast, secure, and completely free - no strings attached.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
-                >
-                  Start Processing Images Now
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="border border-primary text-primary px-8 py-4 rounded-full font-semibold text-lg hover:bg-primary/10 transition-all"
-                >
-                  View All Tools
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
-        </motion.section>
+  initial={{ opacity: 0, y: 40 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+  viewport={{ once: true }}
+  className="relative py-16 sm:py-24 bg-gradient-to-br from-gray-900 via-gray-950 to-black overflow-hidden rounded-sm"
+>
+  {/* Premium Background Elements */}
+  <div className="absolute inset-0 overflow-hidden">
+    {/* Animated gradient orbs */}
+    <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-600/10 to-blue-600/10 rounded-full blur-3xl"></div>
+    
+    {/* Grid pattern */}
+    <div className="absolute inset-0 bg-[linear-gradient(rgba(120,119,198,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(120,119,198,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
+    
+    {/* Shimmer effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 transform -translate-x-full animate-shimmer"></div>
+  </div>
 
-        {/* Privacy Notice */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-center text-sm text-muted-foreground pb-8 bg-background"
-        >
-          <p>All processing happens locally in your browser.</p>
-          <p className="mt-1">No data is uploaded or stored. Complete privacy guaranteed.</p>
-        </motion.div>
+  <div className="container mx-auto px-4 sm:px-6 relative z-10">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6, delay: 0.3, type: "spring" }}
+      viewport={{ once: true }}
+      className="max-w-4xl mx-auto text-center"
+    >
+      {/* Premium Badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        viewport={{ once: true }}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 text-purple-300 text-sm font-medium mb-8 backdrop-blur-sm"
+      >
+        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        Trusted by 10,000+ Users Worldwide
+      </motion.div>
 
+      {/* Main Heading */}
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
+        className="text-3xl sm:text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-200 via-blue-200 to-purple-200 bg-clip-text text-transparent leading-tight"
+      >
+        Ready to Transform Your
+        <motion.span 
+          className="block bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
+          animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+          transition={{ duration: 3, repeat: Infinity }}
+          style={{ backgroundSize: '200% auto' }}
+        >
+          Creative Workflow?
+        </motion.span>
+      </motion.h2>
+
+      {/* Subtitle */}
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        viewport={{ once: true }}
+        className="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed max-w-2xl mx-auto"
+      >
+        Join thousands of professionals who trust Imaggee for their image, PDF, and QR code needs. 
+        Enterprise-grade tools, completely free forever.
+      </motion.p>
+
+      {/* Stats Row */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        viewport={{ once: true }}
+        className="flex justify-center items-center gap-8 mb-8 text-sm text-gray-400"
+      >
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+          <span>10K+ Monthly Users</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+          <span>99.9% Uptime</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+          <span>Zero Data Collection</span>
+        </div>
+      </motion.div>
+
+      {/* CTA Buttons */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+        viewport={{ once: true }}
+        className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+      >
+        <motion.button
+          whileHover={{ 
+            scale: 1.05,
+            boxShadow: "0 20px 40px rgba(120, 119, 198, 0.3)"
+          }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            const element = document.getElementById("alltools");
+            if (element) {
+              const top = element.getBoundingClientRect().top + window.scrollY - 40; // 20px offset
+              window.scrollTo({
+                top,
+                behavior: "smooth",
+              });
+            }
+          }}
+          className="group relative bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300 flex items-center gap-3 overflow-hidden"
+        >
+          {/* Button shine effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+          
+          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Start Processing Now
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            const element = document.getElementById("alltools");
+            if (element) {
+              const top = element.getBoundingClientRect().top + window.scrollY - 40; // 20px offset
+              window.scrollTo({
+                top,
+                behavior: "smooth",
+              });
+            }
+          }}
+
+          className="group border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 px-6 py-4 rounded-xl font-medium text-lg transition-all duration-300 backdrop-blur-sm"
+        >
+          View All Features
+          <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  </div>
+
+  {/* Privacy Notice - Premium Version */}
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 0.8 }}
+    className="text-center text-sm text-gray-500 mt-12 relative z-10"
+  >
+    <div className="inline-flex items-center gap-3 bg-gray-800/50 backdrop-blur-sm px-4 py-3 rounded-xl border border-gray-700/50">
+      <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+      </svg>
+      <span>All processing happens locally in your browser</span>
+      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+      <span>No data uploaded or stored</span>
+      <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+      <span>Complete privacy guaranteed</span>
+    </div>
+  </motion.div>
+
+  <style jsx>{`
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) skewX(-12deg); }
+      100% { transform: translateX(200%) skewX(-12deg); }
+    }
+    .animate-shimmer {
+      animation: shimmer 3s ease-in-out infinite;
+    }
+  `}</style>
+</motion.section>
         <Footer />
       </div>
+
+      <style jsx>{`
+        .tool-card {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.4s ease;
+          isolation: isolate;
+        }
+        
+        /* Hover overlay effects */
+        .tool-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 150px;
+          height: 150px;
+          background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: 1;
+          pointer-events: none;
+        }
+        
+        .tool-card::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 50%);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: 1;
+          pointer-events: none;
+        }
+        
+        .tool-card:hover::before,
+        .tool-card:hover::after {
+          opacity: 1;
+        }
+        
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        
+        .tool-icon {
+          position: relative;
+          z-index: 2;
+        }
+        
+        .tool-icon::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 80%;
+          height: 80%;
+          background: inherit;
+          border-radius: inherit;
+          filter: blur(15px);
+          opacity: 0.6;
+          z-index: -1;
+        }
+        
+        /* Blur effect on hover */
+        .tool-card .hover-blur {
+          position: absolute;
+          inset: 0;
+          backdrop-filter: blur(0px);
+          -webkit-backdrop-filter: blur(0px);
+          opacity: 0;
+          transition: all 0.5s ease;
+          z-index: 0;
+          border-radius: inherit;
+        }
+        
+        .tool-card:hover .hover-blur {
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          opacity: 1;
+        }
+        
+        /* Floating shapes inside cards on hover */
+        .tool-card .hover-shapes {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          border-radius: inherit;
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: 0;
+        }
+        
+        .tool-card:hover .hover-shapes {
+          opacity: 1;
+        }
+        
+        .hover-shape {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(25px);
+          opacity: 0.2;
+          transition: all 0.6s ease;
+        }
+        
+        .tool-card:hover .hover-shape-1 {
+          transform: translate(20px, -20px) scale(1.2);
+        }
+        
+        .tool-card:hover .hover-shape-2 {
+          transform: translate(-20px, 20px) scale(1.1);
+        }
+      .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradient 3s ease infinite;
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+      `}</style>
     </Layout>
   );
 };

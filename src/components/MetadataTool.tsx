@@ -100,12 +100,24 @@ export const MetadataTool = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl p-6"
+        className="rounded-2xl p-6"
       >
-        <h2 className="text-2xl font-bold mb-4 gradient-text">Metadata Cleaner</h2>
-        <p className="text-muted-foreground mb-6">
-          Remove EXIF data and metadata from your images for privacy
-        </p>
+        <motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  className="text-center space-y-4 py-4 md:py-6"
+>
+  <div className="flex flex-col md:flex-row items-center justify-center gap-3">
+    <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+      Metadata Cleaner
+    </h1>
+  </div>
+
+  <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto px-4">
+    Remove EXIF data and metadata from your images for enhanced privacy and security.
+  </p>
+</motion.div>
+
 
         {!originalImage ? (
           <UploadZone onFilesSelected={handleFilesSelected} multiple={false} />

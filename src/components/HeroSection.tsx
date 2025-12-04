@@ -10,31 +10,31 @@ export const HeroSection = () => {
     >
       <div className="space-y-4">
         <h1 className="text-4xl md:text-6xl font-bold">
-          <span className="gradient-text">Transform Your Images</span>
+          <span className="gradient-text">Fix, Enhance, Convert</span>
           <br />
           <span className="text-2xl md:text-4xl text-muted-foreground">
-            Instantly & Free
+            Without the Hassle.
           </span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-          Professional image editing tools powered by AI. Compress, convert, resize, 
-          remove backgrounds, and more — all in your browser with complete privacy.
+          Imaggee: Professional image editing tools. Compress, convert, resize, 
+          pdf's tools, and more — all in your browser with complete privacy.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mt-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass rounded-xl p-4 flex items-center gap-3"
-        >
-          <Sparkles className="w-6 h-6 text-primary" />
-          <div className="text-left">
-            <h3 className="font-semibold">AI-Powered</h3>
-            <p className="text-sm text-muted-foreground">Advanced algorithms</p>
-          </div>
-        </motion.div>
+      <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.1 }}
+  className="glass rounded-xl p-4 flex items-center gap-3"
+>
+  <Sparkles className="w-6 h-6 text-primary" />
+  <div className="text-left">
+    <h3 className="font-semibold">100% Free</h3>
+    <p className="text-sm text-muted-foreground">No hidden costs</p>
+  </div>
+</motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, MessageSquare, Users, HelpCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Footer } from "@/components/Footer";
@@ -7,6 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const Contact = () => {
+
+  const navigate = useNavigate();
+  
+    const handleClick = () => {
+      // Navigate to home first
+      navigate("/");
+  
+      // Scroll after short delay to let DOM render
+      setTimeout(() => {
+        const el = document.getElementById("alltools");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100); // 100ms delay usually enough
+    };
+
   return (
     <Layout>
       <div className="relative z-10 max-w-4xl mx-auto">
@@ -44,95 +60,28 @@ const Contact = () => {
             </CardContent>
           </Card>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card className="glass">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Mail className="w-5 h-5 text-primary" />
-                  </div>
-                  <CardTitle>General Inquiries</CardTitle>
-                </div>
-                <CardDescription>
-                  Questions about our tools or services
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <a 
-                  href="mailto:support@imaggee.com" 
-                  className="text-primary hover:underline font-medium"
-                >
-                  support@imaggee.com
-                </a>
-              </CardContent>
-            </Card>
+         <Card className="glass ">
+  <CardHeader>
+    <div className="flex items-center gap-3 mb-2">
+      <div className="p-2 rounded-lg bg-primary/10">
+        <Mail className="w-5 h-5 text-primary" />
+      </div>
+      <CardTitle>Contact Us</CardTitle>
+    </div>
+    <CardDescription>
+      If you have any questions, feedback, or partnership inquiries, reach out to us via email.
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <a 
+      href="mailto:contact.imaggee@gmail.com" 
+      className="text-primary hover:underline font-medium text-lg"
+    >
+      contact.imaggee@gmail.com
+    </a>
+  </CardContent>
+</Card>
 
-            <Card className="glass">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <HelpCircle className="w-5 h-5 text-primary" />
-                  </div>
-                  <CardTitle>Technical Support</CardTitle>
-                </div>
-                <CardDescription>
-                  Need help with a specific tool or feature
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <a 
-                  href="mailto:help@imaggee.com" 
-                  className="text-primary hover:underline font-medium"
-                >
-                  help@imaggee.com
-                </a>
-              </CardContent>
-            </Card>
-
-            <Card className="glass">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <MessageSquare className="w-5 h-5 text-primary" />
-                  </div>
-                  <CardTitle>Feedback & Suggestions</CardTitle>
-                </div>
-                <CardDescription>
-                  Share your ideas to improve Imaggee
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <a 
-                  href="mailto:feedback@imaggee.com" 
-                  className="text-primary hover:underline font-medium"
-                >
-                  feedback@imaggee.com
-                </a>
-              </CardContent>
-            </Card>
-
-            <Card className="glass">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Users className="w-5 h-5 text-primary" />
-                  </div>
-                  <CardTitle>Partnerships</CardTitle>
-                </div>
-                <CardDescription>
-                  Interested in collaborating with us
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <a 
-                  href="mailto:partners@imaggee.com" 
-                  className="text-primary hover:underline font-medium"
-                >
-                  partners@imaggee.com
-                </a>
-              </CardContent>
-            </Card>
-          </div>
 
           <Card className="glass bg-primary/5 border-primary/20">
             <CardContent className="p-8">
@@ -141,7 +90,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-2">How do I report a bug?</h3>
                   <p className="text-sm text-muted-foreground">
-                    Send us an email at help@imaggee.com with details about the issue, including 
+                    Send us an email at contact.imaggee@gmail.com with details about the issue, including 
                     your browser type, operating system, and steps to reproduce the problem.
                   </p>
                 </div>
@@ -149,7 +98,7 @@ const Contact = () => {
                   <h3 className="font-semibold mb-2">Can I suggest a new feature?</h3>
                   <p className="text-sm text-muted-foreground">
                     Absolutely! We love hearing from our users. Email your suggestions to 
-                    feedback@imaggee.com and we'll review them carefully.
+                    contact.imaggee@gmail.com and we'll review them carefully.
                   </p>
                 </div>
                 <div>
@@ -169,10 +118,8 @@ const Contact = () => {
               <p className="text-muted-foreground mb-6">
                 Our tools are designed to be intuitive and easy to use. Try them out and see what you can create!
               </p>
-              <Button asChild size="lg">
-                <Link to="/">
+              <Button size="lg" onClick={handleClick}>
                   Explore Tools
-                </Link>
               </Button>
             </CardContent>
           </Card>

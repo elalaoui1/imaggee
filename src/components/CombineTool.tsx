@@ -371,10 +371,22 @@ export const CombineTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Layers className="w-6 h-6 text-accent" />
-        <h2 className="text-2xl font-bold">Combine Images</h2>
-      </div>
+      <motion.div
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  className="text-center space-y-4 pt-4 md:pt-6"
+>
+  <div className="flex flex-col md:flex-row items-center justify-center gap-3">
+    <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+      Combine Images
+    </h1>
+  </div>
+
+  <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto px-4">
+    Merge multiple images into a single file with perfect alignment and high-quality output.
+  </p>
+</motion.div>
+
 
       <UploadZone onFilesSelected={handleFileSelect} accept="image/*" multiple />
 

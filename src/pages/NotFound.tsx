@@ -56,15 +56,15 @@ const NotFound = () => {
                 Looking for our tools?
               </p>
               <div className="flex flex-wrap gap-2 justify-center text-xs">
-                <Link to="/?tool=compress" className="text-primary hover:underline">Compress</Link>
+                <Link to="/compress" className="text-primary hover:underline">Compress</Link>
                 <span className="text-muted-foreground">•</span>
-                <Link to="/?tool=convert" className="text-primary hover:underline">Convert</Link>
+                <Link to="/convert" className="text-primary hover:underline">Convert</Link>
                 <span className="text-muted-foreground">•</span>
-                <Link to="/?tool=combine" className="text-primary hover:underline">Combine</Link>
+                <Link to="/combine" className="text-primary hover:underline">Combine</Link>
                 <span className="text-muted-foreground">•</span>
-                <Link to="/?tool=remove-bg" className="text-primary hover:underline">Remove BG</Link>
+                <Link to="/merge-pdf" className="text-primary hover:underline">Merge PDF</Link>
                 <span className="text-muted-foreground">•</span>
-                <Link to="/?tool=resize" className="text-primary hover:underline">Resize</Link>
+                <Link to="/qr-generator" className="text-primary hover:underline">QR Generator</Link>
               </div>
             </div>
           </CardContent>
