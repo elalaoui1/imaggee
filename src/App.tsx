@@ -23,11 +23,13 @@ import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    
     <HelmetProvider>
       <TooltipProvider>
         <Toaster />
@@ -56,6 +58,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+          <Analytics />
       </TooltipProvider>
     </HelmetProvider>
   </QueryClientProvider>

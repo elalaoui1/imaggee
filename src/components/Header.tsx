@@ -298,7 +298,7 @@ export const Header = () => {
                       <motion.div
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="absolute right-0 -left-44 mt-1 bg-black p-4 rounded-xl border grid grid-cols-4 gap-3 min-w-[800px] max-w-[90vw] border-white-500/40 shadow-white-500/20"
+                        className="absolute right-0 -left-44 bg-black p-4 rounded-xl border grid grid-cols-4 gap-3 min-w-[800px] max-w-[90vw] border-white-500/40 shadow-white-500/20"
                       >
                         {item.items.map((tool) => {
                           const Icon = tool.icon;
