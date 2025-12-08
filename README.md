@@ -28,7 +28,6 @@ All processing happens directly in your browser. **No uploads, no cloud storage,
 | **Blur & Emoji** | Add artistic blur effects and expressive emojis | Privacy, Fun, Click to use |
 | **Color Palette** | Extract color palettes from your images for design | Smart, Export, Click to use |
 | **Metadata** | View, edit, and manage image metadata (EXIF, IPTC) | Privacy, Edit, Click to use |
-| **Remove Background** | Automatically remove image backgrounds | AI Powered, Instant, Click to use |
 
 ---
 
