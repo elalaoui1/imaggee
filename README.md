@@ -3,8 +3,8 @@
 ![Imaggee Logo](public/logo.png)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b5c7c224-152c-4903-90d5-39250f1f1d75/deploy-status)](https://app.netlify.com/sites/imaggee/deploys)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![Ko-fi](https://img.shields.io/badge/Buy%20me%20a%20Coffee-yellow?logo=kofi&style=flat-square)](https://ko-fi.com/imaggee) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
 
 **Fix, Enhance, Convert — Without the Hassle**
 
@@ -28,7 +28,6 @@ All processing happens directly in your browser. **No uploads, no cloud storage,
 | **Blur & Emoji** | Add artistic blur effects and expressive emojis | Privacy, Fun, Click to use |
 | **Color Palette** | Extract color palettes from your images for design | Smart, Export, Click to use |
 | **Metadata** | View, edit, and manage image metadata (EXIF, IPTC) | Privacy, Edit, Click to use |
-| **Remove Background** | Automatically remove image backgrounds | AI Powered, Instant, Click to use |
 
 ---
 
@@ -59,13 +58,7 @@ Built with modern web technologies for performance and developer experience:
 - **Framework**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
-- **State Management**: [TanStack Query](https://tanstack.com/query/latest)
-- **Image/PDF Processing**:
-  - `fabric` for canvas manipulation
-  - `browser-image-compression`
-  - `pdf-lib` & `pdfjs-dist`
-  - `@huggingface/transformers` for AI tasks (background removal)
+- **Image/PDF Processing**
 
 ## 📦 Installation & Running Locally
 
@@ -112,14 +105,6 @@ We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for 
 
 Please also read our [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## 🗺️ Roadmap
-
-- [ ] Add dark mode toggle persistence
-- [ ] Implement batch processing for all tools
-- [ ] Add more AI-powered features (upscaling, restoration)
-- [ ] PWA (Progressive Web App) support for offline use
-- [ ] Internationalization (i18n) support
-
 ## 📸 Screenshots
 
 ![Landing Page Placeholder](public/screens/imaggee-landing-page.png) 
@@ -135,6 +120,15 @@ Check out the live version here: [imaggee.com](https://imaggee.com)
 - Website: [imaggee.com](https://imaggee.com)
 - GitHub: [@elalaoui1](https://github.com/elalaoui1)
 
+---
+
+## ❤️ Support Imaggee
+
+Help keep Imaggee fast, free, and improving every week. Your support keeps the project alive.
+
+[Support on Ko-fi](https://ko-fi.com/imaggee)  
+
+---
 ## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
