@@ -10,6 +10,20 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "keywords": [
+    "open-source",
+    "image-tools",
+    "editor",
+    "javascript",
+    "frontend",
+    "webapp",
+    "privacy-first",
+    "react",
+    "vite",
+    "shadcn-ui"
+  ],
+  "author": "Imaggee",
+  "license": "MIT",
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
