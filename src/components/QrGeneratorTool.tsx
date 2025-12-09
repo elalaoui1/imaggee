@@ -1,33 +1,53 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { 
-  QrCode, Download, Upload, Copy, Check, X,
-  Palette, Eye, EyeOff, RefreshCw, Sparkles, 
-  Zap, Smartphone, Mail, Phone, Wifi, 
-  Globe, MessageSquare, Users, Camera, 
-  Share2, Link, FileText, Image, Settings,
-  Shield, Lock, CloudOff, HelpCircle,
-  ChevronRight, TrendingUp, Target, Brush,
-  Scan, SmartphoneIcon, QrCodeIcon, Stamp,
-  Smartphone as PhoneIcon, AtSign, Wifi as WifiIcon,
-  Facebook, Instagram, Twitter,
-  Linkedin, Youtube, MessageCircle as MessageCircleIcon,
-  Disc as Discord, Send, Zap as ZapIcon,
-  Maximize2, Expand, User, MapPin, Calendar,
-  CreditCard, File, Key, Hash, Globe as GlobeIcon,
-  Music, Bookmark, MessageCircle, Ghost,
-  Youtube as YoutubeIcon, Music as MusicIcon,
-  Bookmark as BookmarkIcon, MessageCircle as MessageCircleIcon2,
-  Shield as ShieldIcon
+  Upload, Download, QrCode, X, Sparkles, 
+  Globe, Mail, Phone, Wifi, MessageSquare, 
+  User, MapPin, Calendar, CreditCard, 
+  FileText, Instagram, Facebook, Twitter,
+  Linkedin, Youtube, Send, Music,
+  Palette, Settings, Image as ImageIcon,
+  Copy, Check, RefreshCw, Eye,
+  Smartphone, LayoutGrid, Sliders,
+  AtSign, Shield, Ghost, Bookmark,
+  MessageCircle, Disc, Shield as ShieldIcon,
+  ChevronDown, ChevronUp, Maximize2,
+  Hash, Key, Zap, Bell, Map,
+  Video, Share2, Hash as HashIcon,
+  MessageCircle as MessageCircleIcon,
+  Camera, Music as MusicIcon,
+  Bookmark as BookmarkIcon,
+  Disc as DiscordIcon,
+  ShieldCheck,
+  Navigation,
+  Clock,
+  MessageSquare as MessageSquareIcon,
+  Coins
 } from "lucide-react";
-import { QRCodeSVG } from 'qrcode.react';
+
+import { FaWhatsapp, FaXTwitter ,FaSnapchat, FaTiktok
+  , FaPinterest, FaReddit, FaDiscord, FaSignalMessenger
+ } from "react-icons/fa6";
+
+import { motion, AnimatePresence } from "framer-motion";
+
+// Template Config with Form Fields
+interface TemplateField {
+  name: string;
+  label: string;
+  type: 'text' | 'number' | 'email' | 'password' | 'select' | 'textarea';
+  placeholder?: string;
+  required?: boolean;
+  pattern?: string;
+  options?: Array<{ value: string; label: string }>;
+}
 
 interface TemplateConfig {
   id: string;
@@ -39,31 +59,22 @@ interface TemplateConfig {
   validation?: (value: string) => boolean;
   errorMessage?: string;
   customForm?: {
-    fields: Array<{
-      name: string;
-      label: string;
-      type: 'text' | 'number' | 'email' | 'password' | 'select' | 'textarea';
-      placeholder?: string;
-      required?: boolean;
-      pattern?: string;
-      options?: Array<{ value: string; label: string }>;
-    }>;
+    fields: TemplateField[];
     generateContent: (data: Record<string, string>) => string;
   };
 }
 
+// Color Schemes
 interface ColorScheme {
   id: string;
   name: string;
-  primary: string;
-  secondary: string;
-  background: string;
-  foreground: string;
-  isDark: boolean;
+  dark: string;
+  light: string;
   gradient?: string;
 }
 
-interface QRConfig {
+// QR Settings
+interface QRSettings {
   size: number;
   margin: number;
   errorCorrection: "L" | "M" | "Q" | "H";
@@ -71,68 +82,80 @@ interface QRConfig {
   includeLogo: boolean;
   logoSize: number;
   roundedCorners: boolean;
-  dotStyle: "square" | "dots" | "rounded";
 }
 
-interface FAQItem {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-}
+type ModalSection = 'templates' | 'colors' | 'qr-settings' | 'logo';
 
-interface FormData {
-  [key: string]: string;
-}
-
-export default function QrGeneratorTool() {
+const QRGenerator = () => {
   const [content, setContent] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("website");
-  const [qrCodeData, setQrCodeData] = useState<string>("");
+  const [logo, setLogo] = useState<string | null>(null);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
   const [copied, setCopied] = useState(false);
-  const [qrConfig, setQrConfig] = useState<QRConfig>({
-    size: 300,
-    margin: 4,
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [activeModal, setActiveModal] = useState<ModalSection | null>('templates');
+  const [isMobile, setIsMobile] = useState(false);
+  const [showNotification, setShowNotification] = useState(true);
+  
+  // Settings State
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("website");
+  const [qrSettings, setQrSettings] = useState<QRSettings>({
+    size: 400,
+    margin: 2,
     errorCorrection: "H",
     colorScheme: "default",
     includeLogo: false,
-    logoSize: 40,
+    logoSize: 15,
     roundedCorners: true,
-    dotStyle: "rounded"
   });
-  
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string>("");
+
+  // Custom Colors
   const [customColors, setCustomColors] = useState({
     dark: "#000000",
     light: "#ffffff",
   });
-  
-  const [formData, setFormData] = useState<FormData>({});
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const qrContainerRef = useRef<HTMLDivElement>(null);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Check mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    // Auto-hide notification after 5 seconds on mobile
+    if (isMobile) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [isMobile]);
 
   // Quick Templates with custom forms
   const templates: TemplateConfig[] = [
     {
       id: "website",
       name: "Website",
-      icon: <Globe className="w-4 h-4" />,
+      icon: <Globe className="w-5 h-5" />,
       description: "Link to any website",
-      defaultContent: "https://example.com",
-      placeholder: "https://your-website.com",
+      defaultContent: "",
+      placeholder: "https://example.com",
       validation: (value) => /^https?:\/\/[^\s$.?#].[^\s]*$/.test(value),
       errorMessage: "Please enter a valid URL starting with http:// or https://"
     },
     {
       id: "email",
       name: "Email",
-      icon: <Mail className="w-4 h-4" />,
+      icon: <Mail className="w-5 h-5" />,
       description: "Send an email",
-      defaultContent: "mailto:email@example.com?subject=Hello&body=Hi there!",
+      defaultContent: "",
       placeholder: "mailto:email@example.com",
       validation: (value) => value.startsWith("mailto:"),
       errorMessage: "Must start with 'mailto:'",
@@ -171,9 +194,9 @@ export default function QrGeneratorTool() {
     {
       id: "phone",
       name: "Phone",
-      icon: <Phone className="w-4 h-4" />,
+      icon: <Phone className="w-5 h-5" />,
       description: "Make a phone call",
-      defaultContent: "tel:+1234567890",
+      defaultContent: "",
       placeholder: "tel:+1234567890",
       validation: (value) => value.startsWith("tel:"),
       errorMessage: "Must start with 'tel:'",
@@ -194,9 +217,9 @@ export default function QrGeneratorTool() {
     {
       id: "wifi",
       name: "WiFi",
-      icon: <Wifi className="w-4 h-4" />,
+      icon: <Wifi className="w-5 h-5" />,
       description: "Connect to WiFi",
-      defaultContent: "WIFI:S:MyNetwork;T:WPA;P:mypassword;;",
+      defaultContent: "",
       placeholder: "WIFI:S:NetworkName;T:WPA;P:Password;;",
       validation: (value) => value.startsWith("WIFI:"),
       errorMessage: "Must be in WIFI: format",
@@ -253,9 +276,9 @@ export default function QrGeneratorTool() {
     {
       id: "whatsapp",
       name: "WhatsApp",
-      icon: <MessageSquare className="w-4 h-4" />,
+      icon: <FaWhatsapp className="w-5 h-5" />,
       description: "Send WhatsApp message",
-      defaultContent: "https://wa.me/1234567890?text=Hello",
+      defaultContent: "",
       placeholder: "https://wa.me/1234567890",
       validation: (value) => value.includes("wa.me"),
       errorMessage: "Must include 'wa.me'",
@@ -286,33 +309,11 @@ export default function QrGeneratorTool() {
       }
     },
     {
-      id: "facebook",
-      name: "Facebook",
-      icon: <Facebook className="w-4 h-4" />,
-      description: "Link to Facebook profile",
-      defaultContent: "https://facebook.com/username",
-      placeholder: "https://facebook.com/username",
-      validation: (value) => value.includes("facebook.com"),
-      errorMessage: "Must include 'facebook.com'",
-      customForm: {
-        fields: [
-          {
-            name: "username",
-            label: "Facebook Username",
-            type: "text",
-            placeholder: "username",
-            required: true
-          }
-        ],
-        generateContent: (data) => `https://facebook.com/${data.username}`
-      }
-    },
-    {
       id: "instagram",
       name: "Instagram",
-      icon: <Instagram className="w-4 h-4" />,
+      icon: <Instagram className="w-5 h-5" />,
       description: "Link to Instagram profile",
-      defaultContent: "https://instagram.com/username",
+      defaultContent: "",
       placeholder: "https://instagram.com/username",
       validation: (value) => value.includes("instagram.com"),
       errorMessage: "Must include 'instagram.com'",
@@ -330,19 +331,41 @@ export default function QrGeneratorTool() {
       }
     },
     {
-      id: "twitter",
-      name: "Twitter",
-      icon: <Twitter className="w-4 h-4" />,
-      description: "Link to Twitter profile",
-      defaultContent: "https://twitter.com/username",
-      placeholder: "https://twitter.com/username",
-      validation: (value) => value.includes("twitter.com"),
-      errorMessage: "Must include 'twitter.com'",
+      id: "facebook",
+      name: "Facebook",
+      icon: <Facebook className="w-5 h-5" />,
+      description: "Link to Facebook profile",
+      defaultContent: "",
+      placeholder: "https://facebook.com/username",
+      validation: (value) => value.includes("facebook.com"),
+      errorMessage: "Must include 'facebook.com'",
       customForm: {
         fields: [
           {
             name: "username",
-            label: "Twitter Username",
+            label: "Facebook Username",
+            type: "text",
+            placeholder: "username",
+            required: true
+          }
+        ],
+        generateContent: (data) => `https://facebook.com/${data.username}`
+      }
+    },
+    {
+      id: "twitter",
+      name: "Twitter/X",
+      icon: <FaXTwitter className="w-5 h-5" />,
+      description: "Link to Twitter/X profile",
+      defaultContent: "",
+      placeholder: "https://twitter.com/username",
+      validation: (value) => value.includes("twitter.com") || value.includes("x.com"),
+      errorMessage: "Must include 'twitter.com' or 'x.com'",
+      customForm: {
+        fields: [
+          {
+            name: "username",
+            label: "Twitter/X Username",
             type: "text",
             placeholder: "@username",
             required: true
@@ -354,9 +377,9 @@ export default function QrGeneratorTool() {
     {
       id: "linkedin",
       name: "LinkedIn",
-      icon: <Linkedin className="w-4 h-4" />,
+      icon: <Linkedin className="w-5 h-5" />,
       description: "Link to LinkedIn profile",
-      defaultContent: "https://linkedin.com/in/username",
+      defaultContent: "",
       placeholder: "https://linkedin.com/in/username",
       validation: (value) => value.includes("linkedin.com"),
       errorMessage: "Must include 'linkedin.com'",
@@ -376,9 +399,9 @@ export default function QrGeneratorTool() {
     {
       id: "telegram",
       name: "Telegram",
-      icon: <Send className="w-4 h-4" />,
+      icon: <Send className="w-5 h-5" />,
       description: "Send Telegram message",
-      defaultContent: "https://t.me/username",
+      defaultContent: "",
       placeholder: "https://t.me/username",
       validation: (value) => value.includes("t.me"),
       errorMessage: "Must include 't.me'",
@@ -410,153 +433,208 @@ export default function QrGeneratorTool() {
     {
       id: "snapchat",
       name: "Snapchat",
-      icon: <Ghost className="w-4 h-4" />,
+      icon: <FaSnapchat className="w-5 h-5" />,
       description: "Link to Snapchat profile",
-      defaultContent: "https://snapchat.com/add/username",
+      defaultContent: "",
       placeholder: "https://snapchat.com/add/username",
       validation: (value) => value.includes("snapchat.com"),
-      errorMessage: "Must include 'snapchat.com'"
-    },
-    {
-      id: "youtube",
-      name: "YouTube",
-      icon: <YoutubeIcon className="w-4 h-4" />,
-      description: "Link to YouTube channel/video",
-      defaultContent: "https://youtube.com/c/channelname",
-      placeholder: "https://youtube.com/c/channelname",
-      validation: (value) => value.includes("youtube.com"),
-      errorMessage: "Must include 'youtube.com'"
+      errorMessage: "Must include 'snapchat.com'",
+      customForm: {
+        fields: [
+          {
+            name: "username",
+            label: "Snapchat Username",
+            type: "text",
+            placeholder: "username",
+            required: true
+          }
+        ],
+        generateContent: (data) => `https://snapchat.com/add/${data.username}`
+      }
     },
     {
       id: "tiktok",
       name: "TikTok",
-      icon: <MusicIcon className="w-4 h-4" />,
+      icon: <FaTiktok className="w-5 h-5" />,
       description: "Link to TikTok profile",
-      defaultContent: "https://tiktok.com/@username",
+      defaultContent: "",
       placeholder: "https://tiktok.com/@username",
       validation: (value) => value.includes("tiktok.com"),
-      errorMessage: "Must include 'tiktok.com'"
+      errorMessage: "Must include 'tiktok.com'",
+      customForm: {
+        fields: [
+          {
+            name: "username",
+            label: "TikTok Username",
+            type: "text",
+            placeholder: "@username",
+            required: true
+          }
+        ],
+        generateContent: (data) => `https://tiktok.com/@${data.username.replace('@', '')}`
+      }
+    },
+    {
+      id: "youtube",
+      name: "YouTube",
+      icon: <Youtube className="w-5 h-5" />,
+      description: "Link to YouTube channel/video",
+      defaultContent: "",
+      placeholder: "https://youtube.com/c/channelname",
+      validation: (value) => value.includes("youtube.com"),
+      errorMessage: "Must include 'youtube.com'",
+      customForm: {
+        fields: [
+          {
+            name: "channel",
+            label: "YouTube Channel/Video ID",
+            type: "text",
+            placeholder: "channelname or videoID",
+            required: true
+          },
+          {
+            name: "type",
+            label: "Content Type",
+            type: "select",
+            required: true,
+            options: [
+              { value: "channel", label: "Channel" },
+              { value: "video", label: "Video" }
+            ]
+          }
+        ],
+        generateContent: (data) => {
+          if (data.type === "channel") {
+            return `https://youtube.com/c/${data.channel}`;
+          } else {
+            return `https://youtube.com/watch?v=${data.channel}`;
+          }
+        }
+      }
     },
     {
       id: "pinterest",
       name: "Pinterest",
-      icon: <BookmarkIcon className="w-4 h-4" />,
+      icon: <FaPinterest className="w-5 h-5" />,
       description: "Link to Pinterest profile/board",
-      defaultContent: "https://pinterest.com/username",
+      defaultContent: "",
       placeholder: "https://pinterest.com/username",
       validation: (value) => value.includes("pinterest.com"),
-      errorMessage: "Must include 'pinterest.com'"
+      errorMessage: "Must include 'pinterest.com'",
+      customForm: {
+        fields: [
+          {
+            name: "username",
+            label: "Pinterest Username",
+            type: "text",
+            placeholder: "username",
+            required: true
+          }
+        ],
+        generateContent: (data) => `https://pinterest.com/${data.username}`
+      }
     },
     {
       id: "reddit",
       name: "Reddit",
-      icon: <MessageCircleIcon2 className="w-4 h-4" />,
+      icon: <FaReddit className="w-5 h-5" />,
       description: "Link to Reddit profile/subreddit",
-      defaultContent: "https://reddit.com/user/username",
+      defaultContent: "",
       placeholder: "https://reddit.com/user/username",
       validation: (value) => value.includes("reddit.com"),
-      errorMessage: "Must include 'reddit.com'"
-    },
-    {
-      id: "messenger",
-      name: "Messenger",
-      icon: <MessageCircleIcon className="w-4 h-4" />,
-      description: "Send Facebook Messenger message",
-      defaultContent: "https://m.me/username",
-      placeholder: "https://m.me/username",
-      validation: (value) => value.includes("m.me"),
-      errorMessage: "Must include 'm.me'"
+      errorMessage: "Must include 'reddit.com'",
+      customForm: {
+        fields: [
+          {
+            name: "username",
+            label: "Reddit Username",
+            type: "text",
+            placeholder: "username",
+            required: true
+          },
+          {
+            name: "type",
+            label: "Content Type",
+            type: "select",
+            required: true,
+            options: [
+              { value: "user", label: "User Profile" },
+              { value: "subreddit", label: "Subreddit" }
+            ]
+          }
+        ],
+        generateContent: (data) => {
+          if (data.type === "user") {
+            return `https://reddit.com/user/${data.username}`;
+          } else {
+            return `https://reddit.com/r/${data.username}`;
+          }
+        }
+      }
     },
     {
       id: "discord",
       name: "Discord",
-      icon: <Discord className="w-4 h-4" />,
+      icon: <FaDiscord className="w-5 h-5" />,
       description: "Join Discord server",
-      defaultContent: "https://discord.gg/invitecode",
+      defaultContent: "",
       placeholder: "https://discord.gg/invitecode",
       validation: (value) => value.includes("discord.gg"),
-      errorMessage: "Must include 'discord.gg'"
+      errorMessage: "Must include 'discord.gg'",
+      customForm: {
+        fields: [
+          {
+            name: "inviteCode",
+            label: "Discord Invite Code",
+            type: "text",
+            placeholder: "invitecode",
+            required: true
+          }
+        ],
+        generateContent: (data) => `https://discord.gg/${data.inviteCode}`
+      }
     },
     {
       id: "signal",
       name: "Signal",
-      icon: <ShieldIcon className="w-4 h-4" />,
+      icon: <FaSignalMessenger className="w-5 h-5" />,
       description: "Send Signal message",
-      defaultContent: "https://signal.me/#p/+1234567890",
+      defaultContent: "",
       placeholder: "https://signal.me/#p/+1234567890",
       validation: (value) => value.includes("signal.me"),
-      errorMessage: "Must include 'signal.me'"
-    },
-    {
-      id: "vcard",
-      name: "Contact",
-      icon: <User className="w-4 h-4" />,
-      description: "Save contact to phone",
-      defaultContent: "BEGIN:VCARD\nVERSION:3.0\nFN:John Doe\nEND:VCARD",
-      placeholder: "BEGIN:VCARD...",
-      validation: (value) => value.startsWith("BEGIN:VCARD"),
-      errorMessage: "Must be a valid vCard format",
+      errorMessage: "Must include 'signal.me'",
       customForm: {
         fields: [
           {
-            name: "firstName",
-            label: "First Name",
-            type: "text",
-            placeholder: "John",
-            required: true
-          },
-          {
-            name: "lastName",
-            label: "Last Name",
-            type: "text",
-            placeholder: "Doe",
-            required: true
-          },
-          {
             name: "phone",
-            label: "Phone",
+            label: "Phone Number",
             type: "text",
-            placeholder: "+1234567890"
+            placeholder: "+1234567890",
+            required: true
           },
           {
-            name: "email",
-            label: "Email",
-            type: "email",
-            placeholder: "john@example.com"
-          },
-          {
-            name: "company",
-            label: "Company",
-            type: "text",
-            placeholder: "Acme Inc."
-          },
-          {
-            name: "title",
-            label: "Job Title",
-            type: "text",
-            placeholder: "Software Engineer"
+            name: "message",
+            label: "Pre-filled Message",
+            type: "textarea",
+            placeholder: "Hello!"
           }
         ],
         generateContent: (data) => {
-          let vcard = "BEGIN:VCARD\nVERSION:3.0\n";
-          vcard += `FN:${data.firstName} ${data.lastName}\n`;
-          vcard += `N:${data.lastName};${data.firstName};;;\n`;
-          if (data.phone) vcard += `TEL:${data.phone}\n`;
-          if (data.email) vcard += `EMAIL:${data.email}\n`;
-          if (data.company) vcard += `ORG:${data.company}\n`;
-          if (data.title) vcard += `TITLE:${data.title}\n`;
-          vcard += "END:VCARD";
-          return vcard;
+          let url = `https://signal.me/#p/${data.phone.replace(/\s+/g, '')}`;
+          if (data.message) {
+            url += `?text=${encodeURIComponent(data.message)}`;
+          }
+          return url;
         }
       }
     },
     {
       id: "location",
       name: "Location",
-      icon: <MapPin className="w-4 h-4" />,
+      icon: <Navigation className="w-5 h-5" />,
       description: "Open location in maps",
-      defaultContent: "geo:40.7128,-74.0060",
-      placeholder: "geo:latitude,longitude",
+      defaultContent: "",
+      placeholder: "geo:40.7128,-74.0060",
       validation: (value) => value.startsWith("geo:"),
       errorMessage: "Must start with 'geo:'",
       customForm: {
@@ -596,10 +674,10 @@ export default function QrGeneratorTool() {
     {
       id: "event",
       name: "Event",
-      icon: <Calendar className="w-4 h-4" />,
+      icon: <Calendar className="w-5 h-5" />,
       description: "Add event to calendar",
-      defaultContent: "BEGIN:VEVENT\nSUMMARY:Meeting\nEND:VEVENT",
-      placeholder: "BEGIN:VEVENT...",
+      defaultContent: "",
+      placeholder: "BEGIN:VEVENT\nSUMMARY:Meeting\nEND:VEVENT",
       validation: (value) => value.startsWith("BEGIN:VEVENT"),
       errorMessage: "Must be a valid iCalendar format",
       customForm: {
@@ -646,22 +724,12 @@ export default function QrGeneratorTool() {
       }
     },
     {
-      id: "text",
-      name: "Plain Text",
-      icon: <FileText className="w-4 h-4" />,
-      description: "Display plain text",
-      defaultContent: "Hello World!",
-      placeholder: "Enter any text",
-      validation: (value) => value.length > 0,
-      errorMessage: "Text cannot be empty"
-    },
-    {
       id: "sms",
       name: "SMS",
-      icon: <MessageSquare className="w-4 h-4" />,
+      icon: <MessageSquareIcon className="w-5 h-5" />,
       description: "Send SMS message",
-      defaultContent: "sms:+1234567890?body=Hello",
-      placeholder: "sms:+1234567890",
+      defaultContent: "",
+      placeholder: "sms:+1234567890?body=Hello",
       validation: (value) => value.startsWith("sms:"),
       errorMessage: "Must start with 'sms:'",
       customForm: {
@@ -688,12 +756,12 @@ export default function QrGeneratorTool() {
       }
     },
     {
-      id: "crypto",
+      id: "cryptocurrency",
       name: "Cryptocurrency",
-      icon: <CreditCard className="w-4 h-4" />,
+      icon: <Coins className="w-5 h-5" />,
       description: "Send cryptocurrency",
-      defaultContent: "bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-      placeholder: "bitcoin:address",
+      defaultContent: "",
+      placeholder: "bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
       validation: (value) => /^[a-zA-Z]+:[a-zA-Z0-9]+/.test(value),
       errorMessage: "Must be in format: crypto:address",
       customForm: {
@@ -707,7 +775,9 @@ export default function QrGeneratorTool() {
               { value: "bitcoin", label: "Bitcoin (BTC)" },
               { value: "ethereum", label: "Ethereum (ETH)" },
               { value: "litecoin", label: "Litecoin (LTC)" },
-              { value: "bitcoincash", label: "Bitcoin Cash (BCH)" }
+              { value: "bitcoincash", label: "Bitcoin Cash (BCH)" },
+              { value: "solana", label: "Solana (SOL)" },
+              { value: "dogecoin", label: "Dogecoin (DOGE)" }
             ]
           },
           {
@@ -742,160 +812,57 @@ export default function QrGeneratorTool() {
     }
   ];
 
-    const [showAll, setShowAll] = useState(false);
-const visibleTemplates = showAll ? templates : templates.slice(0, 5);
-
-  // Color Schemes
+  // Color Schemes - Added custom color option
   const colorSchemes: ColorScheme[] = [
-    {
-      id: "default",
-      name: "Classic Black",
-      primary: "#000000",
-      secondary: "#000000",
-      background: "#ffffff",
-      foreground: "#000000",
-      isDark: false
-    },
-    {
-      id: "blue",
-      name: "Ocean Blue",
-      primary: "#3b82f6",
-      secondary: "#1d4ed8",
-      background: "#ffffff",
-      foreground: "#1e293b",
-      isDark: false,
-      gradient: "linear-gradient(135deg, #3b82f6, #1d4ed8)"
-    },
-    {
-      id: "green",
-      name: "Emerald Green",
-      primary: "#10b981",
-      secondary: "#059669",
-      background: "#ffffff",
-      foreground: "#064e3b",
-      isDark: false,
-      gradient: "linear-gradient(135deg, #10b981, #059669)"
-    },
-    {
-      id: "purple",
-      name: "Royal Purple",
-      primary: "#8b5cf6",
-      secondary: "#7c3aed",
-      background: "#ffffff",
-      foreground: "#4c1d95",
-      isDark: false,
-      gradient: "linear-gradient(135deg, #8b5cf6, #7c3aed)"
-    },
-    {
-      id: "red",
-      name: "Ruby Red",
-      primary: "#ef4444",
-      secondary: "#dc2626",
-      background: "#ffffff",
-      foreground: "#7f1d1d",
-      isDark: false,
-      gradient: "linear-gradient(135deg, #ef4444, #dc2626)"
-    },
-    {
-      id: "orange",
-      name: "Sunset Orange",
-      primary: "#f97316",
-      secondary: "#ea580c",
-      background: "#ffffff",
-      foreground: "#7c2d12",
-      isDark: false,
-      gradient: "linear-gradient(135deg, #f97316, #ea580c)"
-    },
-    {
-      id: "dark",
-      name: "Dark Mode",
-      primary: "#ffffff",
-      secondary: "#d4d4d8",
-      background: "#18181b",
-      foreground: "#ffffff",
-      isDark: true
-    },
-    {
-      id: "gradient",
-      name: "Gradient",
-      primary: "#8b5cf6",
-      secondary: "#3b82f6",
-      background: "#ffffff",
-      foreground: "#000000",
-      isDark: false,
-      gradient: "linear-gradient(135deg, #8b5cf6, #3b82f6)"
-    },
-    {
-      id: "custom",
-      name: "Custom",
-      primary: "#000000",
-      secondary: "#000000",
-      background: "#ffffff",
-      foreground: "#000000",
-      isDark: false
-    }
+    { id: "default", name: "Classic", dark: "#000000", light: "#ffffff" },
+    { id: "blue", name: "Ocean Blue", dark: "#3b82f6", light: "#ffffff", gradient: "linear-gradient(135deg, #3b82f6, #1d4ed8)" },
+    { id: "green", name: "Emerald", dark: "#10b981", light: "#ffffff", gradient: "linear-gradient(135deg, #10b981, #059669)" },
+    { id: "purple", name: "Royal Purple", dark: "#8b5cf6", light: "#ffffff", gradient: "linear-gradient(135deg, #8b5cf6, #7c3aed)" },
+    { id: "red", name: "Ruby Red", dark: "#ef4444", light: "#ffffff", gradient: "linear-gradient(135deg, #ef4444, #dc2626)" },
+    { id: "orange", name: "Sunset Orange", dark: "#f97316", light: "#ffffff", gradient: "linear-gradient(135deg, #f97316, #ea580c)" },
+    { id: "dark", name: "Dark Mode", dark: "#ffffff", light: "#18181b" },
+    { id: "gradient", name: "Gradient", dark: "#8b5cf6", light: "#ffffff", gradient: "linear-gradient(135deg, #8b5cf6, #3b82f6)" },
+    { id: "custom", name: "Custom", dark: "#000000", light: "#ffffff" }
   ];
-
-  const faqs: FAQItem[] = [
-    {
-      question: "What types of QR codes can I generate?",
-      answer: "You can generate QR codes for websites, email, phone, WiFi, social media profiles (Facebook, Instagram, Twitter, etc.), messaging apps (WhatsApp, Telegram, Signal), and many more. Each template has pre-formatted content for easy generation.",
-      isOpen: true
-    },
-    {
-      question: "Can I customize the colors of my QR code?",
-      answer: "Yes! Choose from various color schemes including Classic Black, Ocean Blue, Emerald Green, Royal Purple, Ruby Red, Sunset Orange, Dark Mode, Gradient, or create your own custom colors. You can also add a logo and adjust styling options.",
-      isOpen: false
-    },
-    {
-      question: "Are my QR codes secure and private?",
-      answer: "Absolutely! All QR code generation happens 100% locally in your browser. No data is uploaded to any server, ensuring complete privacy and security for your content.",
-      isOpen: false
-    },
-    {
-      question: "What's the difference between error correction levels?",
-      answer: "Error correction helps QR codes remain scannable even if damaged. L: 7% (smallest), M: 15%, Q: 25%, H: 30% (most resilient). Higher levels produce denser codes but are more scannable when damaged.",
-      isOpen: false
-    },
-    {
-      question: "Can I add my logo to the QR code?",
-      answer: "Yes! You can upload a logo image (PNG recommended) and adjust its size. The QR code will automatically adjust error correction to ensure it remains scannable with the logo.",
-      isOpen: false
-    }
-  ];
-
-  // Toggle FAQ item
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
 
   // Get selected template
   const getSelectedTemplate = () => {
     return templates.find(t => t.id === selectedTemplate) || templates[0];
   };
 
-  // Get selected color scheme
-  const getSelectedColorScheme = () => {
-    return colorSchemes.find(c => c.id === qrConfig.colorScheme) || colorSchemes[0];
+  // Get colors based on selected scheme
+  const getColors = () => {
+    if (qrSettings.colorScheme === "custom") {
+      return customColors;
+    }
+    const scheme = colorSchemes.find(s => s.id === qrSettings.colorScheme);
+    return scheme || { dark: "#000000", light: "#ffffff" };
   };
 
   // Handle template selection
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplate(templateId);
     const template = templates.find(t => t.id === templateId);
+    
     if (template) {
-      setContent(template.defaultContent);
       // Reset form data for new template
-      setFormData({});
-      
-      // Initialize form data with empty values
       if (template.customForm) {
-        const initialData: FormData = {};
+        const initialData: Record<string, string> = {};
         template.customForm.fields.forEach(field => {
           initialData[field.name] = '';
         });
         setFormData(initialData);
+        setContent(""); // Clear content initially
+      } else {
+        setContent(""); // Clear content initially
       }
+      
+      // Close modal on mobile
+      if (isMobile) {
+        setActiveModal(null);
+      }
+      
+      toast.success(`Selected ${template.name} template`);
     }
   };
 
@@ -907,10 +874,21 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
     const template = getSelectedTemplate();
     if (template.customForm) {
       try {
-        const generatedContent = template.customForm.generateContent(newFormData);
-        setContent(generatedContent);
+        // Check if all required fields are filled
+        const requiredFields = template.customForm.fields.filter(f => f.required);
+        const allRequiredFilled = requiredFields.every(field => 
+          newFormData[field.name] && newFormData[field.name].trim()
+        );
+        
+        if (allRequiredFilled) {
+          const generatedContent = template.customForm.generateContent(newFormData);
+          setContent(generatedContent);
+        } else {
+          setContent(""); // Clear content if not all required fields are filled
+        }
       } catch (error) {
         console.error("Error generating content:", error);
+        setContent("");
       }
     }
   };
@@ -918,50 +896,55 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
   // Handle logo upload
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("File size should be less than 2MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        setLogo(reader.result as string);
+        setQrSettings(prev => ({ ...prev, includeLogo: true }));
+        toast.success("Logo uploaded successfully!");
+      };
+      reader.readAsDataURL(file);
     }
-
-    // Check file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Logo file size should be less than 2MB");
-      return;
-    }
-
-    setLogoFile(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setLogoPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    // Auto-enable logo inclusion
-    setQrConfig(prev => ({ ...prev, includeLogo: true }));
   };
 
-  // Remove logo
   const removeLogo = () => {
-    setLogoFile(null);
-    setLogoPreview("");
-    setQrConfig(prev => ({ ...prev, includeLogo: false }));
+    setLogo(null);
+    setQrSettings(prev => ({ ...prev, includeLogo: false }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    toast.info("Logo removed");
   };
 
-  // Generate QR code
-  const generateQRCode = async () => {
-    if (!content.trim()) {
-      toast.error("Please enter content for the QR code");
+  // Live preview update when settings change
+  useEffect(() => {
+    if (qrCodeDataUrl && content) {
+      const timer = setTimeout(() => {
+        generateQRCode();
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [qrSettings, content, logo]);
+
+  const generateQRCode = useCallback(async () => {
+    const currentContent = content.trim();
+    if (!currentContent) {
+      toast.error("Please enter content");
       return;
     }
 
-    // Validate content based on template
+    // Validate based on selected template
     const template = getSelectedTemplate();
-    if (template.validation && !template.validation(content)) {
+    if (template.validation && !template.validation(currentContent)) {
       toast.error(template.errorMessage || "Invalid content format");
       return;
     }
@@ -987,28 +970,102 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
     setIsGenerating(true);
 
     try {
-      setQrCodeData(content);
-      toast.success("QR code generated successfully!");
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const size = qrSettings.size;
+      canvas.width = size;
+      canvas.height = size;
+
+      const colors = getColors();
+
+      // Generate QR code
+      const qrDataUrl = await QRCode.toDataURL(currentContent, {
+        width: size,
+        margin: qrSettings.margin,
+        color: {
+          dark: colors.dark,
+          light: colors.light,
+        },
+        errorCorrectionLevel: qrSettings.errorCorrection,
+      });
+
+      // Draw QR code on canvas
+      const qrImage = new Image();
+      qrImage.onload = () => {
+        ctx.drawImage(qrImage, 0, 0, size, size);
+
+        // If logo exists, draw it in the center
+        if (qrSettings.includeLogo && logo) {
+          const logoImage = new Image();
+          logoImage.onload = () => {
+            const logoSize = size * (qrSettings.logoSize / 100);
+            const logoX = (size - logoSize) / 2;
+            const logoY = (size - logoSize) / 2;
+
+            // Draw thin white border for logo (2px border instead of full background)
+            ctx.save();
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 0;
+            if (qrSettings.roundedCorners) {
+              ctx.beginPath();
+              ctx.roundRect(logoX - 1, logoY - 1, logoSize + 2, logoSize + 2, 8);
+              ctx.stroke();
+            } else {
+              ctx.strokeRect(logoX - 1, logoY - 1, logoSize + 2, logoSize + 2);
+            }
+            ctx.restore();
+
+            // Draw logo with clipping
+            ctx.save();
+            if (qrSettings.roundedCorners) {
+              ctx.beginPath();
+              ctx.roundRect(logoX, logoY, logoSize, logoSize, 6);
+              ctx.clip();
+            } else {
+              ctx.beginPath();
+              ctx.rect(logoX, logoY, logoSize, logoSize);
+              ctx.clip();
+            }
+            ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+            ctx.restore();
+
+            setQrCodeDataUrl(canvas.toDataURL("image/png"));
+            setIsGenerating(false);
+            toast.success("QR Code updated!");
+          };
+          logoImage.src = logo;
+        } else {
+          setQrCodeDataUrl(canvas.toDataURL("image/png"));
+          setIsGenerating(false);
+          toast.success("QR Code updated!");
+        }
+      };
+      qrImage.src = qrDataUrl;
     } catch (error) {
-      console.error("QR generation failed:", error);
-      toast.error("Failed to generate QR code. Please try again.");
-    } finally {
+      console.error("Error generating QR code:", error);
+      toast.error("Failed to generate QR code");
       setIsGenerating(false);
     }
-  };
+  }, [content, logo, qrSettings, formData]);
 
-  // Download QR code as PNG - WORKING VERSION
-  const downloadQRCode = useCallback(async () => {
-    if (!qrCodeData) {
+  const downloadQRCode = async () => {
+    if (!qrCodeDataUrl) {
       toast.error("Please generate a QR code first");
       return;
     }
 
+    setIsGenerating(true);
+    
     try {
-      // Create canvas
+      // Create a canvas element for download
       const canvas = document.createElement('canvas');
+      const size = qrSettings.size;
       const padding = 20;
-      const totalSize = qrConfig.size + padding * 2;
+      const totalSize = size + padding * 2;
       
       canvas.width = totalSize;
       canvas.height = totalSize;
@@ -1020,263 +1077,186 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
       }
 
       // Get colors
-      const colorScheme = getSelectedColorScheme();
-      const bgColor = qrConfig.colorScheme === "custom" ? customColors.light : colorScheme.background;
+      const colors = getColors();
+      const bgColor = colors.light;
 
       // Fill background
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, totalSize, totalSize);
 
-      // Create a data URL from the SVG preview
-      const qrContainer = qrContainerRef.current;
-      if (qrContainer) {
-        const svgElement = qrContainer.querySelector('svg');
-        if (svgElement) {
-          // Serialize SVG
-          const svgString = new XMLSerializer().serializeToString(svgElement);
-          const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-          const svgUrl = URL.createObjectURL(svgBlob);
-          
-          const img = new Image();
-          
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              // Draw QR code with padding
-              ctx.drawImage(img, padding, padding, qrConfig.size, qrConfig.size);
-              URL.revokeObjectURL(svgUrl);
-              resolve(true);
-            };
-            
-            img.onerror = () => {
-              URL.revokeObjectURL(svgUrl);
-              reject(new Error('Failed to load SVG'));
-            };
-            
-            img.src = svgUrl;
-          });
-        }
+      // Generate QR code on canvas
+      try {
+        const qrCanvas = document.createElement('canvas');
+        qrCanvas.width = size;
+        qrCanvas.height = size;
+        
+        await QRCode.toCanvas(qrCanvas, content, {
+          width: size,
+          margin: qrSettings.margin,
+          color: {
+            dark: colors.dark,
+            light: colors.light
+          },
+          errorCorrectionLevel: qrSettings.errorCorrection
+        });
+        
+        // Draw QR code centered with padding
+        ctx.drawImage(qrCanvas, padding, padding, size, size);
+        
+      } catch (error) {
+        console.error('QR code generation failed:', error);
+        toast.error("Failed to generate QR code");
+        return;
       }
 
       // Add logo if enabled
-      if (qrConfig.includeLogo && logoPreview) {
-        const logoImg = new Image();
-        logoImg.crossOrigin = "anonymous";
-        
-        await new Promise((resolve, reject) => {
-          logoImg.onload = () => {
-            const logoSize = qrConfig.logoSize;
-            const centerX = totalSize / 2;
-            const centerY = totalSize / 2;
+      if (qrSettings.includeLogo && logo) {
+        try {
+          const logoImg = new Image();
+          
+          // Wait for logo to load
+          await new Promise<void>((resolve, reject) => {
+            logoImg.onload = () => resolve();
+            logoImg.onerror = () => reject(new Error("Failed to load logo"));
+            logoImg.src = logo;
             
-            // Draw logo background
-            ctx.fillStyle = colorScheme.isDark ? '#1e293b' : '#f8fafc';
-            ctx.fillRect(
-              centerX - logoSize/2 - 4,
-              centerY - logoSize/2 - 4,
-              logoSize + 8,
-              logoSize + 8
+            setTimeout(() => reject(new Error("Logo loading timeout")), 5000);
+          });
+
+          // Calculate logo position (center of QR code)
+          const centerX = totalSize / 2;
+          const centerY = totalSize / 2;
+          const logoSize = qrSettings.size * (qrSettings.logoSize / 100);
+          
+          // Draw thin white border for logo
+          ctx.save();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          if (qrSettings.roundedCorners) {
+            ctx.beginPath();
+            ctx.roundRect(
+              centerX - logoSize/2 - 1, 
+              centerY - logoSize/2 - 1, 
+              logoSize + 2, 
+              logoSize + 2, 
+              8
             );
-            
-            // Draw logo
-            ctx.drawImage(
-              logoImg,
-              centerX - logoSize/2,
-              centerY - logoSize/2,
-              logoSize,
+            ctx.stroke();
+          } else {
+            ctx.strokeRect(
+              centerX - logoSize/2 - 1, 
+              centerY - logoSize/2 - 1, 
+              logoSize + 2, 
+              logoSize + 2
+            );
+          }
+          ctx.restore();
+          
+          // Draw the logo with clipping
+          ctx.save();
+          if (qrSettings.roundedCorners) {
+            ctx.beginPath();
+            ctx.roundRect(
+              centerX - logoSize/2, 
+              centerY - logoSize/2, 
+              logoSize, 
+              logoSize, 
+              6
+            );
+            ctx.clip();
+          } else {
+            ctx.beginPath();
+            ctx.rect(
+              centerX - logoSize/2, 
+              centerY - logoSize/2, 
+              logoSize, 
               logoSize
             );
-            
-            resolve(true);
-          };
+            ctx.clip();
+          }
           
-          logoImg.onerror = () => {
-            // If logo fails to load, continue without it
-            resolve(false);
-          };
+          ctx.drawImage(
+            logoImg, 
+            centerX - logoSize/2, 
+            centerY - logoSize/2, 
+            logoSize, 
+            logoSize
+          );
+          ctx.restore();
           
-          logoImg.src = logoPreview;
-        });
+        } catch (error) {
+          console.warn('Failed to add logo to download:', error);
+          toast.warning("Logo could not be added to download, proceeding without it");
+        }
       }
 
-      // Download the image
-      const pngUrl = canvas.toDataURL("image/png", 1.0);
+      // Convert canvas to data URL and trigger download
+      const dataUrl = canvas.toDataURL("image/png", 1.0);
+      
+      // Create a temporary link and trigger download
       const link = document.createElement("a");
-      link.href = pngUrl;
-      link.download = `qr-code-${getSelectedTemplate().name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.download = `qr-code-${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+      }, 100);
       
       toast.success("QR code downloaded successfully!");
       
     } catch (error) {
       console.error("Download failed:", error);
-      
-      // Fallback: Use the QRCodeSVG to create a data URL
-      try {
-        // Create a temporary div to render the QR code
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        document.body.appendChild(tempDiv);
-        
-        // Render QR code to temp div
-        const { QRCodeSVG } = await import('qrcode.react');
-        import('react-dom').then((ReactDOM) => {
-          ReactDOM.render(
-            <QRCodeSVG
-              value={qrCodeData}
-              size={qrConfig.size}
-              bgColor={qrConfig.colorScheme === "custom" ? customColors.light : getSelectedColorScheme().background}
-              fgColor={qrConfig.colorScheme === "custom" ? customColors.dark : getSelectedColorScheme().primary}
-              level={qrConfig.errorCorrection}
-              marginSize={qrConfig.margin}
-            />,
-            tempDiv
-          );
-          
-          // Give React time to render
-          setTimeout(() => {
-            const svgElement = tempDiv.querySelector('svg');
-            if (svgElement) {
-              const svgString = new XMLSerializer().serializeToString(svgElement);
-              const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-              const url = URL.createObjectURL(svgBlob);
-              
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = `qr-code-${getSelectedTemplate().name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.svg`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-              
-              toast.success("QR code downloaded as SVG!");
-            }
-            
-            document.body.removeChild(tempDiv);
-          }, 100);
-        });
-      } catch (fallbackError) {
-        console.error("Fallback download failed:", fallbackError);
-        toast.error("Failed to download QR code. Please try generating it again.");
-      }
+      toast.error("Failed to download QR code");
+    } finally {
+      setIsGenerating(false);
     }
-  }, [qrCodeData, qrConfig, customColors, logoPreview]);
+  };
 
-  // Copy QR code to clipboard
   const copyQRCode = async () => {
-    if (!qrCodeData) {
+    if (!qrCodeDataUrl) {
       toast.error("Please generate a QR code first");
       return;
     }
 
     try {
-      // Create a canvas to copy as image
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        toast.error("Failed to create canvas context");
-        return;
-      }
-
-      canvas.width = qrConfig.size;
-      canvas.height = qrConfig.size;
-
-      // Get colors
-      const colorScheme = getSelectedColorScheme();
-      const bgColor = qrConfig.colorScheme === "custom" ? customColors.light : colorScheme.background;
-
-      // Fill background
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, qrConfig.size, qrConfig.size);
-
-      // Try to get the SVG from the preview
-      const qrContainer = qrContainerRef.current;
-      if (qrContainer) {
-        const svgElement = qrContainer.querySelector('svg');
-        if (svgElement) {
-          const svgString = new XMLSerializer().serializeToString(svgElement);
-          const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-          const url = URL.createObjectURL(svgBlob);
-          
-          const img = new Image();
-          await new Promise((resolve, reject) => {
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0, qrConfig.size, qrConfig.size);
-              URL.revokeObjectURL(url);
-              resolve(true);
-            };
-            img.onerror = () => {
-              URL.revokeObjectURL(url);
-              reject(new Error('Failed to load image'));
-            };
-            img.src = url;
-          });
-        }
-      }
-
-      // Convert canvas to blob and copy
-      canvas.toBlob(async (blob) => {
-        if (blob) {
-          try {
-            await navigator.clipboard.write([
-              new ClipboardItem({
-                'image/png': blob
-              })
-            ]);
-            setCopied(true);
-            toast.success("QR code copied to clipboard!");
-            setTimeout(() => setCopied(false), 2000);
-          } catch (error) {
-            console.error("Copy to clipboard failed:", error);
-            toast.error("Failed to copy QR code");
-          }
-        }
-      }, 'image/png');
-    } catch (error) {
-      console.error("Copy failed:", error);
+      const response = await fetch(qrCodeDataUrl);
+      const blob = await response.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+      setCopied(true);
+      toast.success("QR Code copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Copy failed:", err);
       toast.error("Failed to copy QR code");
     }
   };
 
-  // Quick actions
-  const quickActions = [
-    { label: "Generate QR", icon: <QrCode className="w-4 h-4" />, action: generateQRCode },
-    { label: "Download", icon: <Download className="w-4 h-4" />, action: downloadQRCode },
-    { label: copied ? "Copied!" : "Copy", icon: copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />, action: copyQRCode },
-    { label: "Reset", icon: <RefreshCw className="w-4 h-4" />, action: () => {
-      setContent("");
-      setQrCodeData("");
-      setLogoFile(null);
-      setLogoPreview("");
-      setFormData({});
-      setQrConfig({
-        size: 300,
-        margin: 4,
-        errorCorrection: "H",
-        colorScheme: "default",
-        includeLogo: false,
-        logoSize: 40,
-        roundedCorners: true,
-        dotStyle: "rounded"
-      });
-      toast.info("All settings reset");
-    }},
-  ];
-
-  // Initialize with default template
-  useEffect(() => {
-    const defaultTemplate = templates[0];
-    setContent(defaultTemplate.defaultContent);
-    if (defaultTemplate.customForm) {
-      const initialData: FormData = {};
-      defaultTemplate.customForm.fields.forEach(field => {
-        initialData[field.name] = '';
-      });
-      setFormData(initialData);
-    }
-  }, []);
+  const resetGenerator = () => {
+    setContent("");
+    setLogo(null);
+    setQrCodeDataUrl(null);
+    setSelectedTemplate("website");
+    setFormData({});
+    setQrSettings({
+      size: 400,
+      margin: 2,
+      errorCorrection: "H",
+      colorScheme: "default",
+      includeLogo: false,
+      logoSize: 5,
+      roundedCorners: true,
+    });
+    setCustomColors({
+      dark: "#000000",
+      light: "#ffffff",
+    });
+    toast.info("Generator reset");
+  };
 
   // Render form fields for selected template
   const renderTemplateForm = () => {
@@ -1284,14 +1264,28 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
     
     if (!template.customForm) {
       return (
-        <Textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder={template.placeholder}
-          className="min-h-[120px] bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 transition-all duration-300"
-          rows={4}
-        />
+        <div className="space-y-4">
+          <Label htmlFor="content" className="text-sm font-medium text-foreground">
+            {template.name} Content
+          </Label>
+          <Input
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder={template.placeholder}
+            className="bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 transition-all duration-300"
+          />
+          {content && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 bg-slate-800/30 rounded-lg border border-slate-700"
+            >
+              <p className="text-sm text-slate-400 mb-1">Generated QR Code Content:</p>
+              <p className="text-sm text-slate-300 font-mono break-all text-xs">{content}</p>
+            </motion.div>
+          )}
+        </div>
       );
     }
 
@@ -1301,7 +1295,7 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
           if (field.type === 'select') {
             return (
               <div key={field.name} className="space-y-2">
-                <Label htmlFor={field.name} className="text-slate-300 hover:text-white transition-colors">
+                <Label htmlFor={field.name} className="text-sm text-foreground">
                   {field.label}
                   {field.required && <span className="text-red-400 ml-1">*</span>}
                 </Label>
@@ -1310,12 +1304,12 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
                   onValueChange={(value) => handleFormFieldChange(field.name, value)}
                   required={field.required}
                 >
-                  <SelectTrigger className="bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 hover:bg-slate-800/70 transition-all duration-300">
+                  <SelectTrigger className="bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 transition-all">
                     <SelectValue placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`} />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700 text-slate-100">
                     {field.options?.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="hover:bg-slate-700/50 transition-colors">
+                      <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
                     ))}
@@ -1328,7 +1322,7 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
           if (field.type === 'textarea') {
             return (
               <div key={field.name} className="space-y-2">
-                <Label htmlFor={field.name} className="text-slate-300 hover:text-white transition-colors">
+                <Label htmlFor={field.name} className="text-sm text-foreground">
                   {field.label}
                   {field.required && <span className="text-red-400 ml-1">*</span>}
                 </Label>
@@ -1337,7 +1331,7 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
                   value={formData[field.name] || ''}
                   onChange={(e) => handleFormFieldChange(field.name, e.target.value)}
                   placeholder={field.placeholder}
-                  className="min-h-[100px] bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 transition-all duration-300"
+                  className="min-h-[100px] bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 transition-all"
                   required={field.required}
                 />
               </div>
@@ -1346,7 +1340,7 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
 
           return (
             <div key={field.name} className="space-y-2">
-              <Label htmlFor={field.name} className="text-slate-300 hover:text-white transition-colors">
+              <Label htmlFor={field.name} className="text-sm text-foreground">
                 {field.label}
                 {field.required && <span className="text-red-400 ml-1">*</span>}
               </Label>
@@ -1356,284 +1350,600 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
                 value={formData[field.name] || ''}
                 onChange={(e) => handleFormFieldChange(field.name, e.target.value)}
                 placeholder={field.placeholder}
-                className="bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 hover:bg-slate-800/70 transition-all duration-300"
+                className="bg-slate-800/50 border-slate-700 text-slate-100 hover:border-blue-500/50 transition-all"
                 required={field.required}
                 pattern={field.pattern}
               />
-              {field.pattern && (
-                <p className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
-                  Format: {field.name === 'phone' ? '+1234567890' : 
-                          field.name === 'latitude' ? '40.7128' : 
-                          field.name === 'longitude' ? '-74.0060' : ''}
-                </p>
-              )}
             </div>
           );
         })}
         
-        {/* Preview of generated content */}
         {content && (
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-4 p-3 bg-slate-800/30 rounded-lg border border-slate-700 hover:border-blue-500/30 transition-all duration-300"
+            className="mt-4 p-3 bg-slate-800/30 rounded-lg border border-slate-700"
           >
-            <p className="text-sm text-slate-400 mb-1 hover:text-slate-300 transition-colors">Generated QR Code Content:</p>
-            <p className="text-sm text-slate-300 font-mono break-all">{content}</p>
+            <p className="text-sm text-slate-400 mb-1">Generated QR Code Content:</p>
+            <p className="text-sm text-slate-300 font-mono break-all text-xs">{content}</p>
           </motion.div>
         )}
       </div>
     );
   };
 
+  // Render mobile modal content
+  const renderMobileModalContent = () => {
+    switch (activeModal) {
+      case 'templates':
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Quick Templates</h3>
+              <p className="text-slate-300 text-sm">Select a template</p>
+            </div>
+            
+            <div className="grid grid-cols-4 gap-3">
+              {templates.slice(0, 12).map((template) => (
+                <motion.button
+                  key={template.id}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleTemplateSelect(template.id)}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${
+                    selectedTemplate === template.id
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 border-2 border-blue-400"
+                      : "bg-slate-800/50 border border-slate-700 hover:border-blue-500/50"
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg ${
+                    selectedTemplate === template.id ? "bg-white/20" : "bg-slate-700/50"
+                  }`}>
+                    {template.icon}
+                  </div>
+                  <span className="text-xs font-medium text-white text-center">{template.name}</span>
+                </motion.button>
+              ))}
+            </div>
+            
+            {templates.length > 12 && (
+              <div className="grid grid-cols-4 gap-3">
+                {templates.slice(12, 24).map((template) => (
+                  <motion.button
+                    key={template.id}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleTemplateSelect(template.id)}
+                    className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${
+                      selectedTemplate === template.id
+                        ? "bg-gradient-to-r from-blue-600 to-purple-600 border-2 border-blue-400"
+                        : "bg-slate-800/50 border border-slate-700 hover:border-blue-500/50"
+                    }`}
+                  >
+                    <div className={`p-2 rounded-lg ${
+                      selectedTemplate === template.id ? "bg-white/20" : "bg-slate-700/50"
+                    }`}>
+                      {template.icon}
+                    </div>
+                    <span className="text-xs font-medium text-white text-center">{template.name}</span>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+        
+      case 'colors':
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Color Schemes</h3>
+              <p className="text-slate-300 text-sm">Choose colors for your QR code</p>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-3">
+              {colorSchemes.map((scheme) => (
+                <motion.button
+                  key={scheme.id}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setQrSettings(prev => ({ ...prev, colorScheme: scheme.id }))}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 border-2 transition-all ${
+                    qrSettings.colorScheme === scheme.id
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-slate-700 bg-slate-800/50 hover:border-purple-500/50'
+                  }`}
+                >
+                  <div className="w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center">
+                    {scheme.gradient ? (
+                      <div 
+                        className="w-full h-full"
+                        style={{ background: scheme.gradient }}
+                      />
+                    ) : (
+                      <>
+                        <div 
+                          className="w-full h-full"
+                          style={{ backgroundColor: scheme.dark }}
+                        />
+                        <div 
+                          className="w-1/2 h-full"
+                          style={{ backgroundColor: scheme.light }}
+                        />
+                      </>
+                    )}
+                  </div>
+                  <span className="text-xs font-medium text-white text-center">{scheme.name}</span>
+                </motion.button>
+              ))}
+            </div>
+            
+            {qrSettings.colorScheme === "custom" && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-4 pt-4 border-t border-slate-700/50"
+              >
+                <h4 className="font-medium text-slate-300 text-center">Custom Colors</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs text-slate-300">QR Color</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={customColors.dark}
+                        onChange={(e) => setCustomColors(prev => ({ ...prev, dark: e.target.value }))}
+                        className="w-8 h-8 cursor-pointer rounded-lg overflow-hidden border-2 border-slate-700"
+                      />
+                      <Input
+                        value={customColors.dark}
+                        onChange={(e) => setCustomColors(prev => ({ ...prev, dark: e.target.value }))}
+                        className="text-sm h-8"
+                        placeholder="#000000"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs text-slate-300">Background</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={customColors.light}
+                        onChange={(e) => setCustomColors(prev => ({ ...prev, light: e.target.value }))}
+                        className="w-8 h-8 cursor-pointer rounded-lg overflow-hidden border-2 border-slate-700"
+                      />
+                      <Input
+                        value={customColors.light}
+                        onChange={(e) => setCustomColors(prev => ({ ...prev, light: e.target.value }))}
+                        className="text-sm h-8"
+                        placeholder="#FFFFFF"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        );
+        
+      case 'qr-settings':
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-white mb-2">QR Settings</h3>
+              <p className="text-slate-300 text-sm">Adjust QR code parameters</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-slate-300">Size: {qrSettings.size}px</Label>
+                  <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300">
+                    {qrSettings.size < 300 ? 'Small' : qrSettings.size < 500 ? 'Medium' : 'Large'}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="200"
+                  max="600"
+                  step="50"
+                  value={qrSettings.size}
+                  onChange={(e) => setQrSettings(prev => ({ ...prev, size: parseInt(e.target.value) }))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-sm text-slate-300">Error Correction</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {(["L", "M", "Q", "H"] as const).map((level) => (
+                    <Button
+                      key={level}
+                      size="sm"
+                      variant={qrSettings.errorCorrection === level ? "default" : "outline"}
+                      onClick={() => setQrSettings(prev => ({ ...prev, errorCorrection: level }))}
+                      className={`text-xs ${
+                        qrSettings.errorCorrection === level 
+                          ? 'bg-emerald-600 hover:bg-emerald-700' 
+                          : 'border-slate-700'
+                      }`}
+                    >
+                      {level}
+                      <span className="ml-1 text-xs opacity-80">
+                        {level === "L" ? "7%" : level === "M" ? "15%" : level === "Q" ? "25%" : "30%"}
+                      </span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-slate-300">Margin: {qrSettings.margin}px</Label>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  step="1"
+                  value={qrSettings.margin}
+                  onChange={(e) => setQrSettings(prev => ({ ...prev, margin: parseInt(e.target.value) }))}
+                  className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+        );
+        
+      case 'logo':
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-white mb-2">Logo Settings</h3>
+              <p className="text-slate-300 text-sm">Add or customize your logo</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm text-slate-300">Include Logo</Label>
+                <Switch
+                  checked={qrSettings.includeLogo}
+                  onCheckedChange={(checked) => setQrSettings(prev => ({ ...prev, includeLogo: checked }))}
+                  disabled={!logo}
+                  className="data-[state=checked]:bg-pink-500"
+                />
+              </div>
+              
+              {logo ? (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="space-y-4"
+                >
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="relative">
+                      <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-700 flex items-center justify-center bg-white p-3">
+                        <img
+                          src={logo}
+                          alt="Logo preview"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-xs"
+                      >
+                        Change
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={removeLogo}
+                        className="text-xs"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                  </div>
+                  
+                  {qrSettings.includeLogo && (
+                    <div className="space-y-2 pt-4 border-t border-slate-700/50">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-sm text-slate-300">Logo Size: {qrSettings.logoSize}%</Label>
+                        <span className="text-xs text-slate-400">Max 25%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="15"
+                        max="25"
+                        step="1"
+                        value={qrSettings.logoSize}
+                        onChange={(e) => setQrSettings(prev => ({ ...prev, logoSize: parseInt(e.target.value) }))}
+                        className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                      />
+                      <div className="flex justify-between text-xs text-slate-400">
+                        <span>15%</span>
+                        <span>20%</span>
+                        <span>25%</span>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  whileTap={{ scale: 0.98 }}
+                  className="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center cursor-pointer hover:border-pink-500 hover:bg-slate-800/30 transition-all"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-8 h-8 mx-auto text-slate-400 mb-3" />
+                  <p className="text-sm text-slate-300">Tap to upload logo</p>
+                  <p className="text-xs text-slate-400 mt-1">PNG recommended</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </motion.div>
+              )}
+            </div>
+          </div>
+        );
+        
+      default:
+        return null;
+    }
+  };
+
+  // Initialize with default template
+  useEffect(() => {
+    const defaultTemplate = templates[0];
+    setSelectedTemplate("website");
+    setContent("");
+    setFormData({});
+  }, []);
+
   return (
-    <div className="min-h-screen bg-transparent text-slate-100">
-      <div className="max-w-7xl mx-auto p-4 md:p-0 space-y-6">
-        {/* Header */}
+    <div className="min-h-screen bg-transparent text-slate-100 relative">
+      {/* Mobile Notification at Top */}
+      {isMobile && showNotification && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-4 left-4 right-4 z-50 lg:hidden"
+        >
+          <div className="glass backdrop-blur-lg rounded-xl p-4 border border-blue-500/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Bell className="w-5 h-5 text-blue-400" />
+                <div>
+                  <p className="text-sm font-medium text-white">Live Preview Active</p>
+                  <p className="text-xs text-slate-300">Changes update QR code instantly</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowNotification(false)}
+                className="p-1 hover:bg-slate-800/50 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4 text-slate-400" />
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Mobile Header */}
+      {isMobile && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center space-y-4 pt-4 md:pt-8"
+          className="lg:hidden sticky top-0 z-40 bg-slate-900/90 backdrop-blur-lg border-b border-slate-700/50 px-4 py-3 md:mt-20"
         >
-          <div className="flex flex-col items-center gap-3">
-            <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-              QR Code Generator
-            </h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-blue-400" />
+              <h1 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                QR Generator
+              </h1>
+            </div>
+            <div className="text-sm text-slate-400">
+              {getSelectedTemplate().name}
+            </div>
           </div>
-          <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
-            Create custom QR codes for websites, social media, contacts, WiFi, and more. 100% local & secure.
-          </p>
         </motion.div>
+      )}
+
+      <div className="max-w-7xl mx-auto p-4 md:p-0 space-y-6 pt-6">
+        {/* Desktop Header */}
+        {!isMobile && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="hidden lg:block text-center space-y-4 pt-8"
+          >
+            <div className="flex flex-col items-center gap-3">
+              <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                QR Code Generator
+              </h1>
+            </div>
+            <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto">
+              Create custom QR codes for websites, social media, contacts, WiFi, and more. 100% local & secure.
+            </p>
+          </motion.div>
+        )}
+
+        {/* Mobile Quick Navigation */}
+        {isMobile && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="lg:hidden glass backdrop-blur-sm rounded-2xl p-4 border border-slate-700/50 mb-6 mt-4"
+          >
+            <div className="grid grid-cols-4 gap-2">
+              {['templates', 'colors', 'qr-settings', 'logo'].map((section) => (
+                <motion.button
+                  key={section}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveModal(section as ModalSection)}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${
+                    activeModal === section
+                      ? section === 'templates'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600'
+                        : section === 'colors'
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600'
+                        : section === 'qr-settings'
+                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600'
+                        : 'bg-gradient-to-r from-pink-600 to-rose-600'
+                      : 'bg-slate-800/50 hover:bg-slate-800/70 border border-slate-700/50'
+                  }`}
+                >
+                  {section === 'templates' && <LayoutGrid className="w-4 h-4" />}
+                  {section === 'colors' && <Palette className="w-4 h-4" />}
+                  {section === 'qr-settings' && <Sliders className="w-4 h-4" />}
+                  {section === 'logo' && <ImageIcon className="w-4 h-4" />}
+                  <span className="text-xs font-medium text-white">
+                    {section === 'templates' ? 'Templates' : 
+                     section === 'colors' ? 'Colors' : 
+                     section === 'qr-settings' ? 'Settings' : 'Logo'}
+                  </span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
-          {/* Left Panel - Content & Templates */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Content Input */}
+          {/* Left Panel - Content & Preview */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Content Input - REMOVED Quick Templates from top */}
             <motion.div 
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: isMobile ? 0 : -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4 }}
-              className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all duration-500"
+              className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all"
             >
-              <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-white">
-                <FileText className="w-5 h-5 text-blue-400" />
-                QR Code Content
-              </h3>
-              
               <div className="space-y-6">
-                {/* Template Selection */}
-               <div className="space-y-4">
-                  <h4 className="font-semibold flex items-center gap-2 text-slate-300">
-                    <Zap className="w-4 h-4 text-blue-400" />
-                    Quick Templates
-                  </h4>
-
-                  {/* Grid */}
-                  <motion.div 
-                    layout
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"
-                  >
-                    {visibleTemplates.map((template) => (
-                      <motion.button
-                        key={template.id}
-                        layout
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handleTemplateSelect(template.id)}
-                        className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all duration-300 shadow-lg ${
-                          selectedTemplate === template.id
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 border-2 border-blue-400 shadow-blue-500/30'
-                            : 'bg-slate-800/50 border border-slate-700 hover:border-blue-500/50 hover:bg-slate-800/70 shadow-slate-900/30'
-                        }`}
-                      >
-                        <motion.div 
-                          className={`p-2 rounded-lg transition-all duration-300 ${
-                            selectedTemplate === template.id
-                              ? 'bg-white/20'
-                              : 'bg-slate-700/50 hover:bg-slate-600/50'
-                          }`}
-                          whileHover={{ rotate: 5 }}
-                        >
-                          {template.icon}
-                        </motion.div>
-                        <span className="text-sm font-medium text-white">{template.name}</span>
-                        <span className="text-xs text-slate-300 text-center">{template.description}</span>
-                      </motion.button>
-                    ))}
-                  </motion.div>
-
-                  {/* Toggle button */}
-                  {templates.length > 4 && (
-                    <div className="flex justify-center">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setShowAll(!showAll)}
-                        className="text-sm font-medium text-blue-400 hover:text-blue-300 mt-2"
-                      >
-                        {showAll ? "Show Less" : "Show More"}
-                      </motion.button>
-                    </div>
-                  )}
-                </div>
-
-
                 {/* Content Input Area */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="content" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-                      <MessageSquare className="w-4 h-4 text-blue-400" />
-                      <span className="font-medium">
+                    <Label className="font-medium text-slate-300">
+                      <span className="flex items-center gap-2">
+                        {getSelectedTemplate().icon}
                         {getSelectedTemplate().name} Content
                       </span>
                     </Label>
-                    <div className="text-sm text-slate-400 hover:text-slate-300 transition-colors">
-                      {getSelectedTemplate().description}
-                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setActiveModal('templates')}
+                      className="gap-2"
+                    >
+                      <LayoutGrid className="w-3 h-3" />
+                      {isMobile ? "Templates" : "Change Template"}
+                    </Button>
                   </div>
                   
                   {renderTemplateForm()}
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="text-slate-400 hover:text-slate-300 transition-colors">
-                      Template: <span className="text-blue-300">{getSelectedTemplate().name}</span>
-                    </div>
-                    <div className="text-slate-400 hover:text-slate-300 transition-colors">
-                      {content.length} characters
-                    </div>
-                  </div>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="flex flex-wrap gap-3">
-                  {quickActions.map((action, index) => (
-                    <motion.div
-                      key={index}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="flex-1 min-w-[120px]"
-                    >
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-700/50">
+                  <Button
+                    onClick={generateQRCode}
+                    disabled={isGenerating || !content}
+                    className="flex-1 gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        <QrCode className="w-4 h-4" />
+                        {qrCodeDataUrl ? 'Update QR Code' : 'Generate QR Code'}
+                      </>
+                    )}
+                  </Button>
+                  
+                  {qrCodeDataUrl && (
+                    <>
                       <Button
-                        onClick={action.action}
-                        disabled={isGenerating && index === 0}
-                        className={`w-full transition-all duration-300 ${
-                          index === 0 
-                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-blue-500/30'
-                            : index === 1
-                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-emerald-500/30'
-                            : index === 2
-                            ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 shadow-lg hover:shadow-amber-500/30'
-                            : 'bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 shadow-lg hover:shadow-slate-500/30'
-                        }`}
+                        onClick={downloadQRCode}
+                        className="flex-1 gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
                       >
-                        {isGenerating && index === 0 ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                        ) : (
-                          <motion.div
-                            whileHover={{ rotate: 15 }}
-                            transition={{ type: "spring", stiffness: 300 }}
-                          >
-                            {action.icon}
-                          </motion.div>
-                        )}
-                        <span className="ml-2">{action.label}</span>
+                        <Download className="w-4 h-4" />
+                        Download
                       </Button>
-                    </motion.div>
-                  ))}
+                      <Button
+                        onClick={copyQRCode}
+                        className="flex-1 gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        {copied ? "Copied!" : "Copy"}
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>
 
             {/* QR Code Preview */}
-            {showPreview && (
+            {qrCodeDataUrl && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
-                className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all duration-500"
+                className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-semibold flex items-center gap-2 text-white">
-                    <Eye className="w-5 h-5 text-blue-400" />
-                    QR Code Preview
-                  </h3>
-                </div>
-                
                 <div className="flex flex-col items-center justify-center space-y-6">
                   {/* QR Code Display */}
                   <motion.div 
-                    className={`p-8 rounded-2xl transition-all duration-500 ${
-                      getSelectedColorScheme().isDark 
+                    className={`p-6 rounded-2xl transition-all ${
+                      getColors().light === "#18181b" 
                         ? 'bg-gradient-to-br from-slate-900 to-slate-800' 
                         : 'bg-gradient-to-br from-white to-slate-100'
-                    } shadow-2xl hover:shadow-3xl hover:shadow-blue-500/10`}
+                    } shadow-2xl`}
                     whileHover={{ scale: 1.02 }}
                   >
-                    <div className="relative" ref={qrContainerRef}>
-                      {qrCodeData && (
-                        <motion.div 
-                          className="relative"
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <QRCodeSVG
-                            value={qrCodeData}
-                            size={qrConfig.size}
-                            bgColor={qrConfig.colorScheme === "custom" ? customColors.light : getSelectedColorScheme().background}
-                            fgColor={qrConfig.colorScheme === "custom" ? customColors.dark : getSelectedColorScheme().primary}
-                            level={qrConfig.errorCorrection}
-                            marginSize={qrConfig.margin}
-                            className="rounded-lg shadow-2xl"
-                          />
-                          
-                          {/* Logo Overlay */}
-                          {qrConfig.includeLogo && logoPreview && (
-                            <motion.div 
-                              className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                              style={{
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
-                              }}
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 200 }}
-                            >
-                              <div className="relative group">
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                                <img
-                                  src={logoPreview}
-                                  alt="Logo"
-                                  className="rounded-lg relative z-10 transform group-hover:scale-105 transition-transform duration-300"
-                                  style={{
-                                    width: qrConfig.logoSize,
-                                    height: qrConfig.logoSize,
-                                    backgroundColor: getSelectedColorScheme().isDark ? '#1e293b' : '#f8fafc',
-                                    padding: '8px',
-                                  }}
-                                />
-                              </div>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </div>
+                    <img
+                      src={qrCodeDataUrl}
+                      alt="Generated QR Code"
+                      className="w-64 h-64"
+                    />
                   </motion.div>
                   
                   {/* Preview Info */}
-                  <div className="text-center space-y-2">
-                    <p className="text-slate-300">
+                  <div className="text-center space-y-3">
+                    <p className="text-sm text-slate-300">
                       Scan this QR code with your phone camera
                     </p>
-                    <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
-                      <span className="px-3 py-1 bg-slate-800/50 rounded-full hover:bg-slate-700/50 transition-colors">Size: {qrConfig.size}px</span>
-                      <span className="text-blue-400">•</span>
-                      <span className="px-3 py-1 bg-slate-800/50 rounded-full hover:bg-slate-700/50 transition-colors">Error Correction: {qrConfig.errorCorrection}</span>
-                      <span className="text-blue-400">•</span>
-                      <span className="px-3 py-1 bg-slate-800/50 rounded-full hover:bg-slate-700/50 transition-colors">Template: {getSelectedTemplate().name}</span>
+                    <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+                      <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full hover:bg-blue-500/30 transition-colors">
+                        Size: {qrSettings.size}px
+                      </span>
+                      <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full hover:bg-emerald-500/30 transition-colors">
+                        Error: {qrSettings.errorCorrection}
+                      </span>
+                      {qrSettings.includeLogo && (
+                        <span className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full hover:bg-pink-500/30 transition-colors">
+                          With Logo ({qrSettings.logoSize}%)
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1641,498 +1951,486 @@ const visibleTemplates = showAll ? templates : templates.slice(0, 5);
             )}
           </div>
 
-          {/* Right Panel - Customization */}
-          <div className="space-y-6">
-            {/* Color Schemes */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4 }}
-              className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-purple-500/30 transition-all duration-500"
-            >
-              <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-white">
-                <Palette className="w-5 h-5 text-purple-400" />
-                Color Schemes
-              </h3>
-              
-              <div className="space-y-6">
-                {/* Color Scheme Selection */}
-                <div className="space-y-4">
-                  <Label className="font-medium text-slate-300 hover:text-white transition-colors">Choose a Color Scheme</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {colorSchemes.map((scheme) => (
-                      <motion.button
-                        key={scheme.id}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => setQrConfig(prev => ({ ...prev, colorScheme: scheme.id }))}
-                        className={`p-3 rounded-xl flex flex-col items-center gap-2 border-2 transition-all duration-300 shadow-lg ${
-                          qrConfig.colorScheme === scheme.id
-                            ? 'border-purple-500 bg-purple-500/10 shadow-purple-500/20'
-                            : 'border-slate-700 bg-slate-800/50 hover:border-purple-500/50 hover:bg-slate-800/70 shadow-slate-900/30'
-                        }`}
-                      >
-                        <motion.div 
-                          className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center group"
-                          whileHover={{ rotate: 5 }}
-                        >
-                          {scheme.gradient ? (
-                            <div 
-                              className="w-full h-full"
-                              style={{ background: scheme.gradient }}
-                            />
-                          ) : (
-                            <>
-                              <div 
-                                className="w-full h-full"
-                                style={{ backgroundColor: scheme.primary }}
-                              />
-                              <div 
-                                className="w-1/2 h-full"
-                                style={{ backgroundColor: scheme.secondary }}
-                              />
-                            </>
-                          )}
-                        </motion.div>
-                        <span className="text-sm font-medium text-white">{scheme.name}</span>
-                      </motion.button>
-                    ))}
-                  </div>
+          {/* Right Panel - Settings (Desktop Only) */}
+          {!isMobile && (
+            <div className="space-y-6">
+              {/* Settings Navigation */}
+            
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass backdrop-blur-sm rounded-2xl p-4 border border-slate-700/50"
+              >
+                <div className="grid grid-cols-4 gap-2">
+                  {['templates', 'colors', 'qr-settings', 'logo'].map((section) => (
+                    <motion.button
+                      key={section}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setActiveModal(section as ModalSection)}
+                      className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all ${
+                        activeModal === section
+                          ? section === 'templates'
+                            ? 'bg-gradient-to-r from-blue-600 to-purple-600'
+                            : section === 'colors'
+                            ? 'bg-gradient-to-r from-purple-600 to-pink-600'
+                            : section === 'qr-settings'
+                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600'
+                            : 'bg-gradient-to-r from-pink-600 to-rose-600'
+                          : 'bg-slate-800/50 hover:bg-slate-800/70 border border-slate-700/50'
+                      }`}
+                    >
+                      {section === 'templates' && <LayoutGrid className="w-4 h-4" />}
+                      {section === 'colors' && <Palette className="w-4 h-4" />}
+                      {section === 'qr-settings' && <Sliders className="w-4 h-4" />}
+                      {section === 'logo' && <ImageIcon className="w-4 h-4" />}
+                      <span className="text-xs font-medium text-white">
+                        {section === 'templates' ? 'Templates' : 
+                         section === 'colors' ? 'Colors' : 
+                         section === 'qr-settings' ? 'Settings' : 'Logo'}
+                      </span>
+                    </motion.button>
+                  ))}
                 </div>
+              </motion.div>
 
-                {/* Custom Color Picker */}
-                {qrConfig.colorScheme === "custom" && (
+              {/* Settings Content */}
+              {activeModal && (
+                <AnimatePresence mode="wait">
                   <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-4 pt-4 border-t border-slate-700/50"
+                    key={activeModal}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 min-h-[400px]"
                   >
-                    <Label className="font-medium text-slate-300 hover:text-white transition-colors">Custom Colors</Label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="darkColor" className="text-sm text-slate-300 hover:text-white transition-colors">QR Color</Label>
-                        <div className="flex items-center gap-3">
-                          <motion.div whileHover={{ scale: 1.1 }} className="relative group">
-                            <input
-                              id="darkColor"
-                              type="color"
-                              value={customColors.dark}
-                              onChange={(e) => setCustomColors(prev => ({ ...prev, dark: e.target.value }))}
-                              className="w-10 h-10 cursor-pointer rounded-lg overflow-hidden border-2 border-slate-700 hover:border-purple-500 transition-colors"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity" />
-                          </motion.div>
-                          <Input
-                            value={customColors.dark}
-                            onChange={(e) => setCustomColors(prev => ({ ...prev, dark: e.target.value }))}
-                            className="flex-1 bg-slate-800/50 border-slate-700 text-slate-100 hover:border-purple-500/50 hover:bg-slate-800/70 transition-all"
-                            placeholder="#000000"
-                          />
+                    {activeModal === 'templates' && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Templates ({templates.length})</h3>
+                        <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-blue-800 [&::-webkit-scrollbar-thumb]:rounded-full">
+                          {templates.map((template) => (
+                            <motion.button
+                              key={template.id}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => handleTemplateSelect(template.id)}
+                              className={`p-3 rounded-xl flex items-center gap-2 transition-all ${
+                                selectedTemplate === template.id
+                                  ? "bg-gradient-to-r from-blue-600 to-purple-600 border border-blue-400"
+                                  : "bg-slate-800/50 border border-slate-700 hover:border-blue-500/50"
+                              }`}
+                            >
+                              <div className={`p-1 rounded-md ${
+                                selectedTemplate === template.id ? "bg-white/20" : "bg-slate-700/50"
+                              }`}>
+                                {template.icon}
+                                
+                              </div>
+                              <span className="text-sm font-medium text-white flex-1 text-left">{template.name}</span>
+                            </motion.button>
+                          ))}
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lightColor" className="text-sm text-slate-300 hover:text-white transition-colors">Background</Label>
-                        <div className="flex items-center gap-3">
-                          <motion.div whileHover={{ scale: 1.1 }} className="relative group">
+                    )}
+
+                    {activeModal === 'colors' && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-white">Color Scheme</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                          {colorSchemes.map((scheme) => (
+                            <motion.button
+                              key={scheme.id}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setQrSettings(prev => ({ ...prev, colorScheme: scheme.id }))}
+                              className={`p-3 rounded-xl flex flex-col items-center gap-2 border-2 transition-all ${
+                                qrSettings.colorScheme === scheme.id
+                                  ? 'border-purple-500 bg-purple-500/10'
+                                  : 'border-slate-700 bg-slate-800/50 hover:border-purple-500/50'
+                              }`}
+                            >
+                              <div className="w-10 h-10 rounded-lg overflow-hidden">
+                                {scheme.gradient ? (
+                                  <div 
+                                    className="w-full h-full"
+                                    style={{ background: scheme.gradient }}
+                                  />
+                                ) : scheme.id === "custom" ? (
+                                  <div className="w-full h-full flex">
+                                    <div 
+                                      className="w-1/2 h-full"
+                                      style={{ backgroundColor: customColors.dark }}
+                                    />
+                                    <div 
+                                      className="w-1/2 h-full"
+                                      style={{ backgroundColor: customColors.light }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div 
+                                    className="w-full h-full"
+                                    style={{ backgroundColor: scheme.dark }}
+                                  />
+                                )}
+                              </div>
+                              <span className="text-xs font-medium text-white text-center">{scheme.name}</span>
+                            </motion.button>
+                          ))}
+                        </div>
+                        
+                        {qrSettings.colorScheme === "custom" && (
+                          <div className="space-y-4 pt-4 border-t border-slate-700/50">
+                            <h4 className="font-medium text-slate-300">Custom Colors</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label className="text-xs text-slate-300">QR Color</Label>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="color"
+                                    value={customColors.dark}
+                                    onChange={(e) => setCustomColors(prev => ({ ...prev, dark: e.target.value }))}
+                                    className="w-8 h-8 cursor-pointer rounded-lg border border-slate-700"
+                                  />
+                                  <Input
+                                    value={customColors.dark}
+                                    onChange={(e) => setCustomColors(prev => ({ ...prev, dark: e.target.value }))}
+                                    className="text-sm h-8"
+                                    placeholder="#000000"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs text-slate-300">Background</Label>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="color"
+                                    value={customColors.light}
+                                    onChange={(e) => setCustomColors(prev => ({ ...prev, light: e.target.value }))}
+                                    className="w-8 h-8 cursor-pointer rounded-lg border border-slate-700"
+                                  />
+                                  <Input
+                                    value={customColors.light}
+                                    onChange={(e) => setCustomColors(prev => ({ ...prev, light: e.target.value }))}
+                                    className="text-sm h-8"
+                                    placeholder="#FFFFFF"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {activeModal === 'qr-settings' && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-white">QR Settings</h3>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-sm text-slate-300">Size: {qrSettings.size}px</Label>
+                              <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300">
+                                {qrSettings.size < 300 ? 'Small' : qrSettings.size < 500 ? 'Medium' : 'Large'}
+                              </span>
+                            </div>
                             <input
-                              id="lightColor"
-                              type="color"
-                              value={customColors.light}
-                              onChange={(e) => setCustomColors(prev => ({ ...prev, light: e.target.value }))}
-                              className="w-10 h-10 cursor-pointer rounded-lg overflow-hidden border-2 border-slate-700 hover:border-purple-500 transition-colors"
+                              type="range"
+                              min="200"
+                              max="600"
+                              step="50"
+                              value={qrSettings.size}
+                              onChange={(e) => setQrSettings(prev => ({ ...prev, size: parseInt(e.target.value) }))}
+                              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 rounded-lg transition-opacity" />
-                          </motion.div>
-                          <Input
-                            value={customColors.light}
-                            onChange={(e) => setCustomColors(prev => ({ ...prev, light: e.target.value }))}
-                            className="flex-1 bg-slate-800/50 border-slate-700 text-slate-100 hover:border-purple-500/50 hover:bg-slate-800/70 transition-all"
-                            placeholder="#FFFFFF"
-                          />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label className="text-sm text-slate-300">Error Correction</Label>
+                            <div className="grid grid-cols-4 gap-2">
+                              {(["L", "M", "Q", "H"] as const).map((level) => (
+                                <Button
+                                  key={level}
+                                  size="sm"
+                                  variant={qrSettings.errorCorrection === level ? "default" : "outline"}
+                                  onClick={() => setQrSettings(prev => ({ ...prev, errorCorrection: level }))}
+                                  className={`text-xs ${
+                                    qrSettings.errorCorrection === level 
+                                      ? 'bg-emerald-600 hover:bg-emerald-700' 
+                                      : 'border-slate-700'
+                                  }`}
+                                >
+                                  {level}
+                                  <span className="ml-1 text-xs opacity-80">
+                                    {level === "L" ? "7%" : level === "M" ? "15%" : level === "Q" ? "25%" : "30%"}
+                                  </span>
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-sm text-slate-300">Margin: {qrSettings.margin}px</Label>
+                            </div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="10"
+                              step="1"
+                              value={qrSettings.margin}
+                              onChange={(e) => setQrSettings(prev => ({ ...prev, margin: parseInt(e.target.value) }))}
+                              className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
+
+                    {activeModal === 'logo' && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-white">Logo Settings</h3>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-sm text-slate-300">Include Logo</Label>
+                            <Switch
+                              checked={qrSettings.includeLogo}
+                              onCheckedChange={(checked) => setQrSettings(prev => ({ ...prev, includeLogo: checked }))}
+                              disabled={!logo}
+                              className="data-[state=checked]:bg-pink-500"
+                            />
+                          </div>
+                          
+                          {logo ? (
+                            <motion.div 
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="space-y-4"
+                            >
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="relative">
+                                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-slate-700 flex items-center justify-center bg-white p-3">
+                                    <img
+                                      src={logo}
+                                      alt="Logo preview"
+                                      className="w-full h-full object-contain"
+                                    />
+                                  </div>
+                                </div>
+                                
+                                <div className="flex gap-2 mt-4">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="text-xs"
+                                  >
+                                    Change
+                                  </Button>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={removeLogo}
+                                    className="text-xs"
+                                  >
+                                    Remove
+                                  </Button>
+                                </div>
+                                
+                                <input
+                                  ref={fileInputRef}
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleLogoUpload}
+                                  className="hidden"
+                                />
+                              </div>
+                              
+                              {qrSettings.includeLogo && (
+                                <div className="space-y-2 pt-4 border-t border-slate-700/50">
+                                  <div className="flex items-center justify-between">
+                                    <Label className="text-sm text-slate-300">Logo Size: {qrSettings.logoSize}%</Label>
+                                    <span className="text-xs text-slate-400">Max 25%</span>
+                                  </div>
+                                  <input
+                                    type="range"
+                                    min="15"
+                                    max="25"
+                                    step="1"
+                                    value={qrSettings.logoSize}
+                                    onChange={(e) => setQrSettings(prev => ({ ...prev, logoSize: parseInt(e.target.value) }))}
+                                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                                  />
+                                  <div className="flex justify-between text-xs text-slate-400">
+                                    <span>15%</span>
+                                    <span>20%</span>
+                                    <span>25%</span>
+                                  </div>
+                                </div>
+                              )}
+                            </motion.div>
+                          ) : (
+                            <div
+                              className="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center cursor-pointer hover:border-pink-500 hover:bg-slate-800/30 transition-all"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <Upload className="w-8 h-8 mx-auto text-slate-400 mb-3" />
+                              <p className="text-sm text-slate-300">Click to upload logo</p>
+                              <p className="text-xs text-slate-400 mt-1">PNG recommended</p>
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoUpload}
+                                className="hidden"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
-                )}
-              </div>
-            </motion.div>
+                </AnimatePresence>
+              )}
 
-            {/* QR Code Settings */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-500"
-            >
-              <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-white">
-                <Settings className="w-5 h-5 text-emerald-400" />
-                QR Code Settings
-              </h3>
-              
-              <div className="space-y-6">
-                {/* Size Control */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="size" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-                      <Maximize2 className="w-4 h-4 text-emerald-400" />
-                      <span>Size: {qrConfig.size}px</span>
-                    </Label>
-                    <span className={`text-sm px-2 py-1 rounded-full transition-colors ${
-                      qrConfig.size < 200 
-                        ? 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30' 
-                        : qrConfig.size < 400 
-                        ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
-                        : 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
-                    }`}>
-                      {qrConfig.size < 200 ? 'Small' : qrConfig.size < 400 ? 'Medium' : 'Large'}
-                    </span>
-                  </div>
-                  <input
-                    id="size"
-                    type="range"
-                    min="100"
-                    max="500"
-                    step="10"
-                    value={qrConfig.size}
-                    onChange={(e) => setQrConfig(prev => ({ ...prev, size: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer hover:accent-emerald-500 transition-colors"
-                  />
-                  <div className="flex justify-between text-xs text-slate-400">
-                    <span className="hover:text-slate-300 transition-colors">100px</span>
-                    <span className="hover:text-slate-300 transition-colors">300px</span>
-                    <span className="hover:text-slate-300 transition-colors">500px</span>
-                  </div>
-                </div>
+              {/* Reset Button */}
+              <Button
+                variant="ghost"
+                size="lg"
+                className="w-full gap-2"
+                onClick={resetGenerator}
+              >
+                <RefreshCw className="w-4 h-4" />
+                Reset All Settings
+              </Button>
 
-                {/* Error Correction */}
-                <div className="space-y-3">
-                  <Label className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-                    <Shield className="w-4 h-4 text-emerald-400" />
-                    Error Correction Level
-                  </Label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {(["L", "M", "Q", "H"] as const).map((level) => (
-                      <motion.div key={level} whileHover={{ scale: 1.05 }}>
-                        <Button
-                          variant={qrConfig.errorCorrection === level ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setQrConfig(prev => ({ ...prev, errorCorrection: level }))}
-                          className={`w-full transition-all duration-300 ${
-                            qrConfig.errorCorrection === level 
-                              ? 'bg-emerald-600 hover:bg-emerald-700 shadow-lg hover:shadow-emerald-500/30' 
-                              : 'border-slate-700 hover:border-emerald-500/50 hover:bg-slate-800/70'
-                          }`}
-                        >
-                          {level}
-                          <span className="text-xs ml-1 opacity-80">
-                            {level === "L" ? "7%" : level === "M" ? "15%" : level === "Q" ? "25%" : "30%"}
-                          </span>
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-slate-400 hover:text-slate-300 transition-colors">
-                    Higher levels are more scannable when damaged but create denser codes
-                  </p>
-                </div>
-
-                {/* Margin */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="margin" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-                      <Expand className="w-4 h-4 text-emerald-400" />
-                      <span>Margin: {qrConfig.margin}px</span>
-                    </Label>
-                  </div>
-                  <input
-                    id="margin"
-                    type="range"
-                    min="0"
-                    max="10"
-                    step="1"
-                    value={qrConfig.margin}
-                    onChange={(e) => setQrConfig(prev => ({ ...prev, margin: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer hover:accent-emerald-500 transition-colors"
-                  />
-                  <div className="flex justify-between text-xs text-slate-400">
-                    <span className="hover:text-slate-300 transition-colors">None</span>
-                    <span className="hover:text-slate-300 transition-colors">Normal</span>
-                    <span className="hover:text-slate-300 transition-colors">Wide</span>
+              {/* Security Note */}
+              <div className="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 backdrop-blur-sm rounded-2xl p-4 border border-emerald-700/30">
+                <div className="flex items-start gap-3">
+                  <Shield className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium text-white">Privacy First</p>
+                    <p className="text-xs text-slate-400">
+                      All generation happens locally in your browser
+                    </p>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
+          )}
+        </div>
 
-            {/* Logo Settings */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.2 }}
-              className="hidden glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-pink-500/30 transition-all duration-500"
-            >
-              <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-white">
-                <Image className="w-5 h-5 text-pink-400" />
-                Logo Settings
-              </h3>
+        {/* Mobile Settings Modal */}
+        <AnimatePresence>
+          {isMobile && activeModal && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setActiveModal(null)}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 lg:hidden"
+              />
               
-              <div className="space-y-6">
-                {/* Logo Upload */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="logo" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-                      <Upload className="w-4 h-4 text-pink-400" />
-                      <span>Add Logo</span>
-                    </Label>
-                    <Switch
-                      id="includeLogo"
-                      checked={qrConfig.includeLogo}
-                      onCheckedChange={(checked) => setQrConfig(prev => ({ ...prev, includeLogo: checked }))}
-                      disabled={!logoFile}
-                      className="data-[state=checked]:bg-pink-500 data-[state=checked]:hover:bg-pink-600"
-                    />
+              {/* Modal */}
+              <motion.div
+                initial={{ opacity: 0, y: "100%" }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
+              >
+                <div className="glass backdrop-blur-lg rounded-t-3xl border-t border-x border-slate-700/50 max-h-[80vh] overflow-hidden flex flex-col">
+                  {/* Modal Header */}
+                  <div className="p-4 border-b border-slate-700/50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {activeModal === 'templates' && <LayoutGrid className="w-5 h-5 text-blue-400" />}
+                      {activeModal === 'colors' && <Palette className="w-5 h-5 text-purple-400" />}
+                      {activeModal === 'qr-settings' && <Sliders className="w-5 h-5 text-emerald-400" />}
+                      {activeModal === 'logo' && <ImageIcon className="w-5 h-5 text-pink-400" />}
+                      <h3 className="text-lg font-bold text-white">
+                        {activeModal === 'templates' ? 'Templates' : 
+                         activeModal === 'colors' ? 'Colors' : 
+                         activeModal === 'qr-settings' ? 'QR Settings' : 'Logo'}
+                      </h3>
+                    </div>
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setActiveModal(null)}
+                      className="p-2 rounded-lg hover:bg-slate-800/50 transition-colors"
+                    >
+                      <X className="w-5 h-5 text-slate-400" />
+                    </motion.button>
                   </div>
                   
-                  {logoPreview ? (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="space-y-3"
+                  {/* Modal Content */}
+                  <div className="flex-1 overflow-y-auto p-6">
+                    {renderMobileModalContent()}
+                  </div>
+                  
+                  {/* Modal Footer */}
+                  <div className="p-4 border-t border-slate-700/50">
+                    <motion.button
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setActiveModal(null)}
+                      className="w-full py-3 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl border border-slate-700 text-white font-medium transition-all hover:from-slate-700 hover:to-slate-800"
                     >
-                      <div className="flex items-center justify-center">
-                        <div className="relative group">
-                          <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-lg blur opacity-0 group-hover:opacity-20 transition-opacity duration-500" />
-                          <img
-                            src={logoPreview}
-                            alt="Logo preview"
-                            className="w-32 h-32 object-contain rounded-lg border-2 border-slate-700 group-hover:border-pink-500 relative z-10 transform group-hover:scale-105 transition-all duration-300"
-                          />
-                          <motion.div whileHover={{ scale: 1.1 }}>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={removeLogo}
-                              className="absolute -top-2 -right-2 w-6 h-6 rounded-full shadow-lg hover:shadow-red-500/30"
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
-                          </motion.div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-center text-slate-400 hover:text-slate-300 transition-colors">
-                        PNG recommended • Max 2MB
-                      </p>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="border-2 border-dashed border-slate-700 rounded-xl p-6 text-center cursor-pointer hover:border-pink-500 hover:bg-slate-800/30 transition-all duration-300 group"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <motion.div 
-                        className="relative mx-auto mb-3 w-16 h-16"
-                        whileHover={{ rotate: 10 }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                        <Upload className="w-8 h-8 mx-auto text-slate-400 group-hover:text-pink-400 relative z-10 transition-colors" />
-                      </motion.div>
-                      <p className="text-sm text-slate-300 group-hover:text-white transition-colors">Click to upload logo</p>
-                      <p className="text-xs text-slate-400 mt-1 group-hover:text-slate-300 transition-colors">PNG recommended • Max 2MB</p>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleLogoUpload}
-                        className="hidden"
-                      />
-                    </motion.div>
-                  )}
+                      Done
+                    </motion.button>
+                  </div>
                 </div>
-
-                {/* Logo Size */}
-                {qrConfig.includeLogo && logoPreview && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-3 pt-4 border-t border-slate-700/50"
-                  >
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="logoSize" className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-                        <Maximize2 className="w-4 h-4 text-pink-400" />
-                        <span>Logo Size: {qrConfig.logoSize}px</span>
-                      </Label>
-                    </div>
-                    <input
-                      id="logoSize"
-                      type="range"
-                      min="20"
-                      max="80"
-                      step="5"
-                      value={qrConfig.logoSize}
-                      onChange={(e) => setQrConfig(prev => ({ ...prev, logoSize: parseInt(e.target.value) }))}
-                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer hover:accent-pink-500 transition-colors"
-                    />
-                    <div className="flex justify-between text-xs text-slate-400">
-                      <span className="hover:text-slate-300 transition-colors">Small</span>
-                      <span className="hover:text-slate-300 transition-colors">Medium</span>
-                      <span className="hover:text-slate-300 transition-colors">Large</span>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-
-            {/* Security Features */}
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-              className="bg-gradient-to-br from-emerald-900/20 to-teal-900/20 backdrop-blur-sm rounded-2xl p-6 border border-emerald-700/30 hover:border-emerald-500/50 transition-all duration-500"
-            >
-              <h4 className="font-semibold mb-4 flex items-center gap-2 text-white">
-                <Shield className="w-4 h-4 text-emerald-400" />
-                Security & Privacy
-              </h4>
-              <ul className="space-y-3 text-sm">
-                <motion.li 
-                  className="flex items-start gap-2 text-slate-300 hover:text-white transition-colors"
-                  whileHover={{ x: 5 }}
-                >
-                  <Lock className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <span>All generation happens locally in your browser</span>
-                </motion.li>
-                <motion.li 
-                  className="flex items-start gap-2 text-slate-300 hover:text-white transition-colors"
-                  whileHover={{ x: 5 }}
-                >
-                  <CloudOff className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <span>No data uploaded to external servers</span>
-                </motion.li>
-                <motion.li 
-                  className="flex items-start gap-2 text-slate-300 hover:text-white transition-colors"
-                  whileHover={{ x: 5 }}
-                >
-                  <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <span>Your content never leaves your device</span>
-                </motion.li>
-              </ul>
-            </motion.div>
-          </div>
-        </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Information Sections */}
         <div className="space-y-8 mt-8">
-          {/* QR Code Guide */}
+          {/* Security Features */}
           <motion.section 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="glass rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all duration-500"
+            className="glass backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 hover:border-blue-500/30 transition-all"
           >
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-white">
-              <QrCodeIcon className="w-6 h-6 text-blue-400" />
-              QR Code Best Practices
-            </h2>
-            <div className="space-y-4 text-slate-300">
-              <p>
-                QR codes are powerful tools for bridging physical and digital worlds. Follow these best practices 
-                for optimal results:
-              </p>
-              <div className="grid md:grid-cols-3 gap-4 mt-6">
-                <motion.div 
-                  className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-blue-500/50 hover:bg-slate-800/50 transition-all duration-300"
-                  whileHover={{ y: -5 }}
-                >
-                  <h4 className="font-semibold text-blue-400 mb-2 flex items-center gap-2">
-                    <Target className="w-4 h-4" />
-                    Optimal Size
-                  </h4>
-                  <p className="text-sm text-slate-400 hover:text-slate-300 transition-colors">
-                    Minimum 2x2 cm (0.8x0.8 in) for print, 200+ pixels for digital
-                  </p>
-                </motion.div>
-                <motion.div 
-                  className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-emerald-500/50 hover:bg-slate-800/50 transition-all duration-300"
-                  whileHover={{ y: -5 }}
-                >
-                  <h4 className="font-semibold text-emerald-400 mb-2 flex items-center gap-2">
-                    <Scan className="w-4 h-4" />
-                    Scan Testing
-                  </h4>
-                  <p className="text-sm text-slate-400 hover:text-slate-300 transition-colors">
-                    Always test QR codes with multiple devices and scanning apps
-                  </p>
-                </motion.div>
-                <motion.div 
-                  className="p-4 rounded-lg bg-slate-800/30 border border-slate-700/50 hover:border-purple-500/50 hover:bg-slate-800/50 transition-all duration-300"
-                  whileHover={{ y: -5 }}
-                >
-                  <h4 className="font-semibold text-purple-400 mb-2 flex items-center gap-2">
-                    <Stamp className="w-4 h-4" />
-                    Color Contrast
-                  </h4>
-                  <p className="text-sm text-slate-400 hover:text-slate-300 transition-colors">
-                    Ensure high contrast between QR code and background colors
-                  </p>
-                </motion.div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-emerald-400" />
+                  <h4 className="font-semibold text-white">Secure & Private</h4>
+                </div>
+                <p className="text-sm text-slate-400">
+                  All QR code generation happens 100% locally in your browser. No data is uploaded to any server.
+                </p>
               </div>
-            </div>
-          </motion.section>
-
-          {/* FAQ Section */}
-          <motion.section 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="glass rounded-2xl p-6 border border-slate-700/50 hover:border-purple-500/30 transition-all duration-500"
-          >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-white">
-              <HelpCircle className="w-6 h-6 text-purple-400" />
-              Frequently Asked Questions
-            </h2>
-            
-            <div className="space-y-4">
-              {faqs.map((faq, index) => (
-                <motion.div 
-                  key={index} 
-                  className="border-b border-slate-700/50 last:border-b-0 hover:border-purple-500/30 transition-colors"
-                  whileHover={{ x: 5 }}
-                >
-                  <button
-                    onClick={() => toggleFaq(index)}
-                    className="w-full flex items-center justify-between py-4 text-left hover:text-white transition-colors group"
-                  >
-                    <h4 className="font-semibold text-lg pr-4 text-slate-300 group-hover:text-white">
-                      {faq.question}
-                    </h4>
-                    <motion.div
-                      animate={{ rotate: openFaqIndex === index ? 90 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <ChevronRight 
-                        className="w-6 h-6 text-purple-400 group-hover:text-purple-300 transition-colors"
-                      />
-                    </motion.div>
-                  </button>
-                  <AnimatePresence>
-                    {openFaqIndex === index && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-slate-400 text-base pb-4 hover:text-slate-300 transition-colors">
-                          {faq.answer}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                  <h4 className="font-semibold text-white">Live Preview</h4>
+                </div>
+                <p className="text-sm text-slate-400">
+                  See changes instantly as you customize colors, settings, and add logos to your QR code.
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <LayoutGrid className="w-5 h-5 text-purple-400" />
+                  <h4 className="font-semibold text-white">{templates.length} Templates</h4>
+                </div>
+                <p className="text-sm text-slate-400">
+                  Create QR codes for websites, email, WiFi, social media, contacts, and more with easy forms.
+                </p>
+              </div>
             </div>
           </motion.section>
         </div>
       </div>
+
+      {/* Hidden canvas for QR generation */}
+      <canvas ref={canvasRef} className="hidden" />
     </div>
   );
-}
+};
+
+export default QRGenerator;
